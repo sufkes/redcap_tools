@@ -1,0 +1,140 @@
+# Standard modules
+import os, sys
+import math
+
+# Non-standard modules
+import redcap
+
+# My modules in current directory
+from exportProjectInfo import exportProjectInfo
+
+# My modules in other directories
+sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
+sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
+from Color import Color
+
+
+def importRecords(api_url, api_key, data, overwrite='normal', format='json', return_content='ids', size_thres=300000): # size_thres = 300000 has not caused error.
+    # Load project.
+    project = redcap.Project(api_url, api_key)
+    project_info = exportProjectInfo(api_url, api_key)
+    
+    # Ask for user confirmation before proceeding.
+    print "Data will be imported to the following project:"
+    print "-------------------------------------------------------------------------------------------------"
+    print "Project Title: "+Color.blue+project_info["project_title"]+Color.end
+    print "Project ID   : "+Color.blue+str(project_info["project_id"])+Color.end
+    print "-------------------------------------------------------------------------------------------------"
+    cont = raw_input("Please verify that this is project you wish to modify. Continue y/[n]? ")
+    if (cont != "y"):
+        print "Quitting"
+        sys.exit()
+    if (overwrite == "overwrite"):
+        cont = raw_input("You have selected to overwrite fields with blanks. Continue y/[n]? ")
+        if (cont != "y"):
+            print "Quitting"
+            sys.exit()
+    
+    # SHOULD PUT SOME FURTHER CONFIRMATIONS HERE; E.G. NUMBER OF RECORDS TO BE ADDED OR MODIFIED, NUMBER OF 
+    # FIELDS TO OVERWRITE.
+
+    # Determine size of imported data. I DON'T KNOW THE APPROPRIATE WAY TO DETERMINE THE "SIZE", NOR THE SIZE LIMIT. IF IT DOESN'T WORK WITH THE CURRENT SETTING, REDUCE THE SIZE LIMIT.
+    if (format == 'json'):
+        num_row = len(data)
+        num_col = len(data[0])
+        size = num_row*num_col
+    elif (format == 'csv'):
+        num_row = len(data.split("\n"))
+        num_col = len(data.split("\n")[0].split(",")) # assume same number of columns for every row.
+        size = num_row*num_col    
+    
+    failure_msg = "Import appears to have failed, likely because the input data is too large. Review the logging information in REDCap online to verify import failure, and change data chunk size by adjusting 'size_thres'."
+
+    # Import data
+    if (size < size_thres):
+        print "Importing data in one piece"
+        return_info = project.import_records(data, overwrite=overwrite, format=format, return_content=return_content)
+
+        if (return_content == 'count'):
+            try:
+                num_modified = return_info["count"]
+                print "Number of records imported: "+str(num_modified)
+            except KeyError:
+                print failure_msg
+                sys.exit()
+        elif (return_content == 'ids'):
+            if (return_info != {}):
+                print "Number of records imported: "+str(len(return_info))
+                print "IDs of records imported:"
+                id_string = ""
+                for id in return_info:
+                    id_string += id+" "
+                id_string = id_string.rstrip()
+                print id_string
+            else:
+                print failure_msg
+                sys.exit()
+    else:
+        row_chunk_size = size_thres/num_col # Python 2 rounds down integers after division (desired)
+        print "Importing data in chunks of size: "+str(row_chunk_size)
+        print size_thres, num_col
+        
+        if (return_content == 'count'):
+            num_modified = 0
+        elif (return_content == 'ids'):
+            ids_imported = []
+
+        if (format == 'csv'):
+            data_rows = data.split("\r\n")
+
+        # Slice the data into chunks of size <= size_thres
+        num_chunks = int(math.ceil(float(num_row)/float(row_chunk_size)))
+        for chunk_index in range(num_chunks): 
+            if (format == 'json'):
+                chunk = data[chunk_index*row_chunk_size:(chunk_index+1)*row_chunk_size]
+            elif (format == 'csv'): # For csv, must put column headers atop each chunk.
+                chunk = [data_rows[0]] # Initialize list with column headers.
+                chunk.extend(data_rows[chunk_index*row_chunk_size+1:(chunk_index+1)*row_chunk_size+1])
+                chunk = "\r\n".join(chunk) # Convert list back to string.
+
+#            print "Chunk:"
+#            print chunk
+#            print
+            
+            # Import chunk.
+            return_info = project.import_records(chunk, overwrite=overwrite, format=format, return_content=return_content)
+
+            # Combine import results for each chunk.
+            if (return_content == 'count'):
+                try:
+                    num_modified += return_info["count"]
+                except KeyError:
+                    print failure_msg
+                    sys.exit()
+            elif (return_content == 'ids'):
+                if (return_info != {}):
+                    ids_imported.extend(return_info)
+                else:
+                    print failure_msg
+                    sys.exit()
+
+            completion_percentage = float(chunk_index+1)/float(num_chunks)*100.
+            sys.stdout.write('\r')
+            sys.stdout.write('%.2f%% complete' % (completion_percentage,))
+            sys.stdout.flush()
+        sys.stdout.write('\n\r')
+#        sys.stdout.write('%.2f%% complete' % (float(100),))
+        sys.stdout.flush()
+                
+        # Report import results.
+        if (return_content == 'count'):
+            print "Number of records imported: "+str(num_modified)
+        elif (return_content == 'ids'):
+            id_string = ""
+            for id in ids_imported:
+                id_string += id+" "
+            id_string = id_string.rstrip()
+            print "Number of records imported: "+str(len(ids_imported))
+            print "IDs of records imported:"            
+            print id_string
+    return

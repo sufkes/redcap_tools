@@ -1,0 +1,41 @@
+## Operating system trash
+# Mac/OSX
+.DS_Store
+
+# Windows
+Thumbs.db
+
+
+## Editor trash
+# Emacs
+*~
+\#*\#
+.\#*
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+Session.vim
+.netrwhist
+*~
+
+# Microsoft Word
+~$*.doc*
+
+# Microsoft Excel
+~$*.xls*
+
+
+## Python trash
+# Python byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+## My very own trash
+# Text and spreadsheet files
+*.csv
+*.xls*

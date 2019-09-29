@@ -1,0 +1,37 @@
+from more_itertools import unique_everseen
+import sys
+
+def exportRecordsChunked(project, record_ids=None, chunk_size=100):
+    """Function to export records for large projects. So far, this function is known to be 
+    required for only for the IPSS database."""
+
+    def chunks(l, n):
+        """Yield successive n-sized chunks from list l"""
+        for ii in xrange(0, len(l), n):
+            sys.stdout.write('\r')
+            sys.stdout.write('%.2f%% complete' % (float(ii)/float(len(l))*1e2,))
+            sys.stdout.flush()
+            yield l[ii:ii+n]
+        sys.stdout.write('\r')
+        sys.stdout.write('%.2f%% complete' % (float(100),))
+        sys.stdout.flush()
+
+    record_list = project.export_records(records=record_ids, fields=[project.def_field]) # List of [def_field, ("redcap_event_name"), (instance fields?)]
+    records = [r[project.def_field] for r in record_list] # List of [def_field] for each row in records (includes duplicates)
+
+    # records is now a list of all record IDs, with duplicate entries corresponding to events/instances.
+    # Since a project.export_records(records = 'id_1') request will pull all rows for 'id_1'. 
+
+    records = list(unique_everseen(records))
+
+    try:
+        response = []
+        for record_chunk in chunks(records, chunk_size):
+            chunked_response = project.export_records(records=record_chunk, export_data_access_groups=True)
+            response.extend(chunked_response)
+    except RedcapError: # THIS EXCEPTION DOESN'T SEEM TO WORK PROPERLY
+        msg = "Chunked export failed for chunk_size={:d}".format(chunk_size)
+        raise ValueError(msg)
+    else:
+        return response
+    return

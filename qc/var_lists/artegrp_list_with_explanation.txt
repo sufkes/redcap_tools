@@ -1,0 +1,55 @@
+artdate arteriopathy_diagnosis_classification text <font color=green>Date of assessment</font> <font color=grey>(artdate)</font>
+artmajor arteriopathy_diagnosis_classification radio <font color=green>Primary Diagnosis - Major (please select only 1 major category)</font> <font color=grey>(artmajor)</font>
+artsmall arteriopathy_diagnosis_classification radio <font color=green>Small vessel arteriopathy, minor, specify:</font> <font color=grey>(artsmall)</font>
+artfca arteriopathy_diagnosis_classification radio <font color=green>FCA, minor, specify:</font> <font color=grey>(artfca)</font>
+tcahigh arteriopathy_diagnosis_classification yesno <font color=green>1a. Is transient cerebral arteriopathy (TCA) high on your differential diagnosis?</font> <font color=grey>(tcahigh)</font>
+tcawhy___1 arteriopathy_diagnosis_classification checkbox <font color=green>1b. If yes, why is TCA high on your differential diagnosis?</font> <font color=grey>(tcawhy)</font>
+tcaothsp arteriopathy_diagnosis_classification text <font color=green>Other reason tca is high on your differential diagnosis, specify:</font> <font color=grey>(tcaothsp)</font>
+dishigh arteriopathy_diagnosis_classification yesno <font color=green>2a. Is an Intracranial dissection high on your differential diagnosis?</font> <font color=grey>(dishigh)</font>
+thromhi arteriopathy_diagnosis_classification yesno <font color=green>3a. Is a thrombus high on your differential diagnosis?</font> <font color=grey>(thromhi)</font>
+bca arteriopathy_diagnosis_classification radio <font color=green>Bilateral cerebral arteriopathy, minor, specify:</font> <font color=grey>(bca)</font>
+aoart arteriopathy_diagnosis_classification radio <font color=green>Aortic/Cervical arteriopathy, minor, specify:</font> <font color=grey>(aoart)</font>
+artsecsp___1 arteriopathy_diagnosis_classification checkbox <font color=green>Please select a secondary classification (you may select multiple):</font> <font color=grey>(artsecsp)</font>
+artsecde arteriopathy_diagnosis_classification notes <font color=green>Describe all choices for secondary classification:</font> <font color=grey>(artsecde)</font>
+stutonse clinical_presentation radio <font color=green>Did the patient have stuttering onset of initial stroke? (Stuttering onset of stroke - defined as progressive neurological symptoms that occur within one week of initial presentation)?</font> <font color=grey>(stutonse)</font>
+initcoll radiographic_features_at_presentation radio <font color=green>In the initial scan(s) (within the first week) were collaterals observed?</font> <font color=grey>(initcoll)</font>
+colluncl radiographic_features_at_presentation text <font color=green>Collaterals, unclear, comment:</font> <font color=grey>(colluncl)</font>
+collscan radiographic_features_at_presentation text <font color=green>Collaterals, scan modality or modalities:</font> <font color=grey>(collscan)</font>
+initpseu radiographic_features_at_presentation radio <font color=green>In the initial scan(s) (within the first week) was a pseudoaneurysm observed?</font> <font color=grey>(initpseu)</font>
+pseuuncl radiographic_features_at_presentation text <font color=green>Pseudoaneurysm, unclear comment:</font> <font color=grey>(pseuuncl)</font>
+pseuscan radiographic_features_at_presentation text <font color=green>Pseudoaneurysm, scan modality or modalities:</font> <font color=grey>(pseuscan)</font>
+initroto radiographic_features_at_presentation radio <font color=green>In the initial scan(s) (within the first week) was rotational occlusion of the cervical vertebral artery observed? (eg. Bowhunter's syndrome; typically at the C1/C2 level)</font> <font color=grey>(initroto)</font>
+roocuncl radiographic_features_at_presentation text <font color=green>Rotational occlusion of the cervical vertebral artery, unclear comment:</font> <font color=grey>(roocuncl)</font>
+roocscan radiographic_features_at_presentation text <font color=green>Rotational occlusion, scan modality or modalities:</font> <font color=grey>(roocscan)</font>
+tiarad post_discharge_followup radio <font color=green>If the patient had a transient ischemic attack (defined as a focal deficit of acute onset with full reversal within 24 hours with presumed vascular origin - not due to migraine or seizure) did the radiologic images show no new parenchymal infarct, corresponding to the clinical manifestation?</font> <font color=grey>(tiarad)</font>
+cerspine post_discharge_followup radio <font color=green>Did you identify a cervical spine abnormality associated with an extracranial dissection?</font> <font color=grey>(cerspine)</font>
+unccsp post_discharge_followup notes <font color=green>If unclear, comment:</font> <font color=grey>(unccsp)</font>
+cerabnsp___1 post_discharge_followup checkbox <font color=green>If yes, specify?</font> <font color=grey>(cerabnsp)</font>
+othcsp post_discharge_followup text <font color=green>Other, specify:</font> <font color=grey>(othcsp)</font>
+scan890 post_discharge_followup yesno <font color=green>Were vascular or anatomic scans performed 8-90 days post stroke?</font> <font color=grey>(scan890)</font>
+obs890___1 post_discharge_followup checkbox <font color=green>Which of the following did you observe?</font> <font color=grey>(obs890)</font>
+scam890 post_discharge_followup text <font color=green>Scan modality or modalities:</font> <font color=grey>(scam890)</font>
+coll890 post_discharge_followup radio <font color=green>Collaterals?</font> <font color=grey>(coll890)</font>
+pseu890 post_discharge_followup radio <font color=green>Pseudoaneurysm?</font> <font color=grey>(pseu890)</font>
+roto890 post_discharge_followup radio <font color=green> Rotational occlusion of the cervical vertebral artery?(e.g. Bowhunter's syndrome; typically at the C1/C2 level)</font> <font color=grey>(roto890)</font>
+scan91180 post_discharge_followup yesno <font color=green>Were vascular or anatomic scans performed 91-180 days post stroke?</font> <font color=grey>(scan91180)</font>
+obs91180___1 post_discharge_followup checkbox <font color=green>Which of the following did you observe?</font> <font color=grey>(obs91180)</font>
+scam91180 post_discharge_followup text <font color=green>Scan modality or modalities:</font> <font color=grey>(scam91180)</font>
+coll91180 post_discharge_followup radio <font color=green>Collaterals?</font> <font color=grey>(coll91180)</font>
+pseu91180 post_discharge_followup radio <font color=green>Pseudoaneurysm?</font> <font color=grey>(pseu91180)</font>
+roto91190 post_discharge_followup radio <font color=green> Rotational occlusion of the cervical vertebral artery?(e.g. Bowhunter's syndrome; typically at the C1/C2 level)</font> <font color=grey>(roto91190)</font>
+scang180 post_discharge_followup yesno <font color=green>Were vascular or anatomic scans performed >180 days post stroke?</font> <font color=grey>(scang180)</font>
+obsg180___1 post_discharge_followup checkbox <font color=green>In follow-up scans performed >180 days post stroke dis you observe</font> <font color=grey>(obsg180)</font>
+scamg180 post_discharge_followup text <font color=green>Scan modality or modalities:</font> <font color=grey>(scamg180)</font>
+collg180 post_discharge_followup radio <font color=green>Collaterals?</font> <font color=grey>(collg180)</font>
+pseug180 post_discharge_followup radio <font color=green>pseudoaneurysm?</font> <font color=grey>(pseug180)</font>
+rotog180 post_discharge_followup radio <font color=green> Rotational occlusion of the cervical vertebral artery?(e.g. Bowhunter's syndrome; typically at the C1/C2 level)</font> <font color=grey>(rotog180)</font>
+indbypa post_discharge_followup radio <font color=green>Has the patient received indirect cerebrovascular bypass (e.g. encephaloduroarteriosynoangiosis, or EDAS)?</font> <font color=grey>(indbypa)</font>
+dirbypa post_discharge_followup radio <font color=green>Has the patient received direct cerebrovascular bypass (e.g. STA-MCA bypass)?</font> <font color=grey>(dirbypa)</font>
+rieng post_discharge_followup radio <font color=green>Did the right bypass engraft?</font> <font color=grey>(rieng)</font>
+rengcom post_discharge_followup text <font color=green>Unclear, comment</font> <font color=grey>(rengcom)</font>
+rengdate post_discharge_followup text <font color=green>Right bypass engraft, date confirmed</font> <font color=grey>(rengdate)</font>
+leeng post_discharge_followup radio <font color=green>Did the left bypass engraft?</font> <font color=grey>(leeng)</font>
+lengcom post_discharge_followup text <font color=green>Unclear, comment</font> <font color=grey>(lengcom)</font>
+lengdate post_discharge_followup text <font color=green>Left bypass engraft, date confirmed</font> <font color=grey>(lengdate)</font>
+recbypa post_discharge_followup radio <font color=green>Was there any stroke recurrence after bypass</font> <font color=grey>(recbypa)</font>
