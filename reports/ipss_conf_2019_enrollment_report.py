@@ -13,13 +13,12 @@ import redcap, pandas
 from getIPSSIDs import getIPSSIDs
 
 # My modules in other directories
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
-from Color import Color
-sys.path.append(os.path.join(sufkes_git_repo_dir, "redcap_misc"))
-from exportRecords import exportRecords
-from getRecordIDList import getRecordIDList
-from getDAGs import getDAGs
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.Color import Color
+from misc.exportRecords import exportRecords
+from misc.getRecordIDList import getRecordIDList
+from misc.getDAGs import getDAGs
 
 def addDAGInfo(report_df, path_dag_info):
     """This function adds columns for institution name and country Pandas DataFrames with DAG as the 

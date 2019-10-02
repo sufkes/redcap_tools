@@ -1,5 +1,10 @@
+import os, sys
+
 from Check import Check
-from getRecord import getEntryLR
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.getRecord import getEntryLR
 
 
 checklist = []

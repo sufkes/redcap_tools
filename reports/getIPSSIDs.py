@@ -3,10 +3,10 @@
 import os, sys
 
 # My modules in other directories
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "redcap_misc"))
-from exportRecords import exportRecords
-from getRecordIDList import getRecordIDList
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.exportRecords import exportRecords
+from misc.getRecordIDList import getRecordIDList
 
 def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, inc_pre_2014=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=True, inc_adult_stroke=True, inc_melas=True, inc_non_ipss=True, inc_non_sips=True, inc_non_sips2=True, inc_non_sips2_cohort1=True, inc_non_sips2_cohort2=True, inc_sips_exclusions=True, inc_sips_exclusions_2=True, inc_patient_info_incomp=True, inc_core_incomplete=True, inc_non_vips_enrolled=True):
     '''
@@ -417,7 +417,7 @@ def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, 
         record_ids = [id for id in record_ids if (id in record_ids_vips_enrolled)]
     return record_ids
 
-# For testing. 
+#### Run tests.
 if (__name__ == "__main__"):
     id_lists = []
 #    id_lists.append(getIPSSIDs())

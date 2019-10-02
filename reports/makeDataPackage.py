@@ -17,20 +17,19 @@ import pandas
 from getIPSSIDs import getIPSSIDs
 
 # My scripts in other directory
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
-from Color import Color
-from Timer import Timer
-sys.path.append(os.path.join(sufkes_git_repo_dir, "redcap_misc"))
-from exportRecords import exportRecords
-from exportProjectInfo import exportProjectInfo
-from getEvents import getEvents
-from exportFormEventMapping import exportFormEventMapping
-from exportRepeatingFormsEvents import exportRepeatingFormsEvents
-from exportFormsOrdered import exportFormsOrdered
-from createFormRepetitionMap import createFormRepetitionMap
-from parseMetadata import parseMetadata
-from getRecordIDList import getRecordIDList
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.Color import Color
+from misc.Timer import Timer
+from misc.exportRecords import exportRecords
+from misc.exportProjectInfo import exportProjectInfo
+from misc.getEvents import getEvents
+from misc.exportFormEventMapping import exportFormEventMapping
+from misc.exportRepeatingFormsEvents import exportRepeatingFormsEvents
+from misc.exportFormsOrdered import exportFormsOrdered
+from misc.createFormRepetitionMap import createFormRepetitionMap
+from misc.parseMetadata import parseMetadata
+from misc.getRecordIDList import getRecordIDList
 
 # Time the whole script.
 t_script = Timer('Generate data package')
@@ -718,7 +717,9 @@ if (args.package_name in ['sips']):
     print len(ids_sips_group_1)
     print len(ids_sips_group_2)
     print len(set(ids_sips_group_1+ids_sips_group_2))
-    with open('sips_both_groups.txt', 'wb') as ff:
+    scriptdir = os.path.dirname(os.path.realpath(__file__))
+    sips_both_groups_path = os.path.join(scriptdir, 'sips_both_groups.txt')
+    with open(sips_both_groups_path, 'wb') as ff:
 #        for id in list(set(ids_sips_group_1+ids_sips_group_2)):
 #            ff.writeline()
         ff.writelines([str(id)+" " for id in  list(set(ids_sips_group_1+ids_sips_group_2))])
@@ -1118,7 +1119,7 @@ for format_type in format_type_list:
         # Rename duplicated IPSS V3 fields
         rename_fields_ipss = {}
         for field_name in project_df_ipss_current_format.columns:
-            if (not field_name in ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group']):
+            if (not field_name in ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group', 'strage']):
                 if (field_name in project_df_sips2.columns) or (field_name in project_df_psom2.columns):
                     rename_fields_ipss[field_name] = field_name + '_renamed_ipss'
                     project_df_ipss_current_format.rename(columns=rename_fields_ipss, inplace=True)
@@ -1126,7 +1127,7 @@ for format_type in format_type_list:
         # Rename duplicated SIPS II fields
         rename_fields_sips2 = {}
         for field_name in project_df_sips2_current_format.columns:
-            if (not field_name in ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group']):
+            if (not field_name in ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group', 'strage']):
                 if (field_name in project_df_ipss.columns) or (field_name in project_df_psom2.columns):
                     rename_fields_sips2[field_name] = field_name + '_renamed_sips2'
                     project_df_sips2_current_format.rename(columns=rename_fields_sips2, inplace=True)
@@ -1134,15 +1135,11 @@ for format_type in format_type_list:
         # Rename duplicated PSOM V2 fields
         rename_fields_psom2 = {}
         for field_name in project_df_psom2_current_format.columns:
-            if (not field_name in ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group']):
+            if (not field_name in ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group', 'strage']):
                 if (field_name in project_df_sips2.columns) or (field_name in project_df_ipss.columns):
                     rename_fields_psom2[field_name] = field_name + '_renamed_psom2'
                     project_df_psom2_current_format.rename(columns=rename_fields_psom2, inplace=True)
                     metadata_psom2 = OrderedDict([(key, val) if (not key in rename_fields_psom2) else (rename_fields_psom2[key], val) for (key, val) in metadata_psom2.iteritems()])
-
-    print rename_fields_ipss
-    print rename_fields_sips2
-    print rename_fields_psom2
 
     if (args.package_name in ['sips']):
         for col in project_df_sips2_current_format:
@@ -1523,7 +1520,6 @@ for format_type in format_type_list:
                     return df.loc[~df.index.isin(df_empty.index), :]
 
                 dag_strage_columns = project_df_ipss.loc[(project_df_ipss['redcap_event_name']=='acute_arm_1'), ['ipssid', 'redcap_data_access_group', 'strage']]
-                print dag_strage_columns
 
                 # Divide the records into two groups:
                 # (1) SIPS I (including SIPS II cohort I)
@@ -1675,6 +1671,7 @@ for format_type in format_type_list:
                     return df.loc[~df.index.isin(df_empty.index), :]
 
                 dag_strage_columns = project_df_ipss.loc[(project_df_ipss['redcap_event_name']=='acute_arm_1'), ['ipssid', 'redcap_data_access_group', 'strage']]
+                print dag_strage_columns
 
                 # Create workbook.
                 path_report = os.path.join(dir_report, "data_package_"+args.package_name+"_"+field_list_name+"_"+event_list_name+'_'+format_type+".xlsx")
@@ -1688,23 +1685,30 @@ for format_type in format_type_list:
                         print 'WARNING: THIS LOOP WILL BREAK IF YOU SUDDENLY REQUEST FIELDS NOT PRESENT IN form_list_ipss'
 
 #                        fields_to_include = ['ipssid'] # don't include any repeating form information since this is only acute data.
-                        fields_to_include = ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance'] # *DO* include event & repeat form information for sanity
+                        fields_to_include = ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'strage'] # *DO* include event & repeat form information for sanity
                         fields_in_form = [field_name for field_name in metadata_ipss if (metadata_ipss[field_name].form_name == form_name)]
                         fields_to_include.extend([field_name for field_name in fields_in_form if (not field_name in fields_to_include)]) # don't double-add a field_name
+                        print '1) strage:', 'strage' in fields_to_include
                         
                         selection = project_df_all_current_format_fields_events.loc[:, fields_to_include]
-                        selection = removeEmpty(selection, fields_in_form) # remove columns for which the fields in the requested forms are empty or NA.
-
+                        print '2) strage:', 'strage' in selection.columns
+                        selection = removeEmpty(selection, fields_in_form) # remove rows for which the fields in the requested forms are empty or NA.
+                        print '3) strage:', 'strage' in selection.columns
+                        
+                        print '4) strage:', 'strage' in dag_strage_columns
+                        selection.drop(['strage'], inplace=True, axis=1) # Remove it from the selection (I DON'T REALLT KNOW WHY)
                         selection = selection.merge(dag_strage_columns, how='left', on='ipssid')
+                        print '5) strage:', 'strage' in selection.columns
                         columns_reordered = ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group', 'strage']
                         columns_reordered.extend([col for col in fields_to_include if (not col in columns_reordered)]) # don't double-add any columns
                         columns_reordered = [col for col in columns_reordered if (col in selection.columns)] # remove columns not present in selection
+                        print '6) strage:', 'strage' in columns_reordered
                         selection = selection[columns_reordered]
-
+                        print '7) strage:', 'strage' in selection.columns
                         # Un-rename the fields with inter-project name conflicts.
                         unrename_fields_ipss = {v:k for k,v in rename_fields_ipss.iteritems()}
                         selection.rename(columns=unrename_fields_ipss,inplace=True)
-
+                        print '8) strage:', 'strage' in selection.columns
                         if (not len(selection) == 0):
                             addSheet(writer, selection, form_name)
     

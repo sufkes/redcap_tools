@@ -2,9 +2,9 @@
 import os, sys
 
 # My modules from other directories
-sufkes_git_repo_dir = '/Users/steven ufkes/scripts'
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc")) 
-from Color import Color
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.Color import Color
 
 def formatFieldName(field_name, metadata):
     """This function is used to convert checkbox field names, e.g. var1___1 into var1

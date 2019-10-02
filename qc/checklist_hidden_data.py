@@ -1,5 +1,10 @@
+import os, sys
+
 from Check import Check # Class used to define what a check does and when it is performed
-from getRecord import getEntryLR
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.getRecord import getEntryLR
 
 # THIS SHOULD BE PUT IN THE DEFAULT CHECKLIST; I DIDN'T DO IT THE FIRST TIME BECAUSE I NEED TO HANDLE ALL CASES (LONGITUDINAL, REPEATING) IN getRecords() FUNCTIONS.
 

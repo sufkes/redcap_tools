@@ -6,9 +6,9 @@ import csv
 from formatStrings import formatFieldName, formatDAGName
 
 # My modules from other directories
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc")) 
-from Color import Color
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.Color import Color
 
 ## THIS SCRIPT SHOULD PROBABLY BE REWRITTEN USING PANDAS. SOME OF IT COULD BE DRASTICALLY SIMPLIFIED. 
 

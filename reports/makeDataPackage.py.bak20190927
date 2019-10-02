@@ -17,20 +17,19 @@ import pandas
 from getIPSSIDs import getIPSSIDs
 
 # My scripts in other directory
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
-from Color import Color
-from Timer import Timer
-sys.path.append(os.path.join(sufkes_git_repo_dir, "redcap_misc"))
-from exportRecords import exportRecords
-from exportProjectInfo import exportProjectInfo
-from getEvents import getEvents
-from exportFormEventMapping import exportFormEventMapping
-from exportRepeatingFormsEvents import exportRepeatingFormsEvents
-from exportFormsOrdered import exportFormsOrdered
-from createFormRepetitionMap import createFormRepetitionMap
-from parseMetadata import parseMetadata
-from getRecordIDList import getRecordIDList
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.Color import Color
+from misc.Timer import Timer
+from misc.exportRecords import exportRecords
+from misc.exportProjectInfo import exportProjectInfo
+from misc.getEvents import getEvents
+from misc.exportFormEventMapping import exportFormEventMapping
+from misc.exportRepeatingFormsEvents import exportRepeatingFormsEvents
+from misc.exportFormsOrdered import exportFormsOrdered
+from misc.createFormRepetitionMap import createFormRepetitionMap
+from misc.parseMetadata import parseMetadata
+from misc.getRecordIDList import getRecordIDList
 
 # Time the whole script.
 t_script = Timer('Generate data package')

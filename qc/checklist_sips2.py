@@ -1,9 +1,11 @@
-import sys
+import os, sys
 
-from getRecord import getEventFieldInstance
 from Check import Check
 from dates import compareDates
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.getRecord import getEventFieldInstance
 
 # Create list of checks (must be called 'checklist')
 checklist = []

@@ -14,9 +14,9 @@ from reportCheckResults import reportCheckResults, combineCheckReports
 from formatStrings import formatDAGName
 
 # My modules from other directories
-sufkes_git_repo_dir = '/Users/steven ufkes/scripts'
-sys.path.append(os.path.join(sufkes_git_repo_dir, "redcap_misc")) 
-from isEventFieldInstanceValid import isEventFieldInstanceValid
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.isEventFieldInstanceValid import isEventFieldInstanceValid
 
 def getElementsToCheck(check, def_field, project_longitudinal, project_repeating, repeating_forms_events, form_repetition_map, metadata, records, record_id_map):
     # Checks which look at full rows by themselves.

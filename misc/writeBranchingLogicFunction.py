@@ -3,9 +3,6 @@ import os, sys
 from tokenizeBranchingLogic import tokenizeBranchingLogic
 from translateTokens import translateTokens
 from getRecord import getEventField, getFieldInstance, getEventFieldInstance
-
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
 from Color import Color
 
 def doesFieldExist(field_name, metadata_without_branching_logic):

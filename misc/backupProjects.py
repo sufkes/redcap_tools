@@ -25,11 +25,9 @@ from exportProjectInfo import exportProjectInfo
 from exportRecords import exportRecords
 
 # My scripts in other directories
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
 from Color import Color
-#from exportFormEventMapping import exportFormEventMapping
-#from exportRepeatingFormsEvents import exportRepeatingFormsEvents
+#from misc.exportFormEventMapping import exportFormEventMapping
+#from mexportRepeatingFormsEvents import exportRepeatingFormsEvents
 #from exportFormsOrdered import exportFormsOrdered
 #from createFormRepetitionMap import createFormRepetitionMap
 

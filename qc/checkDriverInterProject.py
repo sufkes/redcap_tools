@@ -5,8 +5,9 @@ import os, sys
 from reportCheckResults import reportCheckResults, combineCheckReports
 
 # My modules from other directies
-sys.path.append(os.path.join(os.path.join(os.getcwd(), '..'), "redcap_misc")) 
-from isEventFieldInstanceValid import isEventFieldInstanceValid
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.isEventFieldInstanceValid import isEventFieldInstanceValid
 
 def getElementsToCheck(check, def_field, project_longitudinal, project_repeating, repeating_forms_events, form_repetition_map, metadata, records, record_id_map):
     # For checks performed only once per record (i.e. checks which refer to

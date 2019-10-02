@@ -21,10 +21,6 @@ from createRecordIDMap import createRecordIDMap
 from getDAGs import getDAGs
 from createDAGRecordMap import createDAGRecordMap
 from isEventFieldInstanceValid import isEventFieldInstanceValid
-
-# My modules from other directories
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repo is cloned."""
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
 from Color import Color
 
 def labelRecords(api_url, api_key, records, project, requested_format, label_overwrite=False):

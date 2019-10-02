@@ -17,23 +17,21 @@ from saveData import saveData
 from isProjectCompatible import isProjectCompatible
 
 # My modules from other directories
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "redcap_misc"))
-from exportProjectInfo import exportProjectInfo
-from getEvents import getEvents
-from exportFormEventMapping import exportFormEventMapping
-from exportRepeatingFormsEvents import exportRepeatingFormsEvents
-from exportFormsOrdered import exportFormsOrdered
-from createFormRepetitionMap import createFormRepetitionMap
-from parseMetadata import parseMetadata
-from exportRecords import exportRecords
-from createRecordIDMap import createRecordIDMap
-from getDAGs import getDAGs
-from createDAGRecordMap import createDAGRecordMap
-#sys.path.append(os.path.join(os.path.join(sufkes_git_repo_dir, "misc"))
-#from Color import Color
-sys.path.append(os.path.join(sufkes_git_repo_dir, "redcap_special"))
-from getIPSSIDs import getIPSSIDs
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import misc
+from misc.exportProjectInfo import exportProjectInfo
+from misc.getEvents import getEvents
+from misc.exportFormEventMapping import exportFormEventMapping
+from misc.exportRepeatingFormsEvents import exportRepeatingFormsEvents
+from misc.exportFormsOrdered import exportFormsOrdered
+from misc.createFormRepetitionMap import createFormRepetitionMap
+from misc.parseMetadata import parseMetadata
+from misc.exportRecords import exportRecords
+from misc.createRecordIDMap import createRecordIDMap
+from misc.getDAGs import getDAGs
+from misc.createDAGRecordMap import createDAGRecordMap
+import reports
+from reports.getIPSSIDs import getIPSSIDs
 
 if (len(sys.argv) == 2): # if args are provided from file
     with open(str(sys.argv[1]), "r") as file:
@@ -62,7 +60,8 @@ for list_index in range(6, 6 + num_checklists):
 
 check_paths_exist = True
 for check_name in check_name_list:
-    check_path = check_name+".py"
+    scriptdir = os.path.dirname(os.path.realpath(__file__))
+    check_path = os.path.join(scriptdir, check_name+".py")
     if not os.path.exists(check_path):
         check_paths_exists = False
         print "ERROR: Path does not exist:", check_path

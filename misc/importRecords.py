@@ -13,10 +13,6 @@ import redcap
 # My modules in current directory
 from exportProjectInfo import exportProjectInfo
 from exportRecords import exportRecords
-
-# My modules in other directories
-sufkes_git_repo_dir = "/Users/steven ufkes/scripts" # change this to the path to which the sufkes Git repository was cloned.
-sys.path.append(os.path.join(sufkes_git_repo_dir, "misc"))
 from Color import Color
 from Timer import Timer
 
