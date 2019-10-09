@@ -659,12 +659,12 @@ path_dag_info = '/Users/steven ufkes/Documents/stroke/ipss/auto-reports/ipss_dag
 #dag_info = getDAGInfo(path_dag_info)
 
 # Patient enrollment information
-#patient_info = getPatientInfo(url_arch, url_ipss, key_arch, key_ipss)
-#reportPatientInfo(patient_info, args.out_dir, path_dag_info)
+patient_info = getPatientInfo(url_arch, url_ipss, key_arch, key_ipss)
+reportPatientInfo(patient_info, args.out_dir, path_dag_info)
 
 # User information
 user_info = getUserInfo(url_ipss, key_ipss)
 
 #print user_info['steven.ufkes']['action_dates']
-#reportUserInfo(user_info, args.out_dir, path_dag_info)
+reportUserInfo(user_info, args.out_dir, path_dag_info)
 reportUserInfo_TAF20190912(user_info, args.out_dir, path_dag_info)

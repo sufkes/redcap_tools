@@ -36,7 +36,7 @@ from misc.exportRecords import exportRecords
 from misc.createRecordIDMap import createRecordIDMap
 from misc.getDAGs import getDAGs
 from misc.createDAGRecordMap import createDAGRecordMap
-from Color import Color
+from misc.Color import Color
 import reports
 from reports.getIPSSIDs import getIPSSIDs
 

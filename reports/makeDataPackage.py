@@ -42,7 +42,7 @@ spreadsheet, then generates smaller pieces by making selections from the larger 
 parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
 
 # Define positional arguments.
-parser.add_argument('package_name', action='store', type=str, help='Name of data package to generate.', choices=['malig', 'subhem', 'sips', 'sipsf'])
+parser.add_argument('package_name', action='store', type=str, help='Name of data package to generate.', choices=['malig', 'subhem', 'meet2019', 'sips', 'sipsf'])
 
 # Define optional arguments.
 parser.add_argument('-d', '--debug', action='store_true', help='Skip important processing steps for debugging purposes.')
@@ -57,6 +57,8 @@ if (args.package_name == 'malig'):
     dir_report = os.path.join(dir_data_packages, '2019-03_LisaSun_Malignancy')
 elif (args.package_name == 'subhem'):
     dir_report = os.path.join(dir_data_packages, '2019-04_SubduralHemorrhage')
+elif (args.package_name == 'meet2019'):
+    dir_report = os.path.join(dir_data_packages, '2019-10_IPSS_meeting')
 elif (args.package_name == 'sips'):
     dir_report = os.path.join(dir_data_packages, '2019-05_SIPS')
 elif (args.package_name == 'sipsf'):
@@ -297,6 +299,11 @@ elif (args.package_name == 'subhem'):
     record_ids_arch = getIPSSIDs(db='arch', inc_registry_only=False, inc_unknown_stroke_type=True, inc_pre_2014=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=False, inc_adult_stroke=False, inc_melas=True, inc_non_ipss=False, inc_patient_info_incomp=False)
     record_ids_ipss = getIPSSIDs(db='ipss', inc_registry_only=False, inc_unknown_stroke_type=True, inc_pre_2014=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=False, inc_adult_stroke=False, inc_melas=True, inc_non_ipss=False, inc_patient_info_incomp=False)
     record_ids_psom = getIPSSIDs(db='psom', inc_registry_only=False, inc_unknown_stroke_type=True, inc_pre_2014=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=False, inc_adult_stroke=False, inc_melas=True, inc_non_ipss=False, inc_patient_info_incomp=False)
+elif (args.package_name == 'meet2019'):
+    record_ids_arch = getIPSSIDs(db='arch', inc_registry_only=False, inc_unknown_stroke_type=False, inc_pre_2003=False, inc_post_20191001=False, inc_vips_screen_nonenroll=False, inc_placeholders=False, inc_adult_stroke=False, inc_non_ipss=False, inc_patient_info_incomp=False)
+    record_ids_ipss = getIPSSIDs(db='ipss', inc_registry_only=False, inc_unknown_stroke_type=False, inc_pre_2003=False, inc_post_20191001=False, inc_vips_screen_nonenroll=False, inc_placeholders=False, inc_adult_stroke=False, inc_non_ipss=False, inc_patient_info_incomp=False)
+    record_ids_psom = getIPSSIDs(db='psom', inc_registry_only=False, inc_unknown_stroke_type=False, inc_pre_2003=False, inc_post_20191001=False, inc_vips_screen_nonenroll=False, inc_placeholders=False, inc_adult_stroke=False, inc_non_ipss=False, inc_patient_info_incomp=False)
+    record_ids_psom2 = getIPSSIDs(db='psom2', inc_registry_only=False, inc_unknown_stroke_type=False, inc_pre_2003=False, inc_post_20191001=False, inc_vips_screen_nonenroll=False, inc_placeholders=False, inc_adult_stroke=False, inc_non_ipss=False, inc_patient_info_incomp=False)
 elif (args.package_name == 'sips'):
     record_ids_arch = getIPSSIDs(db='arch', inc_non_sips=False, inc_sips_exclusions=True) # exclude not enrolled or excluded later
     record_ids_ipss = getIPSSIDs(db='ipss', inc_non_sips=False, inc_sips_exclusions=True) # exclude not enrolled or excluded later
@@ -312,7 +319,7 @@ t_get_record_ids.stop()
 ## Get project data for each project.
 t_get_project_data = Timer('Get project data')
 
-if (args.package_name in ['malig', 'subhem', 'sips']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
     project_arch = redcap.Project(url_arch, key_arch)
     project_info_arch = exportProjectInfo(url_arch, key_arch)
     project_longitudinal_arch = bool(project_info_arch["is_longitudinal"])
@@ -325,7 +332,7 @@ if (args.package_name in ['malig', 'subhem', 'sips']):
     form_repetition_map_arch = createFormRepetitionMap(project_longitudinal_arch, project_repeating_arch, form_event_mapping_arch, repeating_forms_events_arch, forms_arch)
     metadata_arch = parseMetadata(project_arch.def_field, project_info_arch, project_longitudinal_arch, project_repeating_arch, events_arch, metadata_raw_arch, form_event_mapping_arch, repeating_forms_events_arch, forms_arch, form_repetition_map_arch, write_branching_logic_function=False)
 
-if (args.package_name in ['malig', 'subhem', 'sips', 'sipsf']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips', 'sipsf']):
     project_ipss = redcap.Project(url_ipss, key_ipss)
     project_info_ipss = exportProjectInfo(url_ipss, key_ipss)
     project_longitudinal_ipss = bool(project_info_ipss["is_longitudinal"])
@@ -338,7 +345,7 @@ if (args.package_name in ['malig', 'subhem', 'sips', 'sipsf']):
     form_repetition_map_ipss = createFormRepetitionMap(project_longitudinal_ipss, project_repeating_ipss, form_event_mapping_ipss, repeating_forms_events_ipss, forms_ipss)
     metadata_ipss = parseMetadata(project_ipss.def_field, project_info_ipss, project_longitudinal_ipss, project_repeating_ipss, events_ipss, metadata_raw_ipss, form_event_mapping_ipss, repeating_forms_events_ipss, forms_ipss, form_repetition_map_ipss, write_branching_logic_function=False)
 
-if (args.package_name in ['malig', 'subhem']):
+if (args.package_name in ['malig', 'subhem', 'meet2019']):
     project_psom = redcap.Project(url_psom, key_psom)
     project_info_psom = exportProjectInfo(url_psom, key_psom)
     project_longitudinal_psom = bool(project_info_psom["is_longitudinal"])
@@ -433,7 +440,7 @@ if (args.package_name == 'malig'):
         ] # use restrict_fields=True if certain fields will need to be removed for the given event.
     format_type_list = ['singlerow']
 
-elif (args.package_name == 'subhem'):
+elif (args.package_name in ['subhem']):
     field_list_list = [
         {'name':'master', 
          'arch':{'export':True, 
@@ -460,6 +467,44 @@ elif (args.package_name == 'subhem'):
          'arch':set(['follow_up_arm_1', 'treatment_with_rec_arm_1']), 
          'ipss':set(['followup_arm_1']), 
          'psom':None
+         }
+        ] # use restrict_fields=True if certain fields will need to be removed for the given event.
+    format_type_list = ['multirow']
+
+elif (args.package_name in ['meet2019']):
+    field_list_list = [
+        {'name':'master', 
+         'arch':{'export':True, 
+                 'fields':['addthromboevent', 'preceding', 'concurrent', 'following', 'not_appl', 'old_ais', 'old_silent', 'systemic_art', 'pulmonary', 'old_csvt', 'tia', 'systemic_ven', 'intracardi', 'detailsofevent'], 
+                 'forms':set(['medical_treatment', 'treatment_table', 'radiographic_stroke_features'])
+                 }, 
+         'ipss':{'export':True, 
+                 'fields':None, 
+                 'forms':None
+                 }, 
+         'psom':{'export':False, 
+#                 'fields':set(["fuionset_soi", "fpsomr", "fpsoml", "fpsomlae", "fpsomlar", "fpsomcb", "psomsen", "fpsomco", "othsens", 'totpsom', "fucomm"]), 
+                 'fields':set([]),
+                 'forms':set([])
+                 },
+         'psom2':{'export':True,
+                  'fields':set(["fuionset_soi", "fpsomr", "fpsoml", "fpsomlae", "fpsomlar", "fpsomcb", "psomsen", "fpsomco", "othsens", 'totpsom', "fucomm"]), 
+                  'forms':None
+                  }
+         }
+        ]
+    event_list_list = [
+        {'name':'acute', 'restrict_events':True, 
+         'arch':set(['acute_arm_1']), 
+         'ipss':set(['acute_arm_1']), 
+         'psom':set([]),
+         'psom2':None
+         }, 
+        {'name':'followup', 'restrict_events':True, 
+         'arch':set(['follow_up_arm_1', 'treatment_with_rec_arm_1']), 
+         'ipss':set(['followup_arm_1']), 
+         'psom':set([]),
+         'psom2':None
          }
         ] # use restrict_fields=True if certain fields will need to be removed for the given event.
     format_type_list = ['multirow']
@@ -560,7 +605,7 @@ stroke_presentation_select_fields = ['addthromboevent', 'preceding', 'concurrent
 #------------------------------------------------------------------------------------------------------
 ## Archive 
 # Add Archive data to workbook.
-if (args.package_name in ['malig', 'subhem', 'sips']): 
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']): 
     print "Adding data from: "+Color.green+"Archive"+Color.end
     events_to_add_arch = None # include all events
     fields_to_add_arch = None # export everything now, restrict selection later
@@ -574,7 +619,7 @@ if (args.package_name in ['malig', 'subhem', 'sips']):
 #------------------------------------------------------------------------------------------------------
 ## IPSS         
 # Add IPSS data to workbook.
-if (args.package_name in ['malig', 'subhem', 'sips', 'sipsf']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips', 'sipsf']):
     print "Adding data from: "+Color.green+"IPSS"+Color.end
     events_to_add_ipss = None
     fields_to_add_ipss = None
@@ -642,12 +687,23 @@ if (args.package_name in ['sipsf']):
     else:
         project_df_psom2 = pandas.DataFrame()
 
+if (args.package_name in ['meet2019']):
+    # Export only specific data from PSOM V2; don't treat PSOM V2 the same as IPSS or Archive because it's fields aren't directly included in the data packages.
+    events_to_add_psom2 = None
+    fields_to_add_psom2 = set(["fuionset_soi", "fpsomr", "fpsoml", "fpsomlae", "fpsomlar", "fpsomcb", "psomsen", "fpsomco", "othsens", 'totpsom', "fucomm"]) # field_list_list[0]['psom']['fields'] # export master list (a superset of the mini list)
+    forms_to_add_psom2 = None # field_list_list[0]['psom']['forms'] # export master list (a superset of the mini list)
+    export_from_psom2 = True
+    if export_from_psom2:
+        project_df_psom2 = makeSheet(url_psom2, key_psom2, record_ids_psom2, project_psom2, project_info_psom2, project_longitudinal_psom2, project_repeating_psom2, events_psom2, form_event_mapping_psom2, repeating_forms_events_psom2, forms_psom2, form_repetition_map_psom2, metadata_psom2, forms_to_add=forms_to_add_psom2, fields_to_add=fields_to_add_psom2, events_to_add=events_to_add_psom2, remove_repeating_info=False)
+    else:
+        project_df_psom2 = pandas.DataFrame()
+
 #------------------------------------------------------------------------------------------------------
 ## Old 1-row per patient data package.
 # Add data from old 1-row per patient.
 #export_from_1row = True
 #if export_from_1row:
-if (args.package_name in ['malig', 'subhem', 'sips']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
     print "Adding data from: "+Color.green+"Old one-row-per-patient data package"+Color.end
     # Data is stored in CSV files.
     path_1row_rad = os.path.join(dir_data_packages, "ipss_radiographic_investigations_source.csv")
@@ -675,7 +731,7 @@ else:
 
 
 ###### MANUAL OVERWRITE SPECIFIC FORMS FOR HAND-PICKED LIST OF RECORDS. I DON'T KNOW HOW THESE ID LISTS WERE GENERATED, AND IT IS NOT SAFE TO ASSUME THAT THESE LISTS SHOULD NOT BE DIFFERENT NOW
-if (args.package_name in ['malig', 'subhem', 'sips']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
     # Data to be take from V3 for the following patients (these patients have been completely re-abstracted):
     ids_mod_ipss_only = ['106', '122', '170', '186', '187', '255', '663', '699', '736', '737', '744', '748', '750', '783', '892', '920', '923', '948', '1576', '1585', '1607', '1641', '1642', '1674', '1718', '1731', '1741', '1765', '1799', '1903', '1934', '1955', '1974', '2000', '2010', '2014', '2030', '2107', '2255', '2271', '2326', '2327', '2419', '2686', '5943', '6023', '7127', '7483', '7526', '7564', '7603', '7963', '8223', '9164', '9166', '9766', '9843', '10324', '10944', '11046', '11063', '11307', '11550', '11671', '11674', '11685', '12124', '12163', '12205', '13724', '15049', '17475', '18086', '19030', '19485', '20453']
     
@@ -819,7 +875,7 @@ if (args.package_name in ['sips', 'sipsf']):
 #project_df_arch, record_ids_with_ipss_treat_data = modifyTreatmentData(project_df_arch, project_df_ipss, metadata_arch, metadata_ipss, project_arch, project_ipss, except_ids=ids_custom_mod_arch_only+ids_custom_mod_arch_treat_only)
 
 ## Transfer 'Summary of Impressions' data from PSOM fields to IPSS fields. Handle this differently for the final SIPS package.
-if (args.package_name in ['malig', 'subhem']):
+if (args.package_name in ['malig', 'subhem', 'meet2019']):
     def modifySummaryOfImpressionsData(project_df_ipss, project_df_psom, metadata_psom, project_psom):
         t_soi = Timer('Modify Summary of Impressions data')
         psom_to_ipss_map = {'fuionset_soi':'fuionset', "fpsomr": 'fpsomr', "fpsoml": 'fpsoml', "fpsomlae": 'fpsomlae', "fpsomlar": 'fpsomlar', "fpsomcb": 'fpsomcb', "psomsen___1": 'psomsen___3', "psomsen___2": 'psomsen___4', "psomsen___3": 'psomsen___5', "psomsen___4": 'psomsen___6', "psomsen___5": 'psomsen___7', "psomsen___6": 'psomsen___8', "psomsen___7": 'psomsen___9', "psomsen___8": 'psomsen___10', "psomsen___9": 'psomsen___11', "psomsen___10": 'psomsen___12', "psomsen___11": 'psomsen___13', "psomsen___12": 'psomsen___14', "fpsomco___1": 'fpsomco___1', "fpsomco___2": 'fpsomco___2', "othsens": 'othsens', 'totpsom':'totpsom', "fucomm": 'fucomm'}
@@ -827,12 +883,17 @@ if (args.package_name in ['malig', 'subhem']):
         for key, val in psom_to_ipss_map.iteritems():
             ipss_to_psom_map[val] = key
     
+        # (-1) If taking from PSOM V2, need to remove the 'acute_hospitalizat_arm_1' event.
+        print "Rows in PSOM dataframe prior to removing 'acute_hospitalizat_arm_1' event:", len(project_df_psom)
+        project_df_psom = project_df_psom.loc[~(project_df_psom['redcap_event_name']=='acute_hospitalizat_arm_1'),:]
+        print "Rows in PSOM dataframe prior to removing 'acute_hospitalizat_arm_1' event:", len(project_df_psom)
+
         # (0) Delete all summary of impressions data for SickKids patients.
         #t_soi_del = Timer('(0) Delete HSC Summary of Impressions data from IPSS')
         # WAS DOING THIS SOI DELETION STEP FOR TESTING. WHEN I DO THIS, ONLY PATIENTS WHO DO NOT EXIST IN PSOM RETAIN THE NA TAG, AND NONE OF THESE APPEAR TO HAVE A SOI. SIMPLY LEAVE THEIR IPSS SOI DATA THIER INSTEAD OF DELETING IT.
     #    project_df_ipss.loc[(project_df_ipss['redcap_data_access_group']=='hsc'), ipss_to_psom_map] = 'NA (Overwritten by fields in PSOM database)' 
         #t_soi_del.stop()
-    
+
         # (1) Change the event name and instance to match those used in IPSS
         #t_soi_rep = Timer('(1) Change event names and instances in PSOM to match IPSS')    
         for row_index in project_df_psom.index:
@@ -886,10 +947,13 @@ if (args.package_name in ['malig', 'subhem']):
     if skip_soi_mod:
         print Color.red+'WARNING: SKIPPING MODIFICATION OF SUMMARY OF IMPRESSIONS DATA.'+Color.end
     else:
-        project_df_ipss = modifySummaryOfImpressionsData(project_df_ipss, project_df_psom, metadata_psom, project_psom)
+        if (args.package_name in ['malig', 'subhem']):
+            project_df_ipss = modifySummaryOfImpressionsData(project_df_ipss, project_df_psom, metadata_psom, project_psom)
+        if (args.package_name in ['meet2019']):
+            project_df_ipss = modifySummaryOfImpressionsData(project_df_ipss, project_df_psom2, metadata_psom2, project_psom2) # need to remove all rows for event acute_hospitalizat_arm_1.
 
 # For single-row format: Create a mapping event_name:{list of fields} that determines the event from which each field will be selected.
-if (args.package_name in ['malig', 'subhem', 'sips']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
     t_event_field_map = Timer('Creating map between events and fields')
     event_field_mapping_arch = {} # keys are tuples (event_name, repeat_instrument_name) ; values are sets of field names
     for field_name, field_obj in metadata_arch.iteritems():
@@ -1013,7 +1077,7 @@ def listIncludedFields(field_list, form_list, event_list, metadata, def_field, r
 #    project_df_current = project_df_current[[col for col in project_df_current.columns if (not col in fields_to_remove)]]
 #    return project_df_current
 
-if (args.package_name in ['malig', 'subhem', 'sips']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
     def flattenData(project_df_current, event_field_mapping, def_field, record_ids):
         # Remove fields from event_field_mapping if they are not in the current dataframe.
         t_flatten = Timer('flattenData()')
@@ -1045,7 +1109,7 @@ if (args.package_name in ['malig', 'subhem', 'sips']):
         t_flatten.stop()
         return project_df_current
 
-if (args.package_name in ['malig', 'subhem', 'sips']):
+if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
     def archAppendSuffix(df, metadata_arch):
         """Append '_from_old' to columns which are fields in the IPSS Archive."""
     
@@ -1068,7 +1132,7 @@ t_create_wss = Timer('Create worksheets')
 
 for format_type in format_type_list:
     # Copy dataframes and modify a separate instance of project_df_current_format for each format_type
-    if (args.package_name in ['malig', 'subhem', 'sips']):
+    if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
         project_df_arch_current_format = deepcopy(project_df_arch)
     project_df_ipss_current_format = deepcopy(project_df_ipss) 
     if (args.package_name in ['sips', 'sipsf']):
@@ -1085,7 +1149,7 @@ for format_type in format_type_list:
 
     ## Create a single DataFrame by joining the DataFrames of each project.
     t_merge = Timer("Merge IPSS and Archive for format: "+format_type)
-    if (args.package_name in ['malig', 'subhem', 'sips']):
+    if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
         project_df_arch_current_format = modify_arch(project_df_arch_current_format) # convert 'pk_patient_id' to 'ipssid', 'follow_up_arm_1' to 'followup_arm_1'.
     
         ## Remove fields and rename instruments that are duplicated in Archive and IPSS. Change or delete only the Archive duplicate. 
@@ -1162,7 +1226,7 @@ for format_type in format_type_list:
     else:
         on_list = ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance']
     project_df_all_current_format = project_df_ipss_current_format
-    if (args.package_name in ['malig', 'subhem', 'sips']):
+    if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
         for col in project_df_all_current_format.columns:
             if (col in project_df_arch_current_format.columns) and (not col in on_list):
                 print "Warning: Merging dataframes (IPSS V3 with Archive) with duplicate column:", col
@@ -1200,10 +1264,14 @@ for format_type in format_type_list:
         def ipssid_to_int_1(ipssid):
             return int(ipssid.split('-')[0])
         def ipssid_to_int_2(ipssid):
-            if ('-' in ipssid):
-                return int(ipssid.split('-')[1])
-            else:
-                return 0
+            try:
+                if ('-' in ipssid):
+                    return int(ipssid.split('-')[1])
+                else:
+                    return 0
+            except ValueError:
+                return 0 # Required for the ID '9203-'
+
         project_df_all_current_format.loc[:, 'ipssid_as_int_1'] = project_df_all_current_format.loc[:, 'ipssid_as_int_1'].apply(ipssid_to_int_1)
         project_df_all_current_format.loc[:, 'ipssid_as_int_2'] = project_df_all_current_format.loc[:, 'ipssid_as_int_2'].apply(ipssid_to_int_2)
         project_df_all_current_format.loc[:, 'redcap_repeat_instance'] = project_df_all_current_format.loc[:, 'redcap_repeat_instance'].apply(change_dtype)
@@ -1215,7 +1283,7 @@ for format_type in format_type_list:
 
         t_sort.stop()
 
-    if (args.package_name in ['malig', 'subhem', 'sips']):
+    if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
         # Remove the Archive DAG column after transferring over the Archive DAGs to the IPSS DAGs for rows that correspond to repeating forms in the Archive.
         missing_dag_indices = (project_df_all_current_format['redcap_data_access_group'] == '') # Series of bools associated with each index in dataframe
         project_df_all_current_format.loc[missing_dag_indices, 'redcap_data_access_group'] = project_df_all_current_format.loc[missing_dag_indices, 'redcap_data_access_group_from_arch']
@@ -1233,10 +1301,10 @@ for format_type in format_type_list:
 
     if (not args.debug):
         ## Overwrite fields if they are only valid for either the 1992-2014 patients or the 2014-present patients.
-        t_na = Timer("Overwrite fields with if they didn't exist at time of entry for format: "+format_type)
+        t_na = Timer("Overwrite fields with NA if they didn't exist at time of entry for format: "+format_type)
 
 #        ###### MANUAL OVERWRITE SPECIFIC FORMS FOR HAND-PICKED LIST OF RECORDS. I DON'T KNOW HOW THESE ID LISTS WERE GENERATED, AND IT IS NOT SAFE TO ASSUME THAT THESE LISTS SHOULD NOT BE DIFFERENT NOW
-        if (args.package_name in ['malig', 'subhem']):
+        if (args.package_name in ['malig', 'subhem', 'meet2019']):
             # "Reabstracted V3 Data N=77"
             project_df_all_current_format.loc[(project_df_all_current_format['ipssid'].isin(ids_mod_ipss_only)), [col for col in project_df_all_current_format.columns if ((col in metadata_arch) and ((metadata_arch[col].form_name in ['medical_treatment', 'treatment_table', 'radiographic_stroke_features']) or (col in stroke_presentation_select_fields)))]] = 'NA' # 'NA (reabstracted V3 data N=76)'
     
@@ -1298,7 +1366,7 @@ for format_type in format_type_list:
     for field_list in field_list_list:
         field_list_name = field_list['name']
 
-        if (args.package_name in ['malig', 'subhem', 'sips']):
+        if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
             field_list_arch = field_list['arch']['fields'] # * GIVES, E.G. 'CHECKBOX_NAME' INSTEAD OF 'CHECKBOX_NAME___1'
             if (field_list_arch != None):
                 field_list_arch = set(convertFieldNames(url_arch, key_arch, project_arch.def_field, field_list_arch))
@@ -1326,7 +1394,7 @@ for format_type in format_type_list:
     
             event_list_name = event_list['name']
             
-            if (args.package_name in ['malig', 'subhem', 'sips']):
+            if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
                 event_list_arch = event_list['arch']
             event_list_ipss = event_list['ipss']
             if (args.package_name in ['sips', 'sipsf']):
@@ -1351,7 +1419,7 @@ for format_type in format_type_list:
             # Generate list of fields to include from each project
             # THIS SHOULD WORK PROPERLY FOR CORRECTLY RENAMED FIELDS (if they were renamed in the metadata and the dataframe)
             include_set = set(['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'redcap_data_access_group']) # primary key variables
-            if (args.package_name in ['malig', 'subhem', 'sips']):
+            if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips']):
                 include_set.update(listIncludedFields(field_list_arch, form_list_arch, event_list_arch, metadata_arch, 'ipssid', restrict_events)) # IPSS Archive variables
             include_set.update(listIncludedFields(field_list_ipss, form_list_ipss, event_list_ipss, metadata_ipss, 'ipssid', restrict_events)) # IPSS V3 variables
             # Do not list 1-row-per-patient variables, since they are added later.
@@ -1426,7 +1494,7 @@ for format_type in format_type_list:
 #                project_df_all_current_format_fields_events = archAppendSuffix(project_df_all_current_format_fields_events, metadata_arch)
 
                 addSheet(writer, project_df_all_current_format_fields_events, 'all_forms')
-            elif (args.package_name == 'subhem'):
+            elif (args.package_name in ['subhem', 'meet2019']):
                 # Create workbook.
                 path_report = os.path.join(dir_report, "data_package_"+args.package_name+"_"+field_list_name+"_"+event_list_name+'_'+format_type+".xlsx")
                 writer = pandas.ExcelWriter(path_report, engine='xlsxwriter')

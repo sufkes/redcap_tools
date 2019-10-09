@@ -298,7 +298,7 @@ def reportCheckResults(elements_to_check, bad_elements, check, out_dir, def_fiel
 #        form_event_tab_map = {} #&&&&&&&&&&&&&& TAB REPORTS &&&&&&&&&&&&&&&
         for form in forms:
             form_name = form["instrument_name"]
-            if (not form_name in ['patient_information', 'cardiac_and_arteriopathy_risk_factors', 'other_child_and_neonatal_risk_factors', 'maternal_pregnancy_and_delivery_risk_factors', 'arteriopathy_diagnosis_classification', 'clinical_presentation', 'clinical_investigations', 'prothrombotichypercoaguability_state', 'radiographic_features_at_presentation', 'treatment', 'tpa_specific_questions', 'additional_thromboembolic_events_during_initial_ho', 'status_at_discharge', 'post_discharge_followup', 'outcome', 'recovery_and_recurrence', 'patient_summary', 'acute_crf', 'follow_up_crf']):
+            if (not form_name in ['patient_information', 'cardiac_and_arteriopathy_risk_factors', 'other_child_and_neonatal_risk_factors', 'maternal_pregnancy_and_delivery_risk_factors', 'arteriopathy_diagnosis_classification', 'clinical_presentation', 'clinical_investigations', 'prothrombotichypercoaguability_state', 'radiographic_features_at_presentation', 'treatment', 'tpa_specific_questions', 'additional_thromboembolic_events_during_initial_ho', 'status_at_discharge', 'post_discharge_followup', 'outcome', 'recovery_and_recurrence', 'patient_summary', 'acute_crf', 'follow_up_crf', 'neuroimaging_crf']):
                 continue
             form_label = form["instrument_label"]
             form_event_column_map[form_name] = {}

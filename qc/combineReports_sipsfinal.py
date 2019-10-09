@@ -10,7 +10,8 @@
 
 import os, sys
 import csv
-os.chdir('/Users/steven ufkes/Documents/stroke/redcap_qc/sips_final/site-form-field')
+os.chdir('/Users/steven ufkes/Documents/stroke/redcap_qc/sips_final/site-form-field') for sipsfinal
+
 path_list = os.listdir('.')
 
 site_list = set()
