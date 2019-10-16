@@ -74,7 +74,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss):
 #        patient_info[record_id]["in_ipss"] = True
     
 
-    ## Get enrollment date for each record.
+    ## Get enrolment date for each record.
     # Archive - Use 'dateofentry', then 'visit_date".
 #    print "Project        : Archive"
     dateofentry_arch = exportRecords(url_arch, key_arch, record_id_list=record_ids, fields=["dateofentry"], events=["acute_arm_1"])
@@ -155,7 +155,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss):
             if (not info['enroll_date'] in range(2003, 2020)):
                 print "Record enroll date outside [2003, 2019]:", id
         else:
-            print "Record with no enrollment date:", id
+            print "Record with no enrolment date:", id
 #    print "enroll_dates:", sorted(list(enroll_dates))
     
     ## Get DAG for each record:
@@ -263,7 +263,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss):
     print "Number of unique record IDs:", len(set(record_ids))
     print "Number of record IDs in patient_info:", len(patient_info)
     print "Number of records with no DAG:", num_no_dag
-    print "Number of records with no enrollment date:", num_no_year
+    print "Number of records with no enrolment date:", num_no_year
     print "Number of records with unidentified stroke type:", len(record_ids_with_unidentified_stroke_type)    
     return patient_info
 
@@ -277,7 +277,8 @@ def getUserInfo(url_ipss, key_ipss):
     df_2 = pandas.read_csv(log_path_ipss_2)
     df_3 = pandas.read_csv(log_path_ipss_3)
     log_list = [df_1, df_2, df_3]
-    
+
+    # Get the user information directly from IPSS V3 (not possible for V2 or V1 since they are archived).
     users = redcap.Project(url_ipss, key_ipss).export_users()
     user_info = {} # {username: {dag:"...", year_added:"...", ...}, ...}
     for user in users:
@@ -287,7 +288,7 @@ def getUserInfo(url_ipss, key_ipss):
         user_info[username]["current"] = True
         user_info[username]["action_dates"] = set()
     
-    # Julie Paterson is the one person not accounted for in the logs for any of IPSS 1, 2, or 3. Add her manually here.
+    # Julie Paterson is not created in the logs for any of IPSS 1, 2, or 3. Add her manually here. She is not accounted for in the logs in the sense that, since she created IPSS V1, V2, and V3, there is no record of her username being added to the logs.
     user_info["julie.paterson"] = {}
     user_info["julie.paterson"]["dag"] = ""
     user_info["julie.paterson"]["current"] = False
@@ -299,9 +300,8 @@ def getUserInfo(url_ipss, key_ipss):
 
     # Get get the year each user was added.
     for df in log_list:    
-#        for index in reversed(range(len(df))): # Reverse to read in order or occurrence.
-        for index in df.index[::-1]:
-            user_action = str(df["Username"][index]).lower()
+        for index in df.index[::-1]: # Reverse to read in order or occurrence.
+            user_action = str(df["Username"][index]).lower() # User who performed an action in current log row
             action = str(df["Action"][index])
             date_time = str(df["Time / Date"][index])
             date = date_time[:4]+date_time[5:7]+date_time[8:10]
@@ -309,7 +309,7 @@ def getUserInfo(url_ipss, key_ipss):
             changes = str(df["List of Data Changes OR Fields Exported"][index])
             if ("Created User" in action):
                 year = date_time[:4]
-                username = action.split()[-1].lower()
+                username = action.split()[-1].lower() # The user that was created in the current log row
                 if (not username in user_info):
                     user_info[username] = {}
                     user_info[username]["current"] = False
@@ -322,27 +322,33 @@ def getUserInfo(url_ipss, key_ipss):
                 user_info[username]["dag"] = dag 
 #                print changes, username, dag
             # Add date of user's action to action_dates
+            # Assume a currently unidentified user is a REDCap admin, becuase the addition of their username to the project did not occur before they started performing actions in the project. The only ways this is known to happen is if the person is a REDCap administrator, or they created the project (which is why Julie Paterson is added manually above).
+            # If a user whose creation did not occur earlier in the logs performed an action, assume that they are REDCap administrators.
             if (not(user_action) in user_info.keys()):
                 if (not user_action in redcap_admins):
                     redcap_admins.add(user_action)
                     print "Warning: Unidentified user performed an action. Assume it is a REDCap administrator, and do not include in report:", user_action
                 continue
+
+            # Add a set which stores all the dates on which a user performed an action in the logs.
             if (not 'action_dates' in user_info[user_action].keys()):
                 user_info[user_action]['action_dates'] = set()
                 user_info[user_action]['action_dates'].add(int(date))
             else:
                 user_info[user_action]['action_dates'].add(int(date))
 
+    # Add DAG information for users only found in IPSS V1 or V2, where the user information (including DAG) cannot be directly exported.
     dag_path_ipss_1 = "/Users/steven ufkes/Documents/stroke/ipss/auto-reports/ipss_1_dags.csv"
     dag_path_ipss_2 = "/Users/steven ufkes/Documents/stroke/ipss/auto-reports/ipss_2_dags.csv"
     df_dag_1 = pandas.read_csv(dag_path_ipss_1).astype(str)
     df_dag_2 = pandas.read_csv(dag_path_ipss_2).astype(str)
     for df in [df_dag_1, df_dag_2]:
-        for index in range(len(df)):
+        for index in df.index:
             username = str(df["user"][index]).split()[0].strip(",")
             dag = df["dag"][index]
             if (username == "nan"): # if DAG has no users in log, skip to next entry.
                 continue
+
             # Add DAG info to user if currently unknown.
             if (not username in user_info):
                 print "Unidentified user:", username
@@ -380,7 +386,7 @@ def getUserInfo(url_ipss, key_ipss):
     return user_info
 
 def reportPatientInfo(patient_info, out_dir, path_dag_info):
-    ## Miscellaneous items used in all of the enrollment reports
+    ## Miscellaneous items used in all of the enrolment reports
     min_year = 2003
     max_year = 2019
     year_list = range(min_year, max_year+1)
@@ -398,8 +404,8 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info):
         if (not record["dag"] in dags):
             print "Record with ID", record_id, "in DAG",record[dag],"is part of unidentified DAG."
 
-    # Enrollment by site per year
-    report_path = os.path.join(out_dir, "enrollment_dag.csv")    
+    # Enrolment by site per year
+    report_path = os.path.join(out_dir, "enrolment_dag.csv")    
 
     # Write row/column headings
     columns = year_list    
@@ -433,8 +439,8 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info):
     report_df.to_csv(report_path)
     print report_df
 
-    ## Enrollment by stroke type per year
-    report_path = os.path.join(out_dir, "enrollment_stroke_type.csv")
+    ## Enrolment by stroke type per year
+    report_path = os.path.join(out_dir, "enrolment_stroke_type.csv")
     
     # Write row/column headings
     columns = year_list
@@ -444,7 +450,7 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info):
     
     # Add each patient with known stroke type to report.
     for id, record in patient_info.iteritems():
-        if ("enroll_date" in record) and (record["enroll_date"] in columns): # If enrollment date is known and included in the report.
+        if ("enroll_date" in record) and (record["enroll_date"] in columns): # If enrolment date is known and included in the report.
             year = record["enroll_date"]
             if (record["stroke_type"]["neo_ais"] == "1") and (record["stroke_type"]["neo_csvt"] == "1"):
                 report_df[year]["Neonatal AIS & CSVT"] += 1
@@ -494,15 +500,17 @@ def reportUserInfo(user_info, out_dir, path_dag_info):
         if (not dag in dags_unsorted):
             dags_unsorted.append(dag)
 
+    # Put the DAG '' at the end of the list. Convert it to "Unassigned" later.
     dags = sorted(dags_unsorted)[1:]
     dags.extend(sorted(dags_unsorted)[:1])
 
     # Write column, row headings.
-    columns = year_list
+    columns = year_list + ['usernames']
     index = [dag if (dag != "") else "Unassigned" for dag in dags]
 
     # Create report.
     report_df = pandas.DataFrame(columns=columns, index=index)
+    report_df['usernames'] = '' # intialize this column with empty strings.
 
     # Add row for each DAG.
     for dag in dags:
@@ -520,14 +528,21 @@ def reportUserInfo(user_info, out_dir, path_dag_info):
                     print "WARNING: Comparison of different types in 'year_added'"
                 if (info["dag"] == dag) and (info["year_added"] == year):
                     num_added_dag_year += 1
+                    report_df['usernames'][dag_name] += username + ' '
             report_df[year][dag_name] = num_added_dag_year
 
     for username, info in user_info.iteritems():
         if (not 'year_added' in info):
             print "User with no 'year_added':", username
+            
 
-    report_df["Total"] = report_df.sum(axis=1).astype(int) # Total column
-    report_df = report_df.append(report_df.sum(axis=0).astype(int).rename("Total")) # Total row
+    report_df["Total"] = report_df.loc[:,[col for col in report_df.columns if (not col=='usernames')]].sum(axis=1).astype(int) # Total column (except for the column storing usernames)
+    report_df = report_df.append(report_df.loc[:, [col for col in report_df.columns if (not col=='usernames')]].sum(axis=0).astype(int).rename("Total")) # Total row
+
+    # Reorder the last two columns (currently 'usernames' and 'Total')
+    print list(report_df.columns[:-2]), ['Total', 'usernames']
+    reordered_columns = list(report_df.columns[:-2]) + ['Total', 'usernames']
+    report_df = report_df.loc[:, reordered_columns]
 
     # Add instition name and country columns to dataframe.
     report_df = addDAGInfo(report_df, path_dag_info)
@@ -537,16 +552,11 @@ def reportUserInfo(user_info, out_dir, path_dag_info):
 
     return
 
-def reportUserInfo_TAF20190912(user_info, out_dir, path_dag_info):
+def reportActiveUserInfo(user_info, out_dir, path_dag_info, active_start_date=20180701, active_end_date=20190630, period_name=None):
     # This is a sketchy hacked version of reportUserInfo() which was hastily assembled to complete the task:
     
     # Users per DAG
-    report_path = os.path.join(out_dir, "user_dag_TAF20190912.csv")
-
-    ## Miscellaneous items used in the user information report.
- #   min_year = 2014
- #   max_year = 2019
- #   year_list = range(min_year, max_year+1)
+    report_path = os.path.join(out_dir, "user_dag_active.csv")
 
     # Get alphabetized DAG list. Put unassigned at the end of the list.
     dags_unsorted = [] # Could include dags not present in current IPSS. Do it this way to be safe.
@@ -560,12 +570,20 @@ def reportUserInfo_TAF20190912(user_info, out_dir, path_dag_info):
 
     # Write column, row headings.
  #   columns = year_list
-    columns = ['number_of_active_users_in_TAF_period']
+    
+    if (period_name == None):
+        count_column_name = 'number_of_active_users_between_'+str(active_start_date)+'_and_'+str(active_end_date)
+    else:
+        count_column_name = 'number_of_active_users_in_'+str(period_name)
+
+        
+
+    columns = [count_column_name]
     index = [dag if (dag != "") else "Unassigned" for dag in dags]
 
     # Create report.
     report_df = pandas.DataFrame(columns=columns, index=index)
-    report_df['active_users_in_TAF_period'] = ''
+    report_df['usernames'] = ''
 
     # Add row for each DAG.
     for dag in dags:
@@ -586,22 +604,22 @@ def reportUserInfo_TAF20190912(user_info, out_dir, path_dag_info):
                     print "WARNING: user does not have action_dates:", username
                     continue
                 for action_date in info['action_dates']:
-                    if (20180701 < action_date) and (action_date < 20190630):
-#                        print "Found TAF action"
+                    if (active_start_date <= action_date) and (action_date <= active_end_date):
+#                        print "Found action in activity period:",username, action_date
                         num_added_dag_year += 1
-                        report_df['active_users_in_TAF_period'][dag_name] += username + ' '
+                        report_df['usernames'][dag_name] += username + ' '
                         break
                     else:
 #                        print username, action_date
                         pass
-        report_df['number_of_active_users_in_TAF_period'][dag_name] = num_added_dag_year
+        report_df[count_column_name][dag_name] = num_added_dag_year
 
     for username, info in user_info.iteritems():
         if (not 'action_dates' in info):
             print "User with no 'action_dates':", username
 
     report_df.append(pandas.Series(name='Total'))
-    report_df.loc['Total', 'number_of_active_users_in_TAF_period'] = report_df['number_of_active_users_in_TAF_period'].sum(axis=0)
+    report_df.loc['Total', count_column_name] = report_df[count_column_name].sum(axis=0)
 
     # Add instition name and country columns to dataframe.
     report_df = addDAGInfo(report_df, path_dag_info)
@@ -635,6 +653,11 @@ default_out_dir = "/Users/steven ufkes/Documents/stroke/ipss/auto-reports/"
 parser.add_argument("-i", "--in_path", help="path to text file containing API URLs and keys for projects to generate reports on. File should contain 1 space-separated (API URL, API key) pair per line.", type=str, default=default_in_path)
 parser.add_argument("-o", "--out_dir", help="directory to save reports to", type=str, default=default_out_dir)
 
+parser.add_argument("-s", "--active_start", help="Start date of period (YYYYMMDD) in which users will be considered active if they perform any logged action.", type=int, default=20180701)
+parser.add_argument("-e", "--active_end", help="End date of period (YYYYMMDD) in which users will be considered active if they perform any logged action.", type=int, default=20190630)
+
+
+
 # Parse arguments.
 args = parser.parse_args()
 
@@ -658,13 +681,13 @@ key_ipss = api_pairs[1][1]
 path_dag_info = '/Users/steven ufkes/Documents/stroke/ipss/auto-reports/ipss_dag_info.csv'
 #dag_info = getDAGInfo(path_dag_info)
 
-# Patient enrollment information
-patient_info = getPatientInfo(url_arch, url_ipss, key_arch, key_ipss)
-reportPatientInfo(patient_info, args.out_dir, path_dag_info)
+# Patient enrolment information
+#patient_info = getPatientInfo(url_arch, url_ipss, key_arch, key_ipss)
+#reportPatientInfo(patient_info, args.out_dir, path_dag_info)
 
 # User information
 user_info = getUserInfo(url_ipss, key_ipss)
 
 #print user_info['steven.ufkes']['action_dates']
 reportUserInfo(user_info, args.out_dir, path_dag_info)
-reportUserInfo_TAF20190912(user_info, args.out_dir, path_dag_info)
+reportActiveUserInfo(user_info, args.out_dir, path_dag_info, active_start_date=args.active_start, active_end_date=args.active_end)

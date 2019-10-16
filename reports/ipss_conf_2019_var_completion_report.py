@@ -32,7 +32,8 @@ dir_ipss = "/Users/steven ufkes/Documents/stroke/ipss"
 dir_report = os.path.join(dir_ipss, "auto-reports")
 
 # Get API URLs and keys.
-api_url_key_list_path = os.path.join(dir_ipss, "api_url_key_list.txt")
+#api_url_key_list_path = os.path.join(dir_ipss, "api_url_key_list.txt")
+api_url_key_list_path = '/Users/steven ufkes/Documents/stroke/data_packages/api_url_key_list.txt'
 with open(api_url_key_list_path, 'r') as fh:
     try:
         api_pairs = [(p.split()[0], p.split()[1]) for p in fh.readlines() if (p.strip() != "") and (p.strip()[0] != "#")] # separate lines by spaces; look only at first two items; skip whitespace lines.

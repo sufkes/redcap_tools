@@ -17,9 +17,9 @@ parser.add_argument("out_path", help="file path to write the data to")
 
 ## Define optional arguments.
 parser.add_argument("-r", "--records", help="list of records to export. Default: Export all records.", nargs="+", metavar=("ID_1", "ID_2"))
-parser.add_argument("-e", "--events", help="list of events to export. Default: Export all events.", nargs="+", metavar=("event_1", "event_2"))
+parser.add_argument("-e", "--events", help="list of events to export. Note that an event's name may differ from the event's label. For example, and event with label 'Acute' may have name 'acute_arm_1'. Default: Export all events.", nargs="+", metavar=("event_1", "event_2"))
 parser.add_argument("-f", "--fields", help="list of fields to export. Default: export all fields. To export checkbox fields, specify the base variable name (e.g. 'cb_var' instead of 'cb_var___1', 'cb_var___2', ...)", nargs="+", metavar=("field_1", "field_2"))
-parser.add_argument("-i", "--instruments", help="list of data instruments to export. Default: export all instruments.", nargs="+", metavar=("form_1", "form_2"))
+parser.add_argument("-i", "--instruments", help="list of data instrument names to export. Note that an instrument's name (shown in the data dictionary) may differ from an instrument's label (shown in the Online Designer). Default: export all instruments.", nargs="+", metavar=("form_1", "form_2"))
 parser.add_argument("-q", "--quiet", help="do not print export progress. Default: False", action="store_true")
 parser.add_argument("-l", "--label", help="label cells as HIDDEN or INVALID if hidden by branching logic or invalid (event, form, instance) combinations.", action="store_true")
 parser.add_argument("-o", "--label_overwrite", help="if the -l --label is specified, using this option will overwrite fields containing entries with labels.", action="store_true")

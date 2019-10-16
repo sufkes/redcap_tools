@@ -345,7 +345,7 @@ if (args.package_name in ['malig', 'subhem', 'meet2019', 'sips', 'sipsf']):
     form_repetition_map_ipss = createFormRepetitionMap(project_longitudinal_ipss, project_repeating_ipss, form_event_mapping_ipss, repeating_forms_events_ipss, forms_ipss)
     metadata_ipss = parseMetadata(project_ipss.def_field, project_info_ipss, project_longitudinal_ipss, project_repeating_ipss, events_ipss, metadata_raw_ipss, form_event_mapping_ipss, repeating_forms_events_ipss, forms_ipss, form_repetition_map_ipss, write_branching_logic_function=False)
 
-if (args.package_name in ['malig', 'subhem', 'meet2019']):
+if (args.package_name in ['malig', 'subhem']):
     project_psom = redcap.Project(url_psom, key_psom)
     project_info_psom = exportProjectInfo(url_psom, key_psom)
     project_longitudinal_psom = bool(project_info_psom["is_longitudinal"])
@@ -371,7 +371,7 @@ if (args.package_name in ['sips', 'sipsf']):
     form_repetition_map_sips2 = createFormRepetitionMap(project_longitudinal_sips2, project_repeating_sips2, form_event_mapping_sips2, repeating_forms_events_sips2, forms_sips2)
     metadata_sips2 = parseMetadata(project_sips2.def_field, project_info_sips2, project_longitudinal_sips2, project_repeating_sips2, events_sips2, metadata_raw_sips2, form_event_mapping_sips2, repeating_forms_events_sips2, forms_sips2, form_repetition_map_sips2, write_branching_logic_function=False)
 
-if (args.package_name in ['sipsf']):
+if (args.package_name in ['sipsf', 'meet2019']):
     project_psom2 = redcap.Project(url_psom2, key_psom2)
     project_info_psom2 = exportProjectInfo(url_psom2, key_psom2)
     project_longitudinal_psom2 = bool(project_info_psom2["is_longitudinal"])
