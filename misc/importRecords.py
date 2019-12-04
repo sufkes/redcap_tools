@@ -113,26 +113,28 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
     cont = bool(raw_input("These changes will be made to the database. Continue y/[n]? ") == 'y')
     return cont
 
-def importRecords(api_url, api_key, records_src, overwrite='normal', format='json', quick=False, return_content='ids', size_thres=40000): # size_thres = 300000 has not caused error [2019-05-08 ACTUALLY, MAYBE IT HAS]
+def importRecords(api_url, api_key, records_src, overwrite='normal', format='json', quick=False, quiet=False, return_content='ids', size_thres=40000): # size_thres = 300000 has not caused error [2019-05-08 ACTUALLY, MAYBE IT HAS]
     # Load project.
     project = redcap.Project(api_url, api_key)
     project_info = exportProjectInfo(api_url, api_key)
     
-    # Ask for user confirmation before proceeding.
-    print "Data will be imported to the following project:"
-    print "-------------------------------------------------------------------------------------------------"
-    print "Project Title: "+Color.blue+project_info["project_title"]+Color.end
-    print "Project ID   : "+Color.blue+str(project_info["project_id"])+Color.end
-    print "-------------------------------------------------------------------------------------------------"
-    cont = bool(raw_input("Please verify that this is project you wish to modify. Continue y/[n]? ") == 'y')
-    if (not cont):
-        print "Quitting"
-        sys.exit()
-    if (overwrite == "overwrite"):
-        cont = bool(raw_input("You have selected to overwrite fields with blanks. Continue y/[n]? ") == 'y')
+    if (not quiet):
+        # Ask for user confirmation before proceeding.
+        print "Data will be imported to the following project:"
+        print "-------------------------------------------------------------------------------------------------"
+        print "Project Title: "+Color.blue+project_info["project_title"]+Color.end
+        print "Project ID   : "+Color.blue+str(project_info["project_id"])+Color.end
+        print "-------------------------------------------------------------------------------------------------"
+    #    cont = bool(raw_input("Please verify that this is project you wish to modify. Continue y/[n]? ") == 'y')
+        cont = bool(raw_input("Continue y/[n]? ") == 'y')
         if (not cont):
             print "Quitting"
             sys.exit()
+        if (overwrite == "overwrite"):
+            cont = bool(raw_input("You have selected to overwrite fields with blanks. Continue y/[n]? ") == 'y')
+            if (not cont):
+                print "Quitting"
+                sys.exit()
     
     # If records_src is a CSV string, convert it to a list of dicts. Then proceed using the same method as for format='json'.
     if (format == 'csv'):
@@ -162,7 +164,8 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
 
     # Import data
     if (num_cells < size_thres):
-        print "Importing data in one piece"
+        if (not quiet):
+            print "Importing data in one piece"
 #        return_info = project.import_records(records_src, overwrite=overwrite, format=format, return_content=return_content)
 
 #        print "importing records as type:", type(records_src), "(", type(records_src[0]), "(", type(records_src[0][records_src[0].keys()[0]]), " ) )"
@@ -170,28 +173,30 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
         return_info = project.import_records(records_src, overwrite=overwrite, format='json', return_content=return_content) # If format was 'csv', records_src has been converted to 'json' by this point.
 
         # Print information returned from REDCap.
-        if (return_content == 'count'):
-            try:
-                num_modified = return_info["count"]
-                print "Number of records imported: "+str(num_modified)
-            except KeyError:
-                print failure_msg
-                sys.exit()
-        elif (return_content == 'ids'):
-            if (return_info != {}):
-                print "Number of records imported: "+str(len(return_info))
-                print "IDs of records imported:"
-                id_string = ""
-                for id in return_info:
-                    id_string += id+" "
-                id_string = id_string.rstrip()
-                print id_string
-            else:
-                print failure_msg
-                sys.exit()
+        if (not quiet):
+            if (return_content == 'count'):
+                try:
+                    num_modified = return_info["count"]
+                    print "Number of records imported: "+str(num_modified)
+                except KeyError:
+                    print failure_msg
+                    sys.exit()
+            elif (return_content == 'ids'):
+                if (return_info != {}):
+                    print "Number of records imported: "+str(len(return_info))
+                    print "IDs of records imported:"
+                    id_string = ""
+                    for id in return_info:
+                        id_string += id+" "
+                    id_string = id_string.rstrip()
+                    print id_string
+                else:
+                    print failure_msg
+                    sys.exit()
     else:
         row_chunk_size = size_thres/num_col # Python 2 rounds down integers after division (desired)
-        print "Importing data in chunks of "+str(row_chunk_size)+" rows"
+        if (not quiet):
+            print "Importing data in chunks of "+str(row_chunk_size)+" rows"
         
         if (return_content == 'count'):
             num_modified = 0
@@ -211,38 +216,42 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
             return_info = project.import_records(chunk, overwrite=overwrite, format='json', return_content=return_content) # if format was CSV, the CSV string has already been converted to 'json' format.
 
             # Combine import results for each chunk.
-            if (return_content == 'count'):
-                try:
-                    num_modified += return_info["count"]
-                except KeyError:
-                    print failure_msg
-                    sys.exit()
-            elif (return_content == 'ids'):
-                if (return_info != {}):
-                    ids_imported.extend(return_info)
-                else:
-                    print chunk
-                    print return_info
-                    print failure_msg
-                    sys.exit()
+            if (not quiet):
+                if (return_content == 'count'):
+                    try:
+                        num_modified += return_info["count"]
+                    except KeyError:
+                        print failure_msg
+                        sys.exit()
+                elif (return_content == 'ids'):
+                    if (return_info != {}):
+                        ids_imported.extend(return_info)
+                    else:
+                        print chunk
+                        print return_info
+                        print failure_msg
+                        sys.exit()
 
-            completion_percentage = float(chunk_index+1)/float(num_chunks)*100.
-            sys.stdout.write('\r')
-            sys.stdout.write('%.2f%% complete' % (completion_percentage,))
+            if (not quiet):
+                completion_percentage = float(chunk_index+1)/float(num_chunks)*100.
+                sys.stdout.write('\r')
+                sys.stdout.write('%.2f%% complete' % (completion_percentage,))
+                sys.stdout.flush()
+        if (not quiet):
+            sys.stdout.write('\n\r')
+#            sys.stdout.write('%.2f%% complete' % (float(100),))
             sys.stdout.flush()
-        sys.stdout.write('\n\r')
-#        sys.stdout.write('%.2f%% complete' % (float(100),))
-        sys.stdout.flush()
                 
         # Report import results.
-        if (return_content == 'count'):
-            print "Number of records imported: "+str(num_modified)
-        elif (return_content == 'ids'):
-            id_string = ""
-            for id in ids_imported:
-                id_string += id+" "
-            id_string = id_string.rstrip()
-            print "Number of records imported: "+str(len(ids_imported))
-            print "IDs of records imported:"            
-            print id_string
+        if (not quiet):
+            if (return_content == 'count'):
+                print "Number of records imported: "+str(num_modified)
+            elif (return_content == 'ids'):
+                id_string = ""
+                for id in ids_imported:
+                    id_string += id+" "
+                id_string = id_string.rstrip()
+                print "Number of records imported: "+str(len(ids_imported))
+                print "IDs of records imported:"            
+                print id_string
     return

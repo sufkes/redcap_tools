@@ -20,6 +20,7 @@ parser.add_argument("-r", "--records", help="list of records to export. Default:
 parser.add_argument("-e", "--events", help="list of events to export. Note that an event's name may differ from the event's label. For example, and event with label 'Acute' may have name 'acute_arm_1'. Default: Export all events.", nargs="+", metavar=("event_1", "event_2"))
 parser.add_argument("-f", "--fields", help="list of fields to export. Default: export all fields. To export checkbox fields, specify the base variable name (e.g. 'cb_var' instead of 'cb_var___1', 'cb_var___2', ...)", nargs="+", metavar=("field_1", "field_2"))
 parser.add_argument("-i", "--instruments", help="list of data instrument names to export. Note that an instrument's name (shown in the data dictionary) may differ from an instrument's label (shown in the Online Designer). Default: export all instruments.", nargs="+", metavar=("form_1", "form_2"))
+parser.add_argument("-c", "--export_form_completion", help="export the fields which store the completion state of a form: False", action="store_true")
 parser.add_argument("-q", "--quiet", help="do not print export progress. Default: False", action="store_true")
 parser.add_argument("-l", "--label", help="label cells as HIDDEN or INVALID if hidden by branching logic or invalid (event, form, instance) combinations.", action="store_true")
 parser.add_argument("-o", "--label_overwrite", help="if the -l --label is specified, using this option will overwrite fields containing entries with labels.", action="store_true")
@@ -46,7 +47,7 @@ else:
     api_url = args.api_url
 
 # Export records.
-records = exportRecords(api_url, args.api_key, record_id_list=args.records, events=args.events, fields=args.fields, forms=args.instruments, quiet=args.quiet, format='csv', label=args.label, label_overwrite=args.label_overwrite)
+records = exportRecords(api_url, args.api_key, record_id_list=args.records, events=args.events, fields=args.fields, forms=args.instruments, export_form_completion=args.export_form_completion, quiet=args.quiet, format='csv', label=args.label, label_overwrite=args.label_overwrite)
 
 # Save string to csv file. This saves in the same format as a REDCap export, except that the completion
 # state of each form is excluded.

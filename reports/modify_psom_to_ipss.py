@@ -23,7 +23,6 @@ def modifyRecords(from_psom):
     # instance 2 in IPSS.
     #
     # This script must determine the event/form mapping separately for each record.
-
     
     # Create field name mappings. Need one for SOI (PSOM) -> status at discharge (IPSS V3), and one for SOI (PSOM) -> Outcome (IPSS V3)
     # Both dicts will be of the form {field_name_in_PSOM: field_name_in_IPSS}
@@ -36,11 +35,11 @@ def modifyRecords(from_psom):
     for row_index in range(len(from_psom)): # loop through all 'initial_hospitalizat_arm_1' event rows.
         row = from_psom[row_index]
         id = row['ipssid']
-        if (row['redcap_event_name'] == 'acute_hospitalizat_arm_1') and (row['summary_of_impressions_complete'] != '0'):
+        if (row['redcap_event_name'] == 'acute_hospitalizat_arm_1'):
             psom_instance = row['redcap_repeat_instance']
             if (not id in acute_dict.keys()):
                 acute_dict[id] = (row_index, psom_instance)
-            elif (psom_instance > acute_dict[id][1]): #  if ID already in acute_dict and row corresponds to a newer acute hospitalization instance
+            elif (psom_instance > acute_dict[id][1]): # if ID already in acute_dict and row corresponds to a newer acute hospitalization instance
                 acute_dict[id] = (row_index, psom_instance)
 
     followup_dict = {}
@@ -49,21 +48,35 @@ def modifyRecords(from_psom):
         row = from_psom[row_index]
         id = row['ipssid']
         # NEED TO DECIDE WHAT CRITERIA SHOULD DETERMINE WHETHER THE initial_psom_arm_1 SOI WILL BE MAPPED TO IPSS V3
-        if (row['redcap_event_name'] == 'initial_psom_arm_1') and (row['summary_of_impressions_complete'] != '0'): # if the row corresponds to the initial_psom event, and the Summary of Impressions was completed for this event.
+        if (row['redcap_event_name'] == 'initial_psom_arm_1'):
             followup_dict[id] = [(row_index, 0)]]
     for row_index in range(len(from_psom)): # loop through all 'initial_psom_arm_1' event rows.
         row = from_psom[row_index]
         id = row['ipssid']
         psom_instance = row['redcap_repeat_instance']
         # NEED TO DECIDE WHAT CRITERIA SHOULD DETERMINE WHETHER THE initial_psom_arm_1 SOI WILL BE MAPPED TO IPSS V3
-        if (row['redcap_event_name'] == 'follow_up_psom_arm_1') and (row['summary_of_impressions_complete'] != '0'): # if the row corresponds to the initial_psom event, and the Summary of Impressions was completed for this event.
+        if (row['redcap_event_name'] == 'follow_up_psom_arm_1'): # if the row corresponds to the initial_psom event, and the Summary of Impressions was completed for this event.
             if (not id in followup_dict.keys()):
                 followup_dict[id] = [(row_index, psom_instance)]
             else:
                 followup_dict[id].append((row_index, psom_instance))
 
+    ## Now, the PSOM rows to take for each record, and their final ordering in IPSS V3 is known.
+    ## Next, build the import data for IPSS V3 using these mappings.
+    to_ipss = []
 
-    # Now, the PSOM rows to take for each record, and their final ordering in IPSS V3 is know.
-    # Next, build the import data for IPSS V3 using these mappings.
+    # Map data to 'status_at_discharge':
+    for id, row_tuple_psom in acute_dict.iteritems():
+        row_index_psom = row_tuple_psom[0]
+        instance_psom = row_tuple_psom[0] # not used.
+
+        row_ipss = {'ipssid':id, 'redcap_event_name':'acute_arm_1', 'redcap_repeat_instrument':'', 'redcap_repeat_instance':''} # initialize the row to be imported into IPSS.
+        for field_name_psom, field_value_psom in from_psom[row_index_psom]:
+            if (field_name_psom in ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance']):
+                continue
+
+    # Map data to 'outcome'
+    for id, row_tuple_psom in followup_dict.iteritems():
+        pass
 
     return to_ipss

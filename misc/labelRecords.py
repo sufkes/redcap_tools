@@ -127,17 +127,20 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
                 else:
                     bl_valid = True
 
-            # Check if (row index, field name) is hidden by branching logic. 
-            if cell_valid and bl_valid:
-                if (field.branching_logic == None):
-                    visible = True
-                elif field.branching_logic(row_index, form_repetition_map, records_all, record_id_map):
-                    visible = True
-                else:
-                    visible = False
-                if (not visible):
-                    list_hidden.append((row_index, field_name))
-
+            # Check if (row index, field name) is hidden by branching logic.
+            try:
+                if cell_valid and bl_valid:
+                    if (field.branching_logic == None):
+                        visible = True
+                    elif field.branching_logic(row_index, form_repetition_map, records_all, record_id_map):
+                        visible = True
+                    else:
+                        visible = False
+                    if (not visible):
+                        list_hidden.append((row_index, field_name))
+            except:
+                print field_name
+                        
     # Markup records with types after finding all of them
     for cell in list_hidden:
         row_index, field_name = cell
