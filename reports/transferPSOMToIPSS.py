@@ -68,7 +68,9 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
 
         #### Perform record-specific modifications to a few records. Ideally, there will be nothing in this section.
         print "Warning: Need to perform record-specific modifications per Alex's spreadsheet."
-
+        print "Warning: Should delete all Summary of Impressions data for SickKids patients before importing."
+        print "Warning: Currently there is no method to ensure that a SOI in PSOM V2 actually corresponds to the correct row in IPSS V4."
+        
         #### Remove data from PSOM which will not be imported into IPSS V4.
         ## Remove all rows (any event) which do not have a PSOM assessment date.
         from_psom_after_exclusions = []

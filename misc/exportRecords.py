@@ -134,7 +134,9 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                 forms = [form for form in forms if (not form in missing_forms)]
         if (fields != None):
             # If specific fields are requested, ensure that they all exist in the project. Raise warnings for requested fields not found in the project. If none of the requested forms or fields are found in the project, return nothing.
-            fields_all = project.field_names
+            data_fields_all = project.field_names
+            form_complete_fields_all = [form_name+'_complete' for form_name in project.forms]
+            fields_all = data_fields_all + form_complete_fields_all
             missing_fields = []
             for field in fields:
                 if (not field in fields_all):
@@ -185,16 +187,18 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
             pass
 
     # If specific forms were requested, and they exist in the project, add all the fields in those forms to the list of fields. This is done becuase for some reason, redcap.project.Project.export_records will erroneously include form_complete fields if and only if specific forms are requested (whether or not the forms actually exist).
-    if (forms != None) and (forms != []):
+    if (forms != None):
         if (fields == None):
             fields = [] # if specific fields were not requested, intialize a list of fields to export.
-        metadata = project.export_metadata() # list of dicts, one for each field. form_complete fields are not included.
-        for field_dict in metadata:
-            field_name = field_dict['field_name']
-            form_name = field_dict['form_name']
-            if (form_name in forms): # if the form containing the current field was requested.
-                if (not field_name in fields):
-                    fields.append(field_name)
+        # At this point, forms and fields are boths lists. If forms is not empty, add all of the fields contained in its forms to fields.
+        if (len(forms) > 0):
+            metadata = project.export_metadata() # list of dicts, one for each field. form_complete fields are not included.
+            for field_dict in metadata:
+                field_name = field_dict['field_name']
+                form_name = field_dict['form_name']
+                if (form_name in forms): # if the form containing the current field was requested.
+                    if (not field_name in fields):
+                        fields.append(field_name)
         # At this point, all of the fields in the requested forms, including the form_complete fields, should be in the fields list. Thus, the forms list is no longer needed.
         forms = None
         
@@ -208,10 +212,13 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
         project_empty = False
         # Note that, at this point, it is possible that fields=None xor forms=None.
     else:
-        print """Warning: Returning no data. This happened because:
-(a) specific records were requested, and none of them exist; or
-(b) specific events were requested, and none of them exist; or
-(c) specific forms or fields were requested, but none of them exist"""
+        # Print messages which explain why the exported data is nothing.
+        if (record_id_list == []):
+            print "Warning: Specific records were requested, but none of them exist in the project. Returning no data."
+        if (events == []):
+            print "Warning: Specific events were requested, but none of them exist in the project. Returning no data."
+        if (fields == []):
+            print "Warning: Specific forms or fields were requested, but none of them exist in the project. Returning no data."
         project_empty = True
 
 
