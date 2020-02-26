@@ -212,7 +212,7 @@ if (__name__ == '__main__'):
     # Define positional arguments.
     
     # Define optional arguments.
-    parser.add_argument('-l', '--logs', action='store', type=str, nargs='*', help='paths to logs to be parsed. If multiple paths are specified, the logs will be concatenated and treated as a single log. If logs correspond to different versions of a REDCap project, list the logs in order of version number (i.e. most recent version last).', default=['/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V1_Logging_2019-04-10_0901.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V2_Logging_2019-04-10_0900.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V3_Logging_2019-04-10_0859.csv'], metavar=('LOG_PATH_1,', 'LOG_PATH_2'))
+    parser.add_argument('-l', '--logs', action='store', type=str, nargs='*', help='paths to logs to be parsed. If multiple paths are specified, the logs will be concatenated and treated as a single log. If logs correspond to different versions of a REDCap project, list the logs in order of version number (i.e. most recent version last).', default=['/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V1_Logging_2019-04-10_0901.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V2_Logging_2019-04-10_0900.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V3_Logging_2019-12-18_0951.csv'], metavar=('LOG_PATH_1,', 'LOG_PATH_2'))
     parser.add_argument('-r', '--record', action='store', type=str, help='name of record to query', metavar='RECORD_ID')
     parser.add_argument('-f', '--field', action='store', type=str, help='name of field to query')
     parser.add_argument('-o', '--out_path', action='store', type=str, help='path to save report to. If none specified, report will not be saved.')

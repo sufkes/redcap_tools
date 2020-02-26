@@ -4,6 +4,7 @@
 # Standard modules 
 import os, sys
 import argparse
+import warnings
 from pprint import pprint
 
 # My modules from other directories
@@ -54,29 +55,29 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
         #     - 'acute_hospitalizat_arm_1' (dependently repeating event) - all data collected during initial hospitalization
         #     - 'initial_psom_arm_1' (non repeating) - data collected during first "initial PSOM" which occurred outside of the initial hospitalization
         #     - 'follow_up_psom_arm_1' (dependently repeating event) - all subsequently collected data.
-        # In IPSS V3:
-        # - The Summary of Impressions assessment is included in the instruments:
-        #     - 'status_at_discharge' (only in event 'acute_arm_1', non-repeating) 
-        #     - 'outcome' (only in event 'followup_arm_1', independently repeating form).
+        # In IPSS V4:
+        # - The Summary of Impressions assessment is found in the instrument:
+        #     - 'summary_of_impressions' (non-repeating in event 'acute_arm_1'; independently repeating in event 'followup_arm_1') 
+        #
         # Link PSOM to IPSS as follows:
-        # - Most recent acute hospitalization SOI should be mapped to status at discharge (only appears in acute event). Previous SOIs will not be mapped to IPSS at all.
-        # - From PSOM, all initial and followup PSOM data should be mapped to IPSS followup event, 
-        # outcome form. When there is no PSOM initial SOI, the first followup SOI should be mapped to 
-        # instance 1 etc. If there is an initial PSOM SOI, the first PSOM followup SOI will be mapped to 
-        # instance 2 in IPSS.
+        # - Map the highest instance of the PSOM V2 'summary_of_impressions' form in the 'acute_hospitalizat_arm_1' event to the IPSS V4 'summary_of_impressions' form in event 'acute_arm_1'.
+        #   - Earlier SOIs in the acute_hospitalizat_arm_1 event will not be mapped to IPSS V4.
+        # - Map the PSOM V2 'summary_of_impressions' form in the 'initial_psom_arm_1' and 'follow_up_psom_arm_1' events to the IPSS V4 'summary_of_impression" form in event 'followup_arm_1'.
+        #   - When there is no PSOM initial SOI (i.e. the PSOM assessment date is blank), the first followup SOI should be mapped to instance 1 etc. If there is an initial PSOM SOI, the first PSOM followup SOI will be mapped to instance 2 in IPSS.
+        # - All PSOM V2 summary of impressions (from any event), which have a blank PSOM assessment date will be excluded from IPSS V4. 
 
 
         #### Perform record-specific modifications to a few records. Ideally, there will be nothing in this section.
-        print "Warning: Need to perform record-specific modifications per Alex's spreadsheet."
-        print "Warning: Should delete all Summary of Impressions data for SickKids patients before importing."
-        print "Warning: Currently there is no method to ensure that a SOI in PSOM V2 actually corresponds to the correct row in IPSS V4."
+        warnings.warn("Need to perform record-specific modifications per Alex's spreadsheet.")
+        warnings.warn("Should delete all Summary of Impressions data for SickKids patients before importing.")
+        warnings.warn("Currently there is no method to ensure that a SOI in PSOM V2 actually corresponds to the correct row in IPSS V4.")
         
         #### Remove data from PSOM which will not be imported into IPSS V4.
         ## Remove all rows (any event) which do not have a PSOM assessment date.
         from_psom_after_exclusions = []
         for row in from_psom:
             soi_date = row['fuionset_soi']
-            if (soi_date.strip() != ''): # if there is no summary of impressions date
+            if (soi_date.strip() != ''): # if the summary of impressions date is not blank
                 from_psom_after_exclusions.append(row)
         from_psom = from_psom_after_exclusions
     
@@ -89,19 +90,20 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
             if (id in record_ids_ipss):
                 from_psom_after_exclusions.append(row)
             elif (not id in excluded_ids): # if excluded ID has not already been identified and a warning printed.
-                print "Warning: IPSSID not found in IPSS, not importing this patient's data: " + id
+                warnings.warn("IPSSID not found in IPSS, not importing this patient's data: " + id)
                 excluded_ids.add(id)
         from_psom = from_psom_after_exclusions
         
         
-        #### Create dictionaries which map IPSSIDs to row numbers in PSOM for (a) the 'acute_hospitalizat_arm_1' event; and (b) the 'initial_psom_arm_1' and 'followup_arm_psom_arm_1' events. 
-        ## Create dictionary for the 'acute_hospitalizat_arm_1' event.
+        #### Create dictionaries which map IPSSIDs to row numbers in PSOM for (a) the 'acute_hospitalizat_arm_1' event; and (b) the 'initial_psom_arm_1' and 'followup_arm_psom_arm_1' events. These dictionaries are used to determine which rows in PSOM V2 will be mapped to which (instances of which) events in IPSS V4.
+        ## Create dictionary for the 'acute_hospitalizat_arm_1' event. By default, take the acute_hospitalization row with the highest instance number.
         acute_dict = {}
+   #     special_ids = {'1554':('1','2000-10-02'), '1804':(1, '2006-03-11')} # key: ipssid, value: (instance to use, fuionset to use)
         for row_index in range(len(from_psom)): # loop through all 'initial_hospitalizat_arm_1' event rows.
             row = from_psom[row_index]
             id = row['ipssid']
             if (row['redcap_event_name'] == 'acute_hospitalizat_arm_1'):
-                psom_instance = row['redcap_repeat_instance']
+                psom_instance = row['redcap_repeat_instance']            
                 if (not id in acute_dict.keys()):
                     acute_dict[id] = (row_index, psom_instance) # key = IPSSID; value = tuple(PSOM row index, psom instance number)
                 elif (psom_instance > acute_dict[id][1]): # if ID already in acute_dict and row corresponds to a newer acute hospitalization instance
@@ -136,56 +138,31 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
                 assert (current_instance > last_instance)
                 last_instance = current_instance
 
-
         #### Create functions and dictionaries for field mappings. 
-        ## Create dictionaries for SOI (PSOM) -> 'status_at_discharge' (IPSS V4), and one for SOI (PSOM) -> 'outcome' (IPSS V4). Both dictionaries are of the form {field_name_in_PSOM: field_name_in_IPSS}. These dictionaries only include fields which are directly mapped to a corresponding IPSS V4 field. Fields which are modified prior to transfer are dealt with separately.
-        psom_to_status_dict = {'fuionset_soi':'psomdate',
-                               'fpsomr':'psomr',
-                               'fpsoml':'psoml',
-                               'fpsomlae':'psomlae',
-                               'fpsomlar':'psomlar',
-                               'fpsomcb':'psomcb',
-                               'psomsen___1':'psomsens___3', # would be good to change this to start at one, and be consistent with PSOM V2. Should add this to transferData.py
-                               'psomsen___2':'psomsens___4',
-                               'psomsen___3':'psomsens___5',
-                               'psomsen___4':'psomsens___6',
-                               'psomsen___5':'psomsens___7',
-                               'psomsen___6':'psomsens___8',
-                               'psomsen___7':'psomsens___9',
-                               'psomsen___8':'psomsens___10',
-                               'psomsen___9':'psomsens___11',
-                               'psomsen___10':'psomsens___12',
-                               'psomsen___11':'psomsens___13',
-                               'psomsen___12':'psomsens___14',
-                               'othsens':'senssp',
-                               'fpsomco___1':'psomcog___1',
-                               'fpsomco___2':'psomcog___2',
-                               'totpsom':'psomscr'
-                               }
-        psom_to_outcome_dict = {'fuionset_soi':'fuionset',
-                                'fpsomr':'fpsomr',
-                                'fpsoml':'fpsoml',
-                                'fpsomlae':'fpsomlae',
-                                'fpsomlar':'fpsomlar',
-                                'fpsomcb':'fpsomcb',
-                                'psomsen___1':'psomsen___3', # would be good to change this to start at one, and be consistent with PSOM V2. Should add this to transferData.py
-                                'psomsen___2':'psomsen___4',
-                                'psomsen___3':'psomsen___5',
-                                'psomsen___4':'psomsen___6',
-                                'psomsen___5':'psomsen___7',
-                                'psomsen___6':'psomsen___8',
-                                'psomsen___7':'psomsen___9',
-                                'psomsen___8':'psomsen___10',
-                                'psomsen___9':'psomsen___11',
-                                'psomsen___10':'psomsen___12',
-                                'psomsen___11':'psomsen___13',
-                                'psomsen___12':'psomsen___14',
-                                'othsens':'othsens',
-                                'fpsomco___1':'fpsomco___1',
-                                'fpsomco___2':'fpsomco___2',
-                                'totpsom':'totpsom'
-                                }
-
+        ## Create a dictionary for Summary of Impressions (PSOM) -> 'summary_of_impressions' (IPSS V4)). The dictionary is of the form {field_name_in_PSOM: field_name_in_IPSS}. This dictionary only includes fields which are directly mapped to a corresponding IPSS V4 field. Fields which are modified prior to transfer are dealt with separately.
+        psom_to_ipss_soi = {'fuionset_soi':'psomdate',
+                            'fpsomr':'psomr',
+                            'fpsoml':'psoml',
+                            'fpsomlae':'psomlae',
+                            'fpsomlar':'psomlar',
+                            'fpsomcb':'psomcb',
+                            'psomsen___1':'psomsens___3', # would be good to change this to start at one, and be consistent with PSOM V2. Should add this to transferData.py
+                            'psomsen___2':'psomsens___4',
+                            'psomsen___3':'psomsens___5',
+                            'psomsen___4':'psomsens___6',
+                            'psomsen___5':'psomsens___7',
+                            'psomsen___6':'psomsens___8',
+                            'psomsen___7':'psomsens___9',
+                            'psomsen___8':'psomsens___10',
+                            'psomsen___9':'psomsens___11',
+                            'psomsen___10':'psomsens___12',
+                            'psomsen___11':'psomsens___13',
+                            'psomsen___12':'psomsens___14',
+                            'othsens':'senssp',
+                            'fpsomco___1':'psomcog___1',
+                            'fpsomco___2':'psomcog___2',
+                            'totpsom':'psomscr'
+                            }
 
         ## Create functions which perform the many-to-one mappings.
         def combineComments(row_psom):
@@ -255,7 +232,7 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
         ## Initialize data to be imported into IPSS V4.
         to_ipss = []
     
-        ## Map data to IPSS 'status_at_discharge' form.
+        ## Map data to IPSS 'acute_arm_1' event.
         for id, row_tuple_psom in acute_dict.iteritems(): # Loop over IPSSIDs which have at least one 'acute_hospitalizat_arm_1' event in PSOM V2.
             row_index_psom = row_tuple_psom[0]
 #            instance_psom = row_tuple_psom[1]
@@ -266,7 +243,8 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
             row_ipss = {'ipssid':id, 'redcap_event_name':'acute_arm_1', 'redcap_repeat_instrument':'', 'redcap_repeat_instance':''}
             
             # Add the variables with a one-to-one mapping.
-            for field_name_psom, field_name_ipss in psom_to_status_dict.iteritems():
+#            for field_name_psom, field_name_ipss in psom_to_status_dict.iteritems(): # METHOD USED BEFORE MOVING SUMMARY OF IMPRESSIONS TO A SEPARATE FORM.
+            for field_name_psom, field_name_ipss in psom_to_ipss_soi.iteritems():
                 value = row_psom[field_name_psom]
                 row_ipss[field_name_ipss] = value
             
@@ -277,7 +255,7 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
             # Append row to IPSS data.
             to_ipss.append(row_ipss)
 
-        ## Map data to IPSS 'outcome' form.
+        ## Map data to IPSS 'followup_arm_1' evemt.
         for id, row_tuple_list_psom in followup_dict.iteritems():
             instance_ipss = 1 # instance number for current row in IPSS
             for row_tuple_psom in row_tuple_list_psom:
@@ -287,17 +265,20 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
                 assert (row_psom['redcap_event_name'] != 'acute_hospitalizat_arm_1') # Check that PSOM row corresponds to the appropriate PSOM event.
                 
                 # Initialize the row to be imported into IPSS.
-                row_ipss = {'ipssid':id, 'redcap_event_name':'followup_arm_1', 'redcap_repeat_instrument':'outcome', 'redcap_repeat_instance':str(instance_ipss)}
+                row_ipss = {'ipssid':id, 'redcap_event_name':'followup_arm_1', 'redcap_repeat_instrument':'summary_of_impressions', 'redcap_repeat_instance':str(instance_ipss)}
 
                 # Add the variables with a one-to-one mapping.
-                for field_name_psom, field_name_ipss in psom_to_outcome_dict.iteritems():
+#                for field_name_psom, field_name_ipss in psom_to_outcome_dict.iteritems(): # METHOD USED BEFORE MOVING SUMMARY OF IMPRESSIONS TO A SEPARATE FORM.
+                for field_name_psom, field_name_ipss in psom_to_ipss_soi.iteritems():
                     value = row_psom[field_name_psom]
                     row_ipss[field_name_ipss] = value
             
                 # Add the variables with a many-to-one mapping
-                fucomm = combineComments(row_psom)
-                row_ipss['fucomm'] = fucomm
-                
+#                fucomm = combineComments(row_psom) # METHOD USED BEFORE MOVING SUMMARY OF IMPRESSIONS TO A SEPARATE FORM.
+#                row_ipss['fucomm'] = fucomm
+                sdcom = combineComments(row_psom)
+                row_ipss['sdcom'] = sdcom
+
                 ## Append row to IPSS data.
                 to_ipss.append(row_ipss)
 

@@ -1,5 +1,6 @@
 # Standard modules
 import sys
+import warnings
 from more_itertools import unique_everseen
 
 # Non-standard modules
@@ -8,24 +9,30 @@ import redcap
 # My modules
 from labelRecords import labelRecords
 #from exportFormsOrdered import exportFormsOrdered # PyCap version sufficient.
+from ProgressBar import ProgressBar
 
 def exportRecordsChunked(project, record_ids=None, events=None, fields=None, forms=None, format='json', quiet=False, chunk_size=400):
     """Function to export records for large projects. So far, this function is known to be 
     required for only for the IPSS database."""
 
+    if (not quiet):
+        p_chunk = ProgressBar("Export records " + str(chunk_size) + " rows at a time")
+    
     def chunks(l, n):
         """Yield successive n-sized chunks from list l"""
         for ii in xrange(0, len(l), n):
             if (not quiet):
-                sys.stdout.write('\r')
-                sys.stdout.write('%.2f%% complete' % (float(ii)/float(len(l))*1e2,))
-                sys.stdout.flush()
+                #sys.stdout.write('\r')
+                #sys.stdout.write('%.2f%% complete' % (float(ii)/float(len(l))*1e2,))
+                #sys.stdout.flush()
+                p_chunk.update(float(ii)/float(len(l)))
             yield l[ii:ii+n]
         if (not quiet):
-            sys.stdout.write('\r')
-            sys.stdout.write('%.2f%% complete' % (float(100),))
-            sys.stdout.write('\n')
-            sys.stdout.flush()
+            #sys.stdout.write('\r')
+            #sys.stdout.write('%.2f%% complete' % (float(100),))
+            #sys.stdout.write('\n')
+            #sys.stdout.flush()
+            p_chunk.stop()
 
     record_list = project.export_records(records=record_ids, fields=[project.def_field]) # List of [def_field, ("redcap_event_name"), (instance fields?)]
     records = [r[project.def_field] for r in record_list] # List of [def_field] for each row in records (includes duplicates)
@@ -86,6 +93,8 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
     maximum number of cells that will be exported before resorting to the chunked export method can be 
     set in the 'chunk_thres' parameter."""
 
+    warnings.warn('exportRecords() may return a different number of rows depending on what variables are requested. The number of rows may differ depending on whether export_form_completion = True or False.')
+    
     # Load project.
     project = redcap.Project(api_url, api_key)
 
@@ -102,7 +111,7 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                     if (not id in missing_ids):
                         missing_ids.append(id)
             if (missing_ids != []): # if any of the requested IDs is missing from the project
-                print "Warning: The following requested IDs were not found: "+" ".join(["'"+missing_id+"'" for missing_id in missing_ids])
+                warnings.warn("The following requested IDs were not found: "+" ".join(["'"+missing_id+"'" for missing_id in missing_ids]))
                 record_id_list = [id for id in record_id_list if (not id in missing_ids)]
         if (events != None):
             # If specific events are requested, ensure that they all exist in the project. Raise warnings for requested events not found in the project. If none of the requested events are found in the project, return nothing.
@@ -118,7 +127,7 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                     if (not event in missing_events):
                         missing_events.append(event)
             if (missing_events != []):
-                print "Warning: The following requested events were not found: "+" ".join(["'"+missing_event+"'" for missing_event in missing_events])
+                warnings.warn("The following requested events were not found: "+" ".join(["'"+missing_event+"'" for missing_event in missing_events]))
                 events = [event for event in events if (not event in missing_events)]
         if (forms != None):
             # If specific forms are requested, ensure that they all exist in the project. Raise warnings for requested forms not found in the project. If none of the requested forms or fields are found in the project, return nothing.
@@ -130,7 +139,7 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                     if (not form in missing_forms):
                         missing_forms.append(form)
             if (missing_forms != []):
-                print "Warning: The following requested forms were not found: "+" ".join(["'"+missing_form+"'" for missing_form in missing_forms])
+                warnings.warn("The following requested forms were not found: "+" ".join(["'"+missing_form+"'" for missing_form in missing_forms]))
                 forms = [form for form in forms if (not form in missing_forms)]
         if (fields != None):
             # If specific fields are requested, ensure that they all exist in the project. Raise warnings for requested fields not found in the project. If none of the requested forms or fields are found in the project, return nothing.
@@ -143,13 +152,13 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                     if (not field in missing_fields):
                         missing_fields.append(field)
             if (missing_fields != []):
-                print "Warning: The following requested fields were not found: "+" ".join(["'"+missing_field+"'" for missing_field in missing_fields])
+                warnings.warn("The following requested fields were not found: "+" ".join(["'"+missing_field+"'" for missing_field in missing_fields]))
                 fields = [field for field in fields if (not field in missing_fields)]
                 
     # If format='csv' and label=True, first export as json, then label, then convert to csv. THIS IS A SPOOF/HACK SOLUTION, A MORE SENSIBLE APPROACH SHOULD REPLACE THIS.
     if label:
         requested_format = format
-        format = "json"
+        format = "json" 
 
     # If form completion variables are requested, generate a list of the form_complete variable names, and add it to the list of fields requested.
     if export_form_completion:
@@ -183,7 +192,7 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
 #            field_names_all = [field_dict['field_name'] for field_dict in metadata]
             field_names_all = project.field_names
             fields = field_names_all + form_complete_names
-        else: # if forms were requested, but none of the requested forms exist in the project, do not add any form complete fields.
+        else: # ?if forms is an empty list and fields is not None
             pass
 
     # If specific forms were requested, and they exist in the project, add all the fields in those forms to the list of fields. This is done becuase for some reason, redcap.project.Project.export_records will erroneously include form_complete fields if and only if specific forms are requested (whether or not the forms actually exist).
@@ -214,11 +223,11 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
     else:
         # Print messages which explain why the exported data is nothing.
         if (record_id_list == []):
-            print "Warning: Specific records were requested, but none of them exist in the project. Returning no data."
+            warnings.warn("Specific records were requested, but none of them exist in the project. Returning no data.")
         if (events == []):
-            print "Warning: Specific events were requested, but none of them exist in the project. Returning no data."
+            warnings.warn("Specific events were requested, but none of them exist in the project. Returning no data.")
         if (fields == []):
-            print "Warning: Specific forms or fields were requested, but none of them exist in the project. Returning no data."
+            warnings.warn("Specific forms or fields were requested, but none of them exist in the project. Returning no data.")
         project_empty = True
 
 
@@ -247,8 +256,6 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                 pass
             records = project.export_records(records=record_id_list, events=events, fields=fields, forms=forms, export_data_access_groups=True, format=format)
         else:
-            if (not quiet):
-                print "Exporting records in chunks of size", chunk_size
             records = exportRecordsChunked(project, record_ids=record_id_list, events=events, fields=fields, forms=forms, quiet=quiet, format=format, chunk_size=chunk_size)
             # type(records) = unicode
 
@@ -261,7 +268,7 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                     msg += " Overwriting fields containing data with labels."
                 print msg
             if (events != None) or (fields != None) or (forms != None): # If only certain events, fields, or forms requeted.
-                records_all = exportRecords(api_url, api_key, record_id_list=record_id_list, quiet=True) # Use all records with requested IDs in labelling function. Could be optimized.
+                records_all = exportRecords(api_url, api_key, record_id_list=record_id_list, quiet=True, export_form_completion=export_form_completion) # Use all records with requested IDs in labelling function. Could be optimized.
                 all_requested = False
             else:
                 records_all = records

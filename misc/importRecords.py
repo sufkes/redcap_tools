@@ -5,6 +5,7 @@ import csv
 import StringIO
 import copy
 from collections import OrderedDict
+import warnings
 
 # Non-standard modules
 import redcap
@@ -20,7 +21,7 @@ def recordsToDict(records, primary_key):
     """
     Parameters:
         records is a list of dicts, where each dict has the same set of keys.
-        primary_key is a list or tuple of keys used in each dict in records. 
+        primary_key is a list or tuple of keys used in each dict in records.
     Returns:
         records_dict: a collections.OrderedDict object. Each row in records is mapped to an entry in records_dict; the key for each entry is tuple of values taken from each row for the keys specified in primary key. The value is a dict of all fields except those in the primary key and the redcap_data_access_group field.
     """
@@ -83,7 +84,7 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
                 val_dst = row_dst[field_name]
             else:
                 val_dst = None
-            if (strip(val_src) != strip(val_dst)):
+            if (val_src.strip() != val_dst.strip()):
                 changes_dict[key] = OrderedDict() # Each row is an OrderedDict()
                 changes_dict[key]['src'] = val_src
                 changes_dict[key]['dst'] = val_dst
@@ -113,7 +114,7 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
     cont = bool(raw_input("These changes will be made to the database. Continue y/[n]? ") == 'y')
     return cont
 
-def importRecords(api_url, api_key, records_src, overwrite='normal', format='json', quick=False, quiet=False, return_content='ids', size_thres=40000): # size_thres = 300000 has not caused error [2019-05-08 ACTUALLY, MAYBE IT HAS]
+def importRecords(api_url, api_key, records_src, overwrite='normal', format='json', quick=False, quiet=False, return_content='ids', size_thres=30000): # size_thres = 300000 has not caused error [2019-05-08 ACTUALLY, MAYBE IT HAS]
     # Load project.
     project = redcap.Project(api_url, api_key)
     project_info = exportProjectInfo(api_url, api_key)
@@ -196,7 +197,7 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
     else:
         row_chunk_size = size_thres/num_col # Python 2 rounds down integers after division (desired)
         if (not quiet):
-            print "Importing data in chunks of "+str(row_chunk_size)+" rows"
+            print "Importing records "+str(row_chunk_size)+" rows at a time"
         
         if (return_content == 'count'):
             num_modified = 0

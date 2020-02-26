@@ -39,7 +39,9 @@ def addDAGInfo(report_df, path_dag_info):
     return report_df
 
 ## Define functions to generate data and write reports.
-def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss):
+def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003, enroll_date_max=2020):
+    
+    
     ## Get list of record IDs for each project. Exclude registry-only patients. Exclude patients with unknown stroke type.
 #    record_ids_arch = getRecordIDList(url_arch, key_arch)
 #    registry_arch = exportRecords(url_arch, key_arch, record_id_list=record_ids_arch, fields=["registry"], events=["acute_arm_1"])
@@ -152,8 +154,8 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss):
     for id, info in patient_info.iteritems():
         if ('enroll_date' in info):
             enroll_dates.add(info['enroll_date'])
-            if (not info['enroll_date'] in range(2003, 2020)):
-                print "Record enroll date outside [2003, 2019]:", id
+            if (not info['enroll_date'] in range(enroll_date_min, enroll_date_max+1)):
+                print "Record enroll date outside ["+str(enroll_date_min)+", "+str(enroll_date_max)+"]:", id
         else:
             print "Record with no enrolment date:", id
 #    print "enroll_dates:", sorted(list(enroll_dates))
@@ -385,10 +387,8 @@ def getUserInfo(url_ipss, key_ipss):
 
     return user_info
 
-def reportPatientInfo(patient_info, out_dir, path_dag_info):
+def reportPatientInfo(patient_info, out_dir, path_dag_info, min_year=2003, max_year=2020):
     ## Miscellaneous items used in all of the enrolment reports
-    min_year = 2003
-    max_year = 2020 #2019
     year_list = range(min_year, max_year+1)
 
     records_ipss = exportRecords(url_ipss, key_ipss, fields=["ipssid"])
@@ -484,13 +484,11 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info):
            
     return
 
-def reportUserInfo(user_info, out_dir, path_dag_info):
+def reportUserInfo(user_info, out_dir, path_dag_info, min_year=2014, max_year=2020):
     # Users per DAG
     report_path = os.path.join(out_dir, "user_dag.csv")
 
     ## Miscellaneous items used in the user information report.
-    min_year = 2014
-    max_year = 2020#2019
     year_list = range(min_year, max_year+1)
 
     # Get alphabetized DAG list. Put unassigned at the end of the list.

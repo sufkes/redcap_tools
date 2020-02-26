@@ -212,7 +212,7 @@ def checkFunction(row_index, field_name, def_field, metadata, records, record_id
         print "Couldn't convert:", row_index, type(records[row_index][field_name]), "entry:",records[row_index][field_name]    
     return element_bad
 
-#print "************************SKIPPING CHECK '"+name+"' FOR TEST************************"
-checklist.append(Check(name, description, report_forms, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction))
-del name, description, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction
+print "************************SKIPPING CHECK '"+name+"' FOR TEST************************"
+#checklist.append(Check(name, description, report_forms, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction))
+#del name, description, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction
 

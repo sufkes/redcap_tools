@@ -79,7 +79,7 @@ def checkFunction(row_index, field_name, def_field, metadata, records, record_id
     return element_bad
 
 # Add check instance to list of checks
-print "WARNING: SKIPPING CHECK FOR DATA STORED IN FIELDS HIDDEN BY BRANCHING LOGIC, BECAUSE IT IS CRASHING IN VIPS FOR AN UNKNOWN REASON."
-#checklist.append(Check(name, description, report_forms, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction))
-#del name, description, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction
+#print "WARNING: SKIPPING CHECK FOR DATA STORED IN FIELDS HIDDEN BY BRANCHING LOGIC, BECAUSE IT IS CRASHING IN VIPS FOR AN UNKNOWN REASON."
+checklist.append(Check(name, description, report_forms, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction))
+del name, description, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction
 

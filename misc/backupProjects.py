@@ -84,7 +84,9 @@ if (__name__ == "__main__"):
     parser.add_argument("-o", "--out_dir", help="path to output directory where backups will be saved", type=str, default=default_out_dir)
     parser.add_argument("-a", "--all", help="backup all API-exportable items. By default, only the project XML (without records), and a separate file containing all records are exported. These two items consititute the entire project, but it is possible to export, e.g., the Instrument-Event mappings by itself, which can be useful to store separately.", action="store_true") 
     parser.add_argument("-m", "--modification_notes", action='store', type=str, help='Notes about why a backup is being performed. For example, if data is about to be imported into a project, the user should not the project which will be modified and what changes will be made, back up the project, and then perform the changes. ')
-
+    parser.add_argument("-p", "--pids", help="list of project IDs to back up. Default: Back up all projects in the list of projects.", nargs="+", metavar=("PID1", "PID2"))
+    parser.add_argument("-t", "--timestamp", help="Include the time of day at which the backup was performed in the backup directory name. By default, on the date is used.", action='store_true')
+    
     # Parse arguments.
     args = parser.parse_args()
 
@@ -114,7 +116,10 @@ if (__name__ == "__main__"):
             sys.exit()
 
     # Create subdirectory for current date.
-    date_string = datetime.datetime.today().strftime('%Y-%m-%d')
+    if (not args.timestamp):
+        date_string = datetime.datetime.today().strftime('%Y-%m-%d')
+    else:
+        date_string = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
     date_dir = os.path.join(args.out_dir, date_string)
     if (not os.path.isdir(date_dir)):
         os.mkdir(date_dir)
@@ -131,6 +136,11 @@ if (__name__ == "__main__"):
     for api_pair in api_pairs:
         api_url = api_pair[0]
         api_key = api_pair[1]
+
+        if (not args.pids == None): # If only backing up specific projects.
+            pid = str(exportProjectInfo(api_url, api_key)["project_id"])
+            if (not pid in args.pids):
+                continue
         
         # Backup project
         backup_project(api_url, api_key, date_dir, date_string, all=args.all)

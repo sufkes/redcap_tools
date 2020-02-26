@@ -8,7 +8,7 @@ import misc
 from misc.exportRecords import exportRecords
 from misc.getRecordIDList import getRecordIDList
 
-def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, inc_pre_2003=True, inc_pre_2014=True, inc_post_20191001=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=True, inc_adult_stroke=True, inc_melas=True, inc_non_ipss=True, inc_non_sips=True, inc_non_sips2=True, inc_non_sips2_cohort1=True, inc_non_sips2_cohort2=True, inc_sips_exclusions=True, inc_sips_exclusions_2=True, inc_patient_info_incomp=True, inc_core_incomplete=True, inc_non_vips_enrolled=True, inc_vips_screen_nonenroll=True):
+def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, inc_pre_2003=True, inc_pre_2014=True, inc_post_20191001=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=True, inc_adult_stroke=True, inc_melas=True, inc_non_ipss=True, inc_non_sips=True, inc_non_sips2=True, inc_non_sips2_cohort1=True, inc_non_sips2_cohort2=True, inc_sips_exclusions=True, inc_sips_exclusions_2=True, inc_patient_info_incomp=True, inc_core_incomplete=True, inc_non_vips_enrolled=True, inc_vips_screen_nonenroll=True, inc_tests=False):
     '''
     Parameters:
         db:                         str - database to get IDs from. Allowed values: 'ipss', 'arch', 'psom', 'sips2', 'vips2', 'psom2'
@@ -33,7 +33,8 @@ def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, 
         inc_core_incomplete         bool - whether to include IDs of patients for whom any of the 'core' forms are not marked as complete (core forms, here, include 'patient_information', 'cardiac_arteriopathy_risk_factors', 'other_child_and_neonatal_risk_factors', and 'clinical_presentation')
         inc_non_vips_enrolled:      bool - whether to include patients who are not enrolled in VIPS, based on the condition of the VIPS field vscreen_sfoutc=4.
         inc_vips_screen_nonenroll:  bool - whether to include patients who are "VIPS screened, not enrolled" based on the IPSS field 'vips_screened'.
-        
+        inc_tests                   bool - whether to include fake records with IDs starting with 'test_'
+
     Returns:
         record_ids:               list - record IDs in the specified database after specified exclusions
     '''
@@ -132,7 +133,10 @@ def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, 
     if (not inc_vips_screen_nonenroll):
         req_fields_ipss.add('vips_screened')
         req_events_ipss.add('acute_arm_1')
-
+    if (not inc_tests):
+        req_fields_ipss.add('ipssid')
+        req_events_ipss.add('acute_arm_1')
+        
     # Export data required to refine ID lists.
     if (req_fields_arch != set()): # if data is required from Archive
         filter_data_arch = exportRecords(url_arch, key_arch, fields=req_fields_arch, events=req_events_arch)
@@ -425,6 +429,15 @@ def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, 
             if (row['vips_screened'] == '1'):
                 record_ids_vips_screen_nonenroll_ipss.add(id)
 
+    # Fake records whose IDs start with 'test_'
+    if (not inc_tests):
+        record_ids_tests_ipss = set()
+        for row in filter_data_ipss:
+            id = row['ipssid']
+            if (id[:5] == 'test_'):
+                record_ids_tests_ipss.add(id)
+                
+
     ## Exclude IDs based on request. 
     if (db == "ipss"):
         record_ids = record_ids_ipss
@@ -481,6 +494,8 @@ def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, 
         record_ids = [id for id in record_ids if (id in record_ids_vips_enrolled)]
     if (not inc_vips_screen_nonenroll):
         record_ids = [id for id in record_ids if (not id in record_ids_vips_screen_nonenroll_ipss)]
+    if (not inc_tests):
+        record_ids = [id for id in record_ids if (not id in record_ids_tests_ipss)]
     return record_ids
 
 #### Run tests.
@@ -525,8 +540,8 @@ if (__name__ == "__main__"):
 #    all = getIPSSIDs(db='ipss', inc_vips_screen_nonenroll=True)
 #    some = getIPSSIDs(db='ipss', inc_vips_screen_nonenroll=False)
 
-    all = getIPSSIDs(db='ipss', inc_pre_2003=True)
-    some = getIPSSIDs(db='ipss', inc_pre_2003=False)
+    all = getIPSSIDs(db='ipss', inc_tests=True)
+    some = getIPSSIDs(db='ipss')
 
     id_lists.append(all)
     id_lists.append(some)
