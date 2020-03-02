@@ -8,7 +8,7 @@ class ProgressBar:
     def __init__(self, task_name=None):
         self.task_name = task_name
         self.update(0.0)
-
+        
 #    def makeMessage(self, ratio, task_name):
 #        if (task_name == None):
 #            message = '%.2f%% complete' % (ratio*1e2,)
@@ -17,9 +17,10 @@ class ProgressBar:
 #        return message
 
     def update(self, ratio):#, task_name=None):
-        """
+        """Print the current completion progress.
 Parameters:
     ratio: float between 0 and 1 indicating the progress"""
+        
         if (self.task_name == None):
             message = Color.Yellow + '%.2f%% complete' % (ratio*1e2,) + Color.end
         else:

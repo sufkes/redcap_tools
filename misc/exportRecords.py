@@ -20,8 +20,9 @@ def exportRecordsChunked(project, record_ids=None, events=None, fields=None, for
     
     def chunks(l, n):
         """Yield successive n-sized chunks from list l"""
+        milestone = max(len(l)/2000, 1) 
         for ii in xrange(0, len(l), n):
-            if (not quiet):
+            if (not quiet) and (ii % milestone == 0):
                 #sys.stdout.write('\r')
                 #sys.stdout.write('%.2f%% complete' % (float(ii)/float(len(l))*1e2,))
                 #sys.stdout.flush()

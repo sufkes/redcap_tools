@@ -38,6 +38,7 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
     # Get the field name of the unique identifying field (e.g. "ipssid").
     if (not quiet):
         p_info = ProgressBar("(1/4) Getting project information")
+        pass
     def_field = project.def_field
     
 #    records = records_all
@@ -104,6 +105,8 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
     if (not quiet):
         p_info.stop()
         p_check = ProgressBar("(2/4) Checking whether fields are hidden and applicable to the current row")
+        milestone = max(len(records_all)/2000, 1)
+        pass
     list_invalid = []
     list_branching_logic_error = []
     list_hidden = []
@@ -159,12 +162,16 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
             except:
                 print field_name
         if (not quiet):
-            p_check.update(float(row_index+1)/float(len(records_all)))
+            if (row_index % milestone == 0):
+                p_check.update(float(row_index+1)/float(len(records_all)))
+                pass
     if (not quiet):
         p_check.stop()
         p_label = ProgressBar("(3/4) Applying labels to cells that are hidden or inavlid for the current row")
         num_cells_to_label = len(list_hidden) + len(list_branching_logic_error) + len(list_invalid)
         num_labelled = 0
+        milestone = max(num_cells_to_label/2000, 1)
+        pass
         
     # Markup records with types after finding all of them
     for cell in list_hidden:
@@ -184,7 +191,8 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
                 records_all[row_index][field_name] = 'rr_hidden'
         if (not quiet):
             num_labelled += 1
-            p_label.update(float(num_labelled)/float(num_cells_to_label))
+            if (num_labelled % milestone == 0):
+                p_label.update(float(num_labelled)/float(num_cells_to_label))
     for cell in list_branching_logic_error:
         row_index, field_name = cell
         field_is_checkbox = (metadata[field_name].field_type == 'checkbox')
@@ -202,17 +210,21 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
                 records_all[row_index][field_name] = 'rr_blerror'
         if (not quiet):
             num_labelled += 1
-            p_label.update(float(num_labelled)/float(num_cells_to_label))
+            if (num_labelled % milestone == 0):
+                p_label.update(float(num_labelled)/float(num_cells_to_label))
     for cell in list_invalid: # checkbox fields will be blank in this case. 
         row_index, field_name = cell
         if (label_overwrite) or (records_all[row_index][field_name] == ''):
             records_all[row_index][field_name] = "rr_invalid"
         if (not quiet):
             num_labelled += 1
-            p_label.update(float(num_labelled)/float(num_cells_to_label))
+            if (num_labelled % milestone == 0):
+                p_label.update(float(num_labelled)/float(num_cells_to_label))
+                pass
     if (not quiet):
         p_label.stop()
         p_check = ProgressBar("(4/4) Formatting and checking for errors")
+        pass
         
     # Select only the requested records from records_all
     if all_requested:
@@ -274,5 +286,6 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
 
     if (not quiet):
         p_check.stop()
+        pass
     return records
                 
