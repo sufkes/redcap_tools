@@ -5,6 +5,7 @@ Scripts for REDCap API, quality control, and report generation
 All scripts require Python 2.7.
 
 Most of the scripts require the Python module "PyCap". See https://github.com/redcap-tools/PyCap
+
 PyCap requires the module "requests". See https://pypi.org/project/requests
 
 Some of the scripts require the Python module "Pandas". See https://pandas.pydata.org/pandas-docs/stable/install.html 
