@@ -15,6 +15,7 @@
 # Standard modules
 import os, sys, argparse
 import datetime
+import warnings
 
 # Non-standard modules.
 #import redcap # PyCap
@@ -23,6 +24,7 @@ import datetime
 from exportProjectXML import exportProjectXML
 from exportProjectInfo import exportProjectInfo
 from exportRecords import exportRecords
+from exportFiles import exportFiles
 
 # My scripts in other directories
 from Color import Color
@@ -31,7 +33,10 @@ from Color import Color
 #from exportFormsOrdered import exportFormsOrdered
 #from createFormRepetitionMap import createFormRepetitionMap
 
-def backup_project(api_url, api_key, date_dir, date_string, all=False):
+warnings.warn("This script does not back up uploaded files from 'file' fields.")
+
+def backup_project(api_url, api_key, date_dir, date_string, skip_files=False):
+    """Create a backup of a REDCap project, including the """
     # Get project info.
     project_info = exportProjectInfo(api_url, api_key)
     if ("error" in project_info):
@@ -68,6 +73,11 @@ def backup_project(api_url, api_key, date_dir, date_string, all=False):
     records_path = os.path.join(project_dir, "records"+file_suffix+".csv")
     with open(records_path, 'w') as fh:
         fh.write(records)
+
+    # Backup files stored in File Upload fields. This does not include files stored in the File Repository.
+    if (not skip_files):
+        project_files_dir = os.path.join(project_dir, 'files_in_file_upload_fields')
+        exportFiles(api_url, api_key, project_files_dir, flat=False)
     print 
 
     return
@@ -82,10 +92,11 @@ if (__name__ == "__main__"):
     default_out_dir = "/Users/steven ufkes/Documents/stroke/backups/"
     parser.add_argument("-i", "--in_path", help="path to text file specifying projects to back up. File should contain 1 space-separated (API URL, API KEY) pair per line.", type=str, default=default_in_path)
     parser.add_argument("-o", "--out_dir", help="path to output directory where backups will be saved", type=str, default=default_out_dir)
-    parser.add_argument("-a", "--all", help="backup all API-exportable items. By default, only the project XML (without records), and a separate file containing all records are exported. These two items consititute the entire project, but it is possible to export, e.g., the Instrument-Event mappings by itself, which can be useful to store separately.", action="store_true") 
     parser.add_argument("-m", "--modification_notes", action='store', type=str, help='Notes about why a backup is being performed. For example, if data is about to be imported into a project, the user should not the project which will be modified and what changes will be made, back up the project, and then perform the changes. ')
     parser.add_argument("-p", "--pids", help="list of project IDs to back up. Default: Back up all projects in the list of projects.", nargs="+", metavar=("PID1", "PID2"))
-    parser.add_argument("-t", "--timestamp", help="Include the time of day at which the backup was performed in the backup directory name. By default, on the date is used.", action='store_true')
+    parser.add_argument("-t", "--timestamp", help="include the time of day at which the backup was performed in the backup directory name. By default, on the date is used.", action='store_true')
+    parser.add_argument("-s", "--skip_files", help="do not back up files stored in File Upload fields. Note that the File Repository is not backed up regardless of this option", action='store_true')
+    
     
     # Parse arguments.
     args = parser.parse_args()
@@ -143,4 +154,4 @@ if (__name__ == "__main__"):
                 continue
         
         # Backup project
-        backup_project(api_url, api_key, date_dir, date_string, all=args.all)
+        backup_project(api_url, api_key, date_dir, date_string, skip_files=args.skip_files)

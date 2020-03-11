@@ -1,3 +1,13 @@
+
+try:
+   import colorama # if colorama module is available.
+   color = True
+except ImportError:
+   color = False
+
+if color:
+   colorama.init() # 
+   
 # Define class for colored text output.
 class Color:
    bold = '\033[1m'
