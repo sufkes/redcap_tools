@@ -112,10 +112,10 @@ def selectChanges(column_changes_dict, field_name):
     select_changes = str(select_changes).lstrip("{").rstrip("}")
     return select_changes
 
-def createReport(logs, record=None, field=None, out_path=None):
+def createReport(logs, record=None, field=None, out_path=None, quiet=False):
     """
     Parameters:
-    logs: a list of paths to REDCap logging data stored in CSV (UTF-8).
+        logs: a list of paths to REDCap logging data stored in CSV (UTF-8).
     Returns:
         report_df: a summary of the data history;
     """
@@ -124,7 +124,11 @@ def createReport(logs, record=None, field=None, out_path=None):
     log_df = pandas.DataFrame()
     log_num = 1
     for sublog_path in logs:
-        sublog_df = pandas.read_csv(sublog_path, dtype=unicode, encoding='utf-8').fillna('')
+        # I can't find an authorative statement about what encoding the logging file is. REDCap says that import data must be encoded in UTF-8. When I export Logging from IPSS V3, I get a utf-8 decoding error for byte 95.
+        try:
+            sublog_df = pandas.read_csv(sublog_path, dtype=unicode, encoding='utf-8').fillna('')
+        except UnicodeDecodeError:
+            raise Exception("Cannot decode logging file '"+sublog_path+"' using utf-8 encoding. One way to fix this is by opening the logging file in Excel, and select the File Format: CSV UTF-8 (Comma delimited) (.csv)")
         sublog_df['source'] = sublog_path
         sublog_df['log_num'] = log_num
         log_num += 1
@@ -164,6 +168,7 @@ def createReport(logs, record=None, field=None, out_path=None):
         report_df['change_requested'] = report_df['change_dict'].apply(selectChanges, args=(field,))
         report_df = report_df.loc[(report_df['change_requested'] != ''), :]
 
+        
     # Reorder columns.
     if (field != None):
         report_df = report_df[['log_num', 'date', 'time', 'record_id', 'event', 'instance', 'Username', 'Action', 'Changes', 'change_requested']]
@@ -171,12 +176,13 @@ def createReport(logs, record=None, field=None, out_path=None):
         report_df = report_df[['log_num', 'date', 'time', 'record_id', 'event', 'instance', 'Username', 'Action', 'Changes']]
 
     # Print some stuff to console.
-    cols_to_print = ['record_id', 'log_num', 'date', 'time', 'event', 'instance', 'Username']
-    if (field != None):
-        cols_to_print.append('change_requested')
-    else:
-        cols_to_print.append('Changes')
-    print report_df[cols_to_print]    
+    if (not quiet):
+        cols_to_print = ['record_id', 'log_num', 'date', 'time', 'event', 'instance', 'Username']
+        if (field != None):
+            cols_to_print.append('change_requested')
+        else:
+            cols_to_print.append('Changes')
+        print report_df[cols_to_print]    
 
     if (out_path != None):
 #        writer = pandas.ExcelWriter(out_path, engine='xlsxwriter')
@@ -212,13 +218,15 @@ if (__name__ == '__main__'):
     # Define positional arguments.
     
     # Define optional arguments.
-    parser.add_argument('-l', '--logs', action='store', type=str, nargs='*', help='paths to logs to be parsed. If multiple paths are specified, the logs will be concatenated and treated as a single log. If logs correspond to different versions of a REDCap project, list the logs in order of version number (i.e. most recent version last).', default=['/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V1_Logging_2019-04-10_0901.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V2_Logging_2019-04-10_0900.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V3_Logging_2019-12-18_0951.csv'], metavar=('LOG_PATH_1,', 'LOG_PATH_2'))
+    default_logs = ['/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V1_Logging_2019-04-10_0901.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V2_Logging_2019-04-10_0900.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V3_Logging_2020-03-16_1108.csv']
+    parser.add_argument('-l', '--logs', action='store', type=str, nargs='*', help='paths to logs to be parsed. If multiple paths are specified, the logs will be concatenated and treated as a single log. If logs correspond to different versions of a REDCap project, list the logs in order of version number (i.e. most recent version last).', default=default_logs, metavar=('LOG_PATH_1,', 'LOG_PATH_2'))
     parser.add_argument('-r', '--record', action='store', type=str, help='name of record to query', metavar='RECORD_ID')
     parser.add_argument('-f', '--field', action='store', type=str, help='name of field to query')
     parser.add_argument('-o', '--out_path', action='store', type=str, help='path to save report to. If none specified, report will not be saved.')
-
+    parser.add_argument('-q', '--quiet', action='store_true', help='do not print report to screen')
+    
     # Parse arguments.
     args = parser.parse_args()
 
     # Generate report
-    createReport(logs=args.logs, record=args.record, field=args.field, out_path=args.out_path)
+    createReport(logs=args.logs, record=args.record, field=args.field, out_path=args.out_path, quiet=args.quiet)

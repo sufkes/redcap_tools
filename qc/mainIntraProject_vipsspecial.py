@@ -38,8 +38,8 @@ from misc.createRecordIDMap import createRecordIDMap
 from misc.getDAGs import getDAGs
 from misc.createDAGRecordMap import createDAGRecordMap
 from misc.Color import Color
-import reports
-from reports.getIPSSIDs import getIPSSIDs
+import ipss
+from ipss.getIPSSIDs import getIPSSIDs
 
 # Parse arguments.
 if (len(sys.argv) == 2): # if args are provided in file

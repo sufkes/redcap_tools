@@ -30,8 +30,8 @@ from misc.exportRecords import exportRecords
 from misc.createRecordIDMap import createRecordIDMap
 from misc.getDAGs import getDAGs
 from misc.createDAGRecordMap import createDAGRecordMap
-import reports
-from reports.getIPSSIDs import getIPSSIDs
+import ipss
+from ipss.getIPSSIDs import getIPSSIDs
 
 if (len(sys.argv) == 2): # if args are provided from file
     with open(str(sys.argv[1]), "r") as file:

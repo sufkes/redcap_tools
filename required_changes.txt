@@ -1,0 +1,29 @@
+# This is a list of all of the changes I need to make to my scripts before I finish:
+
+Scripts that need to read lists of specific API tokens and URLs.
+
+Scripts that require specific logging files:
+/misc/parseLogging.py
+
+Scripts that require an output folder:
+
+
+Scripts that require event_id numbers:
+/misc/getEventIDs.py
+
+Things I need to set up to work with IPSS V4:
+/misc/getEventIDs.py
+/misc/parseLogging.py
+/reports/makeDataPackage.py
+
+Other:
+- Change the way that all scripts read API keys. I should set it up so that a user will have a single file with the format:
+<project id> <api url> <api key>
+and they can simply specify the project_id as an argument to the script.
+- getEventIDs.py should read from a JSON file. 
+- Set it up so that there is a single supplementary (nonpublic) folder containing:
+    - API URL/token & project ID files.
+    - Logging for IPSS V1, V2, V3, V4.
+    - Output for:
+        - qc
+	- makeDataPackage.py

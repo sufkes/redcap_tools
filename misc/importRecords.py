@@ -1,5 +1,8 @@
+#!/usr/bin/env python
+
 # Standard modules
 import os, sys
+import argparse
 import math
 import csv
 import StringIO
@@ -48,8 +51,6 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
     """
     
     print "Comparing source data with destination database. Please review the changes below and confirm."
-    print "DEBUG WARNING: Comparing strings after stripping whitespace from the start and end of the string."
-
     t_export = Timer('Export data from destination project for comparison')
     records_dst = exportRecords(api_url, api_key) # Export all data from destination project.
     # records_dst has type: list(dict(unicode:unicode))
@@ -103,12 +104,6 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
                     print "''"
 #                print type(val_src), ">", type(val_dst)
                 print
-
-    # SAVE changes_dict
-#    print "DEBUG: Saving changes_dict to changes.pkl pickle file."
-#    import pickle
-#    with open('changes.pkl','wb') as ff:
-#        pickle.dump(changes_dict, ff)
     t_compare.stop()
 
     cont = bool(raw_input("These changes will be made to the database. Continue y/[n]? ") == 'y')
@@ -149,12 +144,10 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
 
     # Compare source and destination data. Continue if user confirms changes.
     if (not quick):
-        print "DEBUG: Comparing records_src before and after verification."
         records_src_copy = copy.deepcopy(records_src)
         if (not verifyChanges(api_url, api_key, records_src, project.def_field, project_info, overwrite)):
             print "Quitting"
             sys.exit()
-        print "DEBUG: records_src unchanged by verifyChanges():", records_src == records_src_copy
 
     # Determine size of imported data. I DON'T KNOW THE APPROPRIATE WAY TO DETERMINE THE "SIZE", NOR THE SIZE LIMIT. IF IT DOESN'T WORK WITH THE CURRENT SETTING, REDUCE THE SIZE LIMIT.
     num_row = len(records_src)
@@ -256,3 +249,35 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
                 print "IDs of records imported:"            
                 print id_string
     return
+
+
+# Use function as command-line tool to import csv files.
+if (__name__ == '__main__'):
+    # Create argument parser.
+    description = """Import records to a REDCap project from a CSV file. The fields to be imported must
+already be defined in the project. The record IDs in the import file need not exist in the project."""
+    parser = argparse.ArgumentParser(description=description)
+    
+    # Define positional arguments 
+    parser.add_argument("api_key", help="API key of the project to which you wish to import data")
+    parser.add_argument("in_path", help="file path of CSV file to be imported")
+    
+    # Define positional arguments
+    parser.add_argument("-u", "--api_url", help="API URL. Default: 'https://redcapexternal.research.sickkids.ca/api/'", default="https://redcapexternal.research.sickkids.ca/api/")
+    parser.add_argument("--overwrite", help="overwrite values with blanks", action="store_const", const="overwrite", default="normal") # CURRENTLY NOT SET UP.
+    parser.add_argument("-q", "--quick", help="do not summarize changes to be made to destination project before importing (much quicker)", action='store_true')
+    
+    # Print help message if no args input
+    if (len(sys.argv) == 1):
+        parser.print_help()
+        sys.exit()
+    
+    # Parse arguments
+    args = parser.parse_args()
+    
+    # Convert input csv file to string.
+    with open(args.in_path, 'rb') as data_file:
+        data_string = data_file.read()
+    
+    # Import data.
+    importRecords(args.api_url, args.api_key, data_string, overwrite=args.overwrite, format='csv', quick=args.quick)

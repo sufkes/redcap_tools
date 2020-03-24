@@ -39,3 +39,6 @@ __pycache__/
 # Text and spreadsheet files
 *.csv
 *.xls*
+
+# A user's own settings.json file
+settings.json

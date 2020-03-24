@@ -21,9 +21,11 @@ checklist = []
 # - Check for (near) duplicate records.
 # - Check for entries lying in fields hidden by branching logic.
 
-#### Check: Fields that are hidden by branching logic but contain data
-name = "hidden_with_data"
-description = "Fields that are hidden by branching logic but contain data"
+
+
+#### Check: Fields that are hidden by branching logic but contain data, and are being modified on import to IPSS V4.
+name = "hidden_with_data_v4_modified_fields"
+description = "Fields that are hidden by branching logic but contain data, and are being modifed on import to IPSS V4."
 report_forms = True
 inter_project = False
 whole_row_check = False
@@ -40,14 +42,15 @@ def rowConditions(row_index, def_field, metadata, records, record_id_map, repeat
 
 # Define function which determines whether a field should be checked (regardless of branching logic).
 def fieldConditions(field_name, metadata):
-    if (metadata[field_name].branching_logic != None):
+    fields_changed = ['chd', 'ahd', 'infcard', 'ipfo', 'aneury', 'csurg', 'carcath', 'cath', 'ecls', 'vad', 'vadt', 'dissprov', 'moyaprov', 'fcaprov', 'vascprov', 'artoth', 'cervess', 'cervessp', 'larves', 'smalves', 'smalvesp', 'inflam', 'malig', 'ldisea', 'lupus', 'renaldis', 'othchr', 'dehyd', 'anoxia', 'neohie', 'bilrubin', 'drugtox', 'acidos', 'acilloth', 'othsurg', 'endoinst', 'mdiab', 'naus', 'phyinjdu', 'toxchem', 'comdel', 'oxysyn', 'memrup', 'secstag', 'matfev', 'posthem', 'chrioamn', 'shdysto', 'fepedyst', 'umbcor', 'intube', 'irrita', 'cnp', 'armweak', 'legweak', 'hyperto', 'hypoto', 'tortico', 'movdis', 'papill', 'behavabn', 'cogabn', 'adfeve', 'headach', 'chencep', 'failthr', 'respdif', 'handfist', 'earhapre', 'noproth', 'noclot', 'acyc_admi', 'etb', 'hemic', 'hemeva', 'ivd', 'vps', 'othns', 'hypo', 'aceta', 'immsup', 'oxsup', 'othert']
+
+    if ((metadata[field_name].branching_logic != None) and (field_name.split('___')[0] in fields_changed)):
         check_field = True
     else:
         check_field = False
     return check_field
 
 # Define the function which performs the actual check.
-#def checkFunction(row_index, field_name, def_field, metadata, records, form_repetition_map):
 def checkFunction(row_index, field_name, def_field, metadata, records, record_id_map, repeating_forms_events, form_repetition_map):
     element_bad = False # Assume good until flaw found.
 
@@ -82,3 +85,4 @@ def checkFunction(row_index, field_name, def_field, metadata, records, record_id
 #print "WARNING: SKIPPING CHECK FOR DATA STORED IN FIELDS HIDDEN BY BRANCHING LOGIC, BECAUSE IT IS CRASHING IN VIPS FOR AN UNKNOWN REASON."
 checklist.append(Check(name, description, report_forms, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction))
 del name, description, inter_project, whole_row_check, check_invalid_entries, inter_record, inter_row, specify_fields, target_fields, rowConditions, fieldConditions, checkFunction
+
