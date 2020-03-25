@@ -1,3 +1,4 @@
-{"api_key_path":"/home/sufkes/redcap_directory/api_keys.json",
- "logging_path":"/home/sufkes/redcap_directory/logs",
- "out_path":"/home/sufkes/redcap_directory/out"}
+{"api_key_path":"/Users/steven ufkes/redcap_directory/api_keys.json",
+ "logging_path":"/Users/steven ufkes/redcap_directory/logs",
+ "default_api_url":"https://redcapexternal.research.sickkids.ca/api/",
+ "default_out_dir":"/Users/steven ufkes/redcap_directory/out"}

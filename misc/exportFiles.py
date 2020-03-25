@@ -149,4 +149,4 @@ Parameters:
                         os.makedirs(full_out_dir)
 
                 # Export the file.
-o                exportFile(full_out_dir, api_url, api_key, record, event, instance, field, prefix=prefix)
+                exportFile(full_out_dir, api_url, api_key, record, event, instance, field, prefix=prefix)

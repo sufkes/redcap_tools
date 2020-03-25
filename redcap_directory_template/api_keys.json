@@ -1,58 +1,58 @@
-{"2401":{"name":"Vascular Effects of Infection in Pediatric Stroke - VIPS II",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+{"vips2":{"title":"Vascular Effects of Infection in Pediatric Stroke - VIPS II",
+	  "url":"https://redcapexternal.research.sickkids.ca/api/",
+	  "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "2711":{"name":"IPSS 1992-2014 Archive",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "ipss_arch":{"title":"IPSS 1992-2014 Archive",
+	      "url":"https://redcapexternal.research.sickkids.ca/api/",
+	      "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "3048":{"name":"SIPS II EEG Analysis_V6",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "sips2_eeg":{"title":"SIPS II EEG Analysis_V6",
+	      "url":"https://redcapexternal.research.sickkids.ca/api/",
+	      "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "3091":{"name":"International Paediatric Stroke Study [NEW]_V3",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "ipss_v3":{"title":"International Paediatric Stroke Study [NEW]_V3",
+	    "url":"https://redcapexternal.research.sickkids.ca/api/",
+	    "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "3513":{"name":"The Safety of Antithrombotic Therapy in Paediatric Cardioembolic Stroke - V3 - Final",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "satpcs":{"title":"The Safety of Antithrombotic Therapy in Paediatric Cardioembolic Stroke - V3 - Final",
+	   "url":"https://redcapexternal.research.sickkids.ca/api/",
+	   "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "3249":{"name":"Seizures in Pediatric Stroke - SIPS I",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "sips1":{"title":"Seizures in Pediatric Stroke - SIPS I",
+	  "url":"https://redcapexternal.research.sickkids.ca/api/",
+	  "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "3293":{"name":"Seizures in Pediatric Stroke - SIPS II _V2",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "sips2_v2":{"title":"Seizures in Pediatric Stroke - SIPS II _V2",
+	     "url":"https://redcapexternal.research.sickkids.ca/api/",
+	     "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "3767":{"name":"Impairments in Swallowing, Speech and Language after Stroke_v3",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
-
- "4043":{"name":"IPSS Neuroimaging Screening Form",
-	 "url":"https://redcapexternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "issls":{"title":"Impairments in Swallowing, Speech and Language after Stroke_v3",
+	  "url":"https://redcapexternal.research.sickkids.ca/api/",
+	  "key":"PUT_YOUR_API_TOKEN_HERE"},
+ 
+ "ipss_neuro":{"title":"IPSS Neuroimaging Screening Form",
+	       "url":"https://redcapexternal.research.sickkids.ca/api/",
+	       "key":"PUT_YOUR_API_TOKEN_HERE"},
 
 
 
  
- "1839":{"name":"Stroke Program Patient Tracker (PHI)",
-	 "url":"https://redcapinternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "sppt_phi":{"title":"Stroke Program Patient Tracker (PHI)",
+	     "url":"https://redcapinternal.research.sickkids.ca/api/",
+	     "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "2053":{"name":"Paediatric Stroke Outcome Measure",
-	 "url":"https://redcapinternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "psom_v1":{"title":"Paediatric Stroke Outcome Measure",
+	    "url":"https://redcapinternal.research.sickkids.ca/api/",
+	    "key":"PUT_YOUR_API_TOKEN_HERE"},
 
- "2438":{"name":"Paediatric Stroke Outcome Measure (PSOM) V2",
-	 "url":"https://redcapinternal.research.sickkids.ca/api/",
-	 "key":"PUT_YOUR_API_TOKEN_HERE"},
+ "psom_v2":{"title":"Paediatric Stroke Outcome Measure (PSOM) V2",
+	    "url":"https://redcapinternal.research.sickkids.ca/api/",
+	    "key":"PUT_YOUR_API_TOKEN_HERE"},
 
  
  
  
- "862":{"name":"PSOM Clinical Patients ONLY",
-	"url":"https://staffsurveys.sickkids.ca/api/",
-	"key":"PUT_YOUR_API_TOKEN_HERE"}
+ "psom_clin":{"title":"PSOM Clinical Patients ONLY",
+	      "url":"https://staffsurveys.sickkids.ca/api/",
+	      "key":"PUT_YOUR_API_TOKEN_HERE"}
 }
