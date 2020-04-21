@@ -27,7 +27,7 @@ Returns
 """
         # Verify that the settings.json file exists
         if (not os.path.exists(self.settings_path)):
-            warnings.warn("Settings file not found at path '"+self.settings_path+"'. Copy the file <installation directory>/settings_template.json, to <installation directory>/settings.json and enter appropatiate values in settings.json.")
+            warnings.warn("Settings file not found at path '"+str(self.settings_path)+"'. Copy the file <installation directory>/settings_template.json, to <installation directory>/settings.json and enter appropatiate values in settings.json.")
 
             # If no settings.json file exists in the installation directory, set the values of the settings fields to None, but set the default API url to that stored in settings_template.json.
             with open(self.settings_template_path, 'r') as handle:
@@ -104,8 +104,8 @@ parser : argparse.ArgumentParser object
             raise Exception('If an API key is specified, must also specify an API URL.')
     
         # If user specifed an API URL and token, find the code name for the project, if it exists.
-        msg_api_key_path_not_found = "Path to API keys file does not exist: '"+api_key_path+"'"
-        msg_code_name_not_found = "Code name corresponding to input (API URL, API token) not found in '"+api_key_path+"'. Returning code_name=None"
+        msg_api_key_path_not_found = "Path to API keys file does not exist: '"+str(api_key_path)+"'"
+        msg_code_name_not_found = "Code name corresponding to input (API URL, API token) not found in '"+str(api_key_path)+"'. Returning code_name=None"
         if ((not api_key is None) and (not api_url is None)):
             if (not os.path.exists(api_key_path)):
                 warnings.warn(msg_api_key_path_not_found)
@@ -135,7 +135,7 @@ parser : argparse.ArgumentParser object
                 api_url = api_map[code_name]['url']
                 api_key = api_map[code_name]['key']
             except KeyError:
-                raise Exception("Code name '"+code_name+"' does not appear in '"+api_key_path+"'.")
+                raise Exception("Code name '"+str(code_name)+"' does not appear in '"+str(api_key_path)+"'.")
 
             return api_url, api_key, code_name
 
@@ -146,7 +146,7 @@ if (__name__ == '__main__'):
     code_name_list = sys.argv[1:]
     for code_name in code_name_list:
         api_url, api_key, code_name_ret = api_settings.getApiCredentials(code_name=code_name)
-        print "code name: "+code_name
-        print "code_name: "+code_name_ret
-        print "API URL  : "+api_url
-        print "API token: "+api_key
+        print "code name: "+str(code_name)
+        print "code_name: "+str(code_name_ret)
+        print "API URL  : "+str(api_url)
+        print "API token: "+str(api_key)
