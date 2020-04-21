@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
+# Standard modules
 import os, sys 
 import argparse
 
-import redcap
+# My modules in current directory
+from ApiSettings import ApiSettings
+
+# Other modules
+import redcap # PyCap
 
 def exportUsers(api_url, api_key, format='csv'):
     """export users from REDCap project
@@ -23,22 +28,18 @@ def exportUsers(api_url, api_key, format='csv'):
 
     return users
 
-if (__name__ == '__main__'): 
+if (__name__ == '__main__'):
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    
     description = """Export users from REDCap project."""
     parser = argparse.ArgumentParser(description=description)
 
     ## Define positional arguments.
-    parser.add_argument("api_key", help="API key of the project from which you wish to export data")
     parser.add_argument("out_path", help="file path to write the data to")
 
-    ## Define optional arguments.
-#    parser.add_argument("-q", "--quiet", help="do not print export progress. Default: False", action="store_true")
-    
-    # API URL argument (API URL determines the REDCap instance from which data will be exported. E.g. External (default), internal, Staff Surveys, or a specified URL.
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("-u", "--api_url", help="API URL. Default: 'https://redcapexternal.research.sickkids.ca/api/'", default="https://redcapexternal.research.sickkids.ca/api/")
-    group.add_argument("--int", help="set api_url to the SickKids internal REDCap API URL.", action='store_true')
-    group.add_argument("--stf", help="set api_url to the SickKids Staff Surveys (AKA clinical) REDCap API URL.", action='store_true')
+    ## Define keyword arguments.
+    # Add arguments for API URL, API key, and code name of project used to retreive these.
+    parser = api_settings.addApiArgs(parser) # Adds args "-n", "--code_name", "-k", "--api_key", "-u", "--api_url" to the argument parser.
 
     # Print help message if no args input.
     if (len(sys.argv) == 1):
@@ -48,8 +49,11 @@ if (__name__ == '__main__'):
     # Parse arguments.
     args = parser.parse_args()
 
+    # Determine the API URL and API token based on the users input and api_keys.json file.
+    api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
+    
     # Get users
-    users = exportUsers(args.api_url, args.api_key, format='csv')
+    users = exportUsers(api_url, api_key, format='csv')
 
     # Save users string to csv file.
     with open(args.out_path, 'wb') as handle:

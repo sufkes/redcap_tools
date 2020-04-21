@@ -95,7 +95,8 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
     maximum number of cells that will be exported before resorting to the chunked export method can be 
     set in the 'chunk_thres' parameter."""
 
-    warnings.warn('exportRecords() may return a different number of rows depending on what variables are requested. The number of rows may differ depending on whether export_form_completion = True or False.')
+    #warnings.warn('exportRecords() may return a different number of rows depending on what variables are requested. The number of rows may differ depending on whether export_form_completion = True or False.')
+    ### NOTE: exportRecords() may return a different number of rows depending on what variables are requested. The number of rows may differ depending on whether export_form_completion=True/False.
     
     # Load project.
     project = redcap.Project(api_url, api_key)
@@ -289,9 +290,11 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
 
 ## Use function as a command-line tool.
 if (__name__ == '__main__'):
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    
     ## Create argument parser.
     description = """Export records from a REDCap project to a csv file. By default, all records, fields, and events are exported. Use optional arguments to export data for only certain records, fields, or 
-events."""
+events. User must provide either a project API key or a project code name, not both."""
     parser = argparse.ArgumentParser(description=description)
 
     ## Define positional arguments.
@@ -299,7 +302,6 @@ events."""
 
     ## Define keyword arguments.
     # Add arguments for API URL, API key, and code name of project used to retreive these.
-    api_settings = ApiSettings() # Create instance of ApiSettings class.
     parser = api_settings.addApiArgs(parser) # Adds args "-n", "--code_name", "-k", "--api_key", "-u", "--api_url" to the argument parser.
         
     parser.add_argument("-r", "--records", help="list of records to export. Default: Export all records.", nargs="+", metavar=("ID_1", "ID_2"))
@@ -320,12 +322,11 @@ events."""
     args = parser.parse_args()
     
     # Determine the API URL and API token based on the users input and api_keys.json file.
-    api_url, api_key = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
+    api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
     
     # Export records.
     records = exportRecords(api_url, api_key, record_id_list=args.records, events=args.events, fields=args.fields, forms=args.instruments, export_form_completion=args.export_form_completion, quiet=args.quiet, format='csv', label=args.label, label_overwrite=args.label_overwrite)
     
-    # Save string to csv file. This saves in the same format as a REDCap export, except that the completion
-    # state of each form is excluded.
+    # Save string to csv file.
     with open(args.out_path, 'wb') as handle:
         handle.write(records)

@@ -5,6 +5,8 @@ import os
 class Color:
    if (os.name == 'posix'): # If operating system looks like Mac or Linux.
         bold = '\033[1m'
+        underline = '\033[4m'
+
         blue = '\033[94m'
         red ='\033[31m'
         green ='\033[32m'

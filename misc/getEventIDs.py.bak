@@ -1,9 +1,9 @@
 import warnings
-def getEventIDs(unique_event_name, project_info):
+def getEventIDs(api_url, api_key, unique_event_name):
     project_id = project_info["project_id"]
 
     warnings.warn('Need to add event_id numbers for IPSS V4. To do this, access the "acute_arm_1" and "followup_arm_1" events online, look in the address bar for the "event_id" number, and add those numbers to the appropriate lines below.')
-    warnings.warn('These should be put in a json file and read in, instead of having the mapping inside the script itself.')
+    warnings.warn('These should be put in a json file and read in, instead of having the mapping inside the script itself. The script must also not use project IDs, which are unique within a given instance of REDCap, but are not unique between instances.')
     warnings.warn('URLs should be generated using the REDCap version number exported from the API call.')
     
     # IPSS V3 mapping

@@ -38,8 +38,6 @@ from misc.createRecordIDMap import createRecordIDMap
 from misc.getDAGs import getDAGs
 from misc.createDAGRecordMap import createDAGRecordMap
 from misc.Color import Color
-import ipss
-from ipss.getIPSSIDs import getIPSSIDs
 
 # Parse arguments.
 if (len(sys.argv) == 2): # if args are provided in file
@@ -116,8 +114,10 @@ forms = exportFormsOrdered(api_url, api_key)
 # events the form is non-repeating, indpendently repeating, or dependently repeating.
 form_repetition_map = createFormRepetitionMap(project_longitudinal, project_repeating, form_event_mapping, repeating_forms_events, forms)
 
+
 # Gather data about each variable.
 metadata = parseMetadata(def_field, project_info, project_longitudinal, project_repeating, events, metadata_raw, form_event_mapping, repeating_forms_events, forms, form_repetition_map)
+
 
 # Load all records.
 # LOAD IPSS RECORDS FROM FILE (DEBUG MODE)
@@ -131,8 +131,7 @@ if load_records_from_file:
     e = time.time()
     print "loadRecords():"+"{:.3g}".format(e-s)+"s"
 else:
-    record_ids_vips_enrolled = getIPSSIDs(db='vips2', inc_non_vips_enrolled=False)
-    records = exportRecords(api_url, api_key, record_id_list=record_ids_vips_enrolled)
+    records = exportRecords(api_url, api_key)
 #    records = records[:500] # select subset of records for tests.
     if save_records_to_file:
         print "saveRecords()"
@@ -153,7 +152,7 @@ print "isProjectCompatible(): "+"{:.3g}".format(e-s)+"s"
 #    sys.exit()
 
 
-# Generate a non redundant list of record IDs. 
+# Generate a dictionary with record IDs as keys and a list of row numbers corresponding to that record as values.
 print "getRecordIDs()"
 s= time.time()
 # CHANGE NAME TO record_id_map

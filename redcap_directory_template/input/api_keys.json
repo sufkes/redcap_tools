@@ -34,6 +34,9 @@
 	       "url":"https://redcapexternal.research.sickkids.ca/api/",
 	       "key":"PUT_YOUR_API_TOKEN_HERE"},
 
+ "ipss_v4":{"title":"International Paediatric Stroke Study V4",
+	    "url":"https://redcapexternal.research.sickkids.ca/api/",
+	    "key":"PUT_YOUR_API_TOKEN_HERE"},
 
 
  
@@ -54,5 +57,9 @@
  
  "psom_clin":{"title":"PSOM Clinical Patients ONLY",
 	      "url":"https://staffsurveys.sickkids.ca/api/",
-	      "key":"PUT_YOUR_API_TOKEN_HERE"}
+	      "key":"PUT_YOUR_API_TOKEN_HERE"},
+
+ "npsych":{"title":"NPsych Database",
+	   "url":"https://staffsurveys.sickkids.ca/api/",
+	   "key":"PUT_YOUR_API_TOKEN_HERE"}
 }

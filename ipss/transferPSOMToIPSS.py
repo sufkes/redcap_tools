@@ -21,18 +21,12 @@ import misc
 from misc.exportRecords import exportRecords
 from misc.importRecords import importRecords
 from misc.getRecordIDList import getRecordIDList
+from misc.ApiSettings import ApiSettings
 
 #### Read API keys and URLS from file, to be used as the default arguments for this command line function.
-with open(api_url_key_list_path, 'r') as fh:
-    try:
-        api_pairs = [(p.split()[0], p.split()[1]) for p in fh.readlines() if (p.strip() != "") and (p.strip()[0] != "#")] # separate lines by spaces; look only at first two items; skip whitespace lines.
-    except IndexError:
-        print "Error: cannot parse list of API (url, key) pairs. Each line in text file must contain the API url and API key for a single project separated by a space."
-        sys.exit()
-url_psom2_default = api_pairs[5][0]
-key_psom2_default = api_pairs[5][1]
-url_ipss4_default = api_pairs[6][0]
-key_ipss4_default = api_pairs[6][1]
+api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+url_psom2_default, key_psom2_default, code_name_psom2_default = api_settings.getApiCredentials(code_name="psom_v2")
+url_ipss4_default, key_ipss4_default, code_name_ipss4_default = api_settings.getApiCredentials(code_name="ipss_v4")
 
 #### Define function which transfers data from PSOM V2 to IPSS V4.
 def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, url_ipss=url_ipss4_default, key_ipss=key_ipss4_default, import_non_ipss_ids=False):
@@ -74,8 +68,6 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
         # - All PSOM V2 summary of impressions (from any event), which have a blank 'fuionset_soi' date will be excluded from IPSS V4. 
 
         #### Perform record-specific modifications to a few records. Ideally, there will be nothing in this section.
-        warnings.warn("Need to fix problems with the acute hospitalization event for records 1554, 1804, 20608.")
-        warnings.warn("Should delete all Summary of Impressions data for SickKids patients before importing.")
         
         #### Remove data from PSOM which will not be imported into IPSS V4.
         ## Remove all rows (any event) which do not have a PSOM assessment date.
@@ -96,7 +88,7 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
                 if (id in record_ids_ipss):
                     from_psom_after_exclusions.append(row)
                 elif (not id in excluded_ids): # if excluded ID has not already been identified and a warning printed.
-                    warnings.warn("IPSSID not found in IPSS, not importing this patient's data: " + id)
+                    #warnings.warn("IPSSID not found in IPSS, not importing this patient's data: " + id)
                     excluded_ids.add(id)
             from_psom = from_psom_after_exclusions
         
@@ -169,7 +161,8 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
                             'othsens':'senssp',
                             'fpsomco___1':'psomcog___1',
                             'fpsomco___2':'psomcog___2',
-                            'totpsom':'psomscr'
+                            'totpsom':'psomscr',
+                            'summary_of_impressions_complete':'summary_of_impressions_complete'
                             }
 
         ## Create functions which perform the many-to-one mappings.
@@ -290,13 +283,13 @@ def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, u
         return to_ipss
     
     ## Export Summary of Impressions data from PSOM.
-    from_psom = exportRecords(url_psom, key_psom, fields=None, forms=None, quiet=True)
+    from_psom = exportRecords(url_psom, key_psom, fields=None, forms=None, quiet=True, export_form_completion=True)
 
     ## Map the PSOM data to IPSS fields.
     to_ipss = modifyRecords(from_psom, url_ipss, key_ipss, import_non_ipss_ids=import_non_ipss_ids)
 
     ## Import data to IPSS.
-    importRecords(url_ipss, key_ipss, to_ipss, overwrite='overwrite', quick=True)
+    importRecords(url_ipss, key_ipss, to_ipss, overwrite='overwrite', quick=True, return_content='count')
 
     return
 

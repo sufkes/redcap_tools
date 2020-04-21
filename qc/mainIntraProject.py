@@ -85,7 +85,7 @@ project_repeating = bool(project_info["has_repeating_instruments_or_events"])
 
 
 # Load list of events
-events = getEvents(project, project_info, project_longitudinal)
+events = getEvents(api_url, api_key)#project, project_info, project_longitudinal)
 if (not events == None):
     for event in events:
         event_id = events[event]["event_id"]
@@ -200,3 +200,39 @@ s = time.time()
 saveData(out_dir, project, forms, project_info, metadata, record_id_map, dags_used, dags, check_results)
 e = time.time()
 print "saveData(): "+"{:.3g}".format(e-s)+"s"
+
+
+if (__name__ == '__main__'):
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    
+    ## Create argument parser.
+    description = """Export records from a REDCap project to a csv file. By default, all records, fields, and events are exported. Use optional arguments to export data for only certain records, fields, or 
+events. User must provide either a project API key or a project code name, not both."""
+    parser = argparse.ArgumentParser(description=description)
+
+    ## Define positional arguments.
+    parser.add_argument("out_path", help="file path to write the data to")
+
+    ## Define keyword arguments.
+    # Add arguments for API URL, API key, and code name of project used to retreive these.
+    parser = api_settings.addApiArgs(parser) # Adds args "-n", "--code_name", "-k", "--api_key", "-u", "--api_url" to the argument parser.
+        
+    parser.add_argument("-r", "--records", help="list of records to export. Default: Export all records.", nargs="+", metavar=("ID_1", "ID_2"))
+    parser.add_argument("-e", "--events", help="list of events to export. Note that an event's name may differ from the event's label. For example, and event with label 'Acute' may have name 'acute_arm_1'. Default: Export all events.", nargs="+", metavar=("event_1", "event_2"))
+    parser.add_argument("-f", "--fields", help="list of fields to export. Default: export all fields. To export checkbox fields, specify the base variable name (e.g. 'cb_var' instead of 'cb_var___1', 'cb_var___2', ...)", nargs="+", metavar=("field_1", "field_2"))
+    parser.add_argument("-i", "--instruments", help="list of data instrument names to export. Note that an instrument's name (shown in the data dictionary) may differ from an instrument's label (shown in the Online Designer). Default: export all instruments.", nargs="+", metavar=("form_1", "form_2"))
+    parser.add_argument("-c", "--export_form_completion", help="export the fields which store the completion state of a form for the specific forms requested, or for all forms if specific fields or forms are not requested. Default: False", action="store_true")
+    parser.add_argument("-q", "--quiet", help="do not print export progress. Default: False", action="store_true")
+    parser.add_argument("-l", "--label", help="label cells as HIDDEN or INVALID if hidden by branching logic or invalid (event, form, instance) combinations. Warning: this is still experimental.", action="store_true")
+    parser.add_argument("-o", "--label_overwrite", help="if the -l --label option is specified, using this option will overwrite fields containing entries with labels.", action="store_true")
+
+    # Print help message if no args input.
+    if (len(sys.argv) == 1):
+        parser.print_help()
+        sys.exit()
+    
+    # Parse arguments.
+    args = parser.parse_args()
+    
+    # Determine the API URL and API token based on the users input and api_keys.json file.
+    api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)

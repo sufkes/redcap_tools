@@ -1,4 +1,7 @@
-{"api_key_path":"/Users/steven ufkes/redcap_directory/api_keys.json",
- "logging_path":"/Users/steven ufkes/redcap_directory/logs",
- "default_api_url":"https://redcapexternal.research.sickkids.ca/api/",
- "default_out_dir":"/Users/steven ufkes/redcap_directory/out"}
+{"default_api_url":"https://redcapexternal.research.sickkids.ca/api/",
+ 
+ "api_key_path":"/Users/steven ufkes/redcap_directory/input/api_keys.json",
+ "event_ids_path":"/Users/steven ufkes/redcap_directory/input/event_ids.json",
+ "logging_path":"/Users/steven ufkes/redcap_directory/input/logs",
+ 
+ "default_backups_dir":"/Users/steven ufkes/redcap_directory/output/backups"}

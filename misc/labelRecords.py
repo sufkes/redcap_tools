@@ -49,8 +49,9 @@ def labelRecords(api_url, api_key, records_all, records_requested, all_requested
     project_repeating = bool(project_info["has_repeating_instruments_or_events"])
         
     # Load list of events
-    events = getEvents(project, project_info, project_longitudinal)
-
+    #events = getEvents(project, project_info, project_longitudinal)
+    events = getEvents(api_url, api_key)
+    
     # Load raw data dictionary.
     metadata_raw = project.export_metadata()
     

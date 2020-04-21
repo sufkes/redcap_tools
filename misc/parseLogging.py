@@ -1,20 +1,12 @@
 #!/usr/bin/env python
 
+# Standard modules
 import os, sys
 import pandas
 import argparse
 
-## SAMPLES ##
-# Action                                       List of Data Changes OR Fields Exported
-# Updated Record 13953-11 (Acute)              Assign record to Data Access Group (redcap_data_access_group = 'utsw')
-# Updated Record 20914 (Follow-up)             Assign record to Data Access Group ([instance = 2], redcap_data_access_group = 'hsc')
-# Created Record 13953-11 (Acute)              dateentered = '2019-04-09', admityes = '1', daent = '2019-04-07', gender = '2', birmont = '3', biryear = '2012', patient_information_complete = '0', ipssid = '13953-11'
-# Updated Record (import) 20425 (Follow-up)    ipssid = '20425'
-# Updated Record (import) 20391 (Follow-up)    [instance = 3], harel = ''
-# Updated Record 1674 (Acute)                  pstrtrea = '2', asttpa = '1', tpatype(2) = checked, tparevas = '1', revassp(1) = checked, tpadose = '2', tpacaths = '04:00', tpainjst = '04:47', tpainjen = '05:10', tpamicro = '7', tpacathwi = '06:30', tpadescr = '"The left ICA injection at the end of the procedure indicated no flow through the terminal L ICA and L MCA M1 segment, despite earlier opening and hopefully, the nonfilling was due to a combination of residual clot and vasospasm."', recanres = '3', tpatime = '1', treatment_complete = '0'
-# Updated Record (API) 17                      record_id = '17'
-# Updated Record 14021-3 (Confirmation and Tracking - Arm 1: Cases)    enrolldate = '2019-04-05', img_silc = '1', img_ucsf = '1'
-
+# My modules in current directory
+from ApiSettings import ApiSettings
 
 def separateDate(column_time_date):
     return column_time_date.split()[0]
@@ -105,30 +97,42 @@ def parseChanges(column_changes):
     return changes
 
 def selectChanges(column_changes_dict, field_name):
-    select_changes = {}
+#    select_changes = {}
+    select_changes = ''
     for key, value in column_changes_dict.iteritems():
         if (field_name == key) or (field_name + '___' in key):
-            select_changes[key] = value
-    select_changes = str(select_changes).lstrip("{").rstrip("}")
+            #select_changes[key] = value
+            select_changes = key+" = '"+value+"'"
+#    select_changes = str(select_changes).lstrip("{").rstrip("}")
+#    select_changes_split = select_changes.split(':')
+#    try:
+#        field_name_substring = select_changes_split[0].lstrip("u").strip("'")
+#        field_value_substring = select_changes_split[1].lstrip("u").strip("'")
+#    except:
+#        print key, value
+#    select_changes = ':'.join([field_name_substring, field_value_substring])
     return select_changes
 
-def createReport(logs, record=None, field=None, out_path=None, quiet=False):
+def createReport(log_paths, records=None, fields=None, out_path=None, quiet=False):
     """
     Parameters:
-        logs: a list of paths to REDCap logging data stored in CSV (UTF-8).
+        log_paths: a list of paths to REDCap logging data stored in CSV (UTF-8).
     Returns:
         report_df: a summary of the data history;
     """
 
-    # Load logs and put them all in a single dataframe.
+    # Load log_paths and put them all in a single dataframe.
     log_df = pandas.DataFrame()
     log_num = 1
-    for sublog_path in logs:
+    for sublog_path in log_paths:
         # I can't find an authorative statement about what encoding the logging file is. REDCap says that import data must be encoded in UTF-8. When I export Logging from IPSS V3, I get a utf-8 decoding error for byte 95.
-        try:
-            sublog_df = pandas.read_csv(sublog_path, dtype=unicode, encoding='utf-8').fillna('')
-        except UnicodeDecodeError:
-            raise Exception("Cannot decode logging file '"+sublog_path+"' using utf-8 encoding. One way to fix this is by opening the logging file in Excel, and select the File Format: CSV UTF-8 (Comma delimited) (.csv)")
+        if (os.path.exists(sublog_path)):
+            try:
+                sublog_df = pandas.read_csv(sublog_path, dtype=unicode, encoding='utf-8').fillna('')
+            except UnicodeDecodeError:
+                raise Exception("Cannot decode logging file '"+sublog_path+"' using utf-8 encoding. One way to fix this is by opening the logging file in Excel, and select the File Format: CSV UTF-8 (Comma delimited) (.csv)")
+        else:
+            raise Exception("Log path does not exist: '"+sublog_path+"'")
         sublog_df['source'] = sublog_path
         sublog_df['log_num'] = log_num
         log_num += 1
@@ -161,55 +165,50 @@ def createReport(logs, record=None, field=None, out_path=None, quiet=False):
     # Generate report on requested record and field
     report_df = log_df.copy()
 
-    if (record != None):
-        report_df = report_df.loc[(report_df['record_id']==record), :]
+    if (records != None):
+        report_df = report_df.loc[report_df['record_id'].isin(records), :]
 
-    if (field != None):
-        report_df['change_requested'] = report_df['change_dict'].apply(selectChanges, args=(field,))
-        report_df = report_df.loc[(report_df['change_requested'] != ''), :]
+    if (fields != None):
+        # Add a column for each requested field.
+        for field in fields:
+            report_df[field] = report_df['change_dict'].apply(selectChanges, args=(field,))
+
+        # Remove all rows not corresponding to changes in the requested fields.
+        report_df = report_df.loc[(report_df[fields]!='').any(axis=1), :]
 
         
     # Reorder columns.
-    if (field != None):
-        report_df = report_df[['log_num', 'date', 'time', 'record_id', 'event', 'instance', 'Username', 'Action', 'Changes', 'change_requested']]
+    if (fields != None):
+        report_df = report_df[['log_num', 'source', 'date', 'time', 'record_id', 'event', 'instance', 'Username', 'Action', 'Changes'] + fields]
     else:
-        report_df = report_df[['log_num', 'date', 'time', 'record_id', 'event', 'instance', 'Username', 'Action', 'Changes']]
+        report_df = report_df[['log_num', 'source', 'date', 'time', 'record_id', 'event', 'instance', 'Username', 'Action', 'Changes']]
 
     # Print some stuff to console.
     if (not quiet):
-        cols_to_print = ['record_id', 'log_num', 'date', 'time', 'event', 'instance', 'Username']
-        if (field != None):
-            cols_to_print.append('change_requested')
-        else:
-            cols_to_print.append('Changes')
-        print report_df[cols_to_print]    
+        print report_df
+#        cols_to_print = ['record_id', 'log_num', 'date', 'time', 'event', 'instance', 'Username']
+#        if (fields != None):
+#            cols_to_print.extend(fields)
+#        else:
+#            cols_to_print.append('Changes')
+#        print report_df[cols_to_print]    
 
     if (out_path != None):
-#        writer = pandas.ExcelWriter(out_path, engine='xlsxwriter')
-#        writer = pandas.ExcelWriter(out_path)
         writer = pandas.ExcelWriter(out_path, engine='openpyxl')
         report_df.to_excel(writer, encoding='utf-8', index=False)
         writer.close()
     
-
-#    print report_df
-#    print log_df.loc[log_df['change_dict'] != '', :]
-#    lookat = range(10)
-#    lookat = log_df.loc[(log_df['record_id']=='20070'),:].index
-#    for ii in lookat:
-#        print
-#        print "EXAMPLE "+str(ii)+" (ID: "+log_df.loc[ii, 'record_id']+", source: "+log_df.loc[ii, 'source']+")"+":"
-#        print log_df.loc[ii,'Changes']
-#        print log_df.loc[ii,'change_dict']
     return report_df
 
 
 #### Execute main function if script is called directly.
 if (__name__ == '__main__'):
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    
     # Create argument parser.
     description = """
     Returns:
-        A summary of the data history entries in the specified REDCap logs. The data history query can be limited to a specific record and/or field. The returned summary can be saved by specifying an output path.
+        A summary of the data history entries in the specified REDCap logs. The data history query can be limited to specifics record and/or fields. The returned summary can be saved by specifying an output path.
     """
     
     # Create argument parser.
@@ -218,15 +217,29 @@ if (__name__ == '__main__'):
     # Define positional arguments.
     
     # Define optional arguments.
-    default_logs = ['/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V1_Logging_2019-04-10_0901.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V2_Logging_2019-04-10_0900.csv', '/Users/steven ufkes/Documents/stroke/ipss/logs/IPSS_V3_Logging_2020-03-16_1108.csv']
-    parser.add_argument('-l', '--logs', action='store', type=str, nargs='*', help='paths to logs to be parsed. If multiple paths are specified, the logs will be concatenated and treated as a single log. If logs correspond to different versions of a REDCap project, list the logs in order of version number (i.e. most recent version last).', default=default_logs, metavar=('LOG_PATH_1,', 'LOG_PATH_2'))
-    parser.add_argument('-r', '--record', action='store', type=str, help='name of record to query', metavar='RECORD_ID')
-    parser.add_argument('-f', '--field', action='store', type=str, help='name of field to query')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-l', '--log_paths', action='store', type=str, nargs='*', help='paths to logs to be parsed. If multiple paths are specified, the logs will be concatenated and treated as a single log. If logs correspond to different versions of a REDCap project, list the logs in order of version number (i.e. most recent version last).', metavar=('LOG_PATH_1,', 'LOG_PATH_2'))
+    group.add_argument('-n', '--code_name', help="If this option is used, all CSV files in the directory '"+os.path.join(api_settings.settings['logging_path'], 'CODE_NAME')+"' will be assumed to be logging CSV files, and this script will parse them all together.", type=str)
+    group.add_argument('-d', '--logs_dir', help="Path to directory containing log files. If this option is used, all CSV files in the specified directory will be assumed to be logging CSV files, and this script will parse them all together.", type=str)
+    parser.add_argument('-r', '--records', help='record IDs to query', action='store', type=str, nargs="+", metavar=("ID_1", "ID_2"))
+    parser.add_argument('-f', '--fields', help='fields to query', action='store', type=str, nargs="+", metavar=("FIELD_1", "FIELD_2"))
     parser.add_argument('-o', '--out_path', action='store', type=str, help='path to save report to. If none specified, report will not be saved.')
     parser.add_argument('-q', '--quiet', action='store_true', help='do not print report to screen')
     
     # Parse arguments.
     args = parser.parse_args()
 
+    # Build list of paths to logs to parse.
+    if (not args.log_paths is None):
+        log_paths = args.log_paths
+    elif (not args.logs_dir is None):
+        log_paths = [os.path.join(args.logs_dir, name) for name in os.listdir(args.logs_dir) if name.endswith(".csv")]
+        log_paths.sort()
+    elif (not args.code_name is None):
+        logs_dir = os.path.join(api_settings.settings['logging_path'], args.code_name)
+        log_paths = [os.path.join(logs_dir, name) for name in os.listdir(logs_dir) if name.endswith(".csv")]
+        log_paths.sort()
+    print 'DEBUG: log_paths:', log_paths
+        
     # Generate report
-    createReport(logs=args.logs, record=args.record, field=args.field, out_path=args.out_path, quiet=args.quiet)
+    createReport(log_paths=log_paths, records=args.records, fields=args.fields, out_path=args.out_path, quiet=args.quiet)

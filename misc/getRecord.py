@@ -210,17 +210,17 @@ def getEventFieldInstance(row_number, required_event, required_field_name, requi
 
     return value
 
-def getEntryNLNR(record_id, field_name, records, record_id_map):
-    """Get specific value in records of a non-longitudinal, non-repeating project."""
-    return "PH(value)"
+#def getEntryNLNR(record_id, field_name, records, record_id_map):
+#    """Get specific value in records of a non-longitudinal, non-repeating project."""
+#    return
 
-def getEntryLNR(record_id, event, field_name, records, record_id_map):
-    """Get specific value in records of a longitudinal, non-repeating project."""
-    return "PH(value)"
+#def getEntryLNR(record_id, event, field_name, records, record_id_map):
+#    """Get specific value in records of a longitudinal, non-repeating project."""
+#    return
 
-def getEntryNLR(record_id, event, instance, field_name, records, record_id_map, form_repetition_map):
-    """Get specific value in records of a non-longitudinal, repeating project."""
-    return "PH(value)"
+#def getEntryNLR(record_id, event, instance, field_name, records, record_id_map, form_repetition_map):
+#    """Get specific value in records of a non-longitudinal, repeating project."""
+#    return
 
 def getEntryLR(record_id, event, instance, field_name, records, record_id_map, metadata, form_repetition_map):
     """Get specific value in records of a longitudinal, repeating project.

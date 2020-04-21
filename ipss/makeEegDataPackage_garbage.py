@@ -246,7 +246,7 @@ def addSheet(writer, df, sheet_name):
 #project_info_psom2 = exportProjectInfo(url_psom2, key_psom2)
 #project_longitudinal_psom2 = bool(project_info_psom2["is_longitudinal"])
 #project_repeating_psom2 = bool(project_info_psom2["has_repeating_instruments_or_events"])
-#events_psom2 = getEvents(project_psom2, project_info_psom2, project_longitudinal_psom2)
+#events_psom2 = getEvents(url_psom2, key_psom2)#project_psom2, project_info_psom2, project_longitudinal_psom2)
 #metadata_raw_psom2 = project_psom2.export_metadata()
 #form_event_mapping_psom2 = exportFormEventMapping(project_psom2, project_longitudinal_psom2)
 #repeating_forms_events_psom2 = exportRepeatingFormsEvents(url_psom2, key_psom2, project_repeating_psom2)

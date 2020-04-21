@@ -3,7 +3,7 @@ import redcap # PyCap
 from more_itertools import unique_everseen
 
 def getRecordIDList(api_url, api_key):
-    """Generate a complete, non-redundant list of record IDs in a REDCap project."""
+    """Generate a list of record IDs in a REDCap project, without duplicates."""
 
     def_field = redcap.Project(api_url, api_key).def_field
 

@@ -1,41 +1,23 @@
 #!/usr/bin/env python
-# This script backs up REDCap projects.
-
-# input a list of redcap project api keys and api urls. 
-# specify an output path.
-
-# directory structure:
-# /out_path/YYYY-MM-DD/<project_id>_<project_name>/<date>_<project_id>_<project_name?>_object
-
-# backup will consist of the following:
-# project XML without records
-# records in csv file
-# other stuff?
 
 # Standard modules
 import os, sys, argparse
+import json
 import datetime
 import warnings
-
-# Non-standard modules.
-#import redcap # PyCap
+from collections import OrderedDict
 
 # My modules in current directory
 from exportProjectXML import exportProjectXML
 from exportProjectInfo import exportProjectInfo
 from exportRecords import exportRecords
 from exportFiles import exportFiles
-
-# My scripts in other directories
 from Color import Color
-#from misc.exportFormEventMapping import exportFormEventMapping
-#from mexportRepeatingFormsEvents import exportRepeatingFormsEvents
-#from exportFormsOrdered import exportFormsOrdered
-#from createFormRepetitionMap import createFormRepetitionMap
+from ApiSettings import ApiSettings
 
-warnings.warn("This script does not back up uploaded files from 'file' fields.")
+warnings.warn("This script does not back up files uploaded to the File Repository.")
 
-def backup_project(api_url, api_key, date_dir, date_string, skip_files=False):
+def backupProject(api_url, api_key, date_dir, date_string, skip_files=False):
     """Create a backup of a REDCap project, including the """
     # Get project info.
     project_info = exportProjectInfo(api_url, api_key)
@@ -82,76 +64,85 @@ def backup_project(api_url, api_key, date_dir, date_string, skip_files=False):
 
     return
 
+def backupProjects(api_key_path, out_dir, code_name_list=None, modification_notes=None, timestamp=False, skip_files=False):
+    # Check that output directory exists.
+    if (not os.path.isdir(out_dir)):
+        while True:
+            cont = raw_input("Output directory '"+out_dir+"' does not exist. Create it? [y]/n? ")
+            if (cont.lower() in ['', "y", "yes"]):
+                os.makedirs(out_dir)
+                break
+            elif (cont.lower() in ["n", "no"]):
+                print "Quitting"
+                sys.exit()
+            else:
+                print "Unrecognized response. Please try again."
+                pass
+    
+    # Check that the json file containing the project API URLs and keys exists
+    if (not os.path.exists(api_key_path)):
+        raise ValueError("Input API key file '"+api_key_path+"' does not exist.")
+
+    # Create OrderedDict of projects to backup
+    with open(api_key_path, 'r') as handle:
+        projects_to_back_up = json.load(handle, object_pairs_hook=OrderedDict)
+
+    ## If a specific set of project code names was given, check that their keys exist, and remove all other projects from the OrderedDict.
+    if (not code_name_list is None):
+        # Check that each code_name appears in the json.
+        for code_name in code_name_list:
+            if (not code_name in projects_to_back_up.keys()):
+                raise ValueError("Requested project code name '"+code_name+"' not found in '"+api_key_path+"'")
+        # Remove code names which were not requested.
+        projects_to_back_up = OrderedDict([(code_name, projects_to_back_up[code_name]) for code_name in code_name_list])
+
+    # Create subdirectory for current date.
+    if (not timestamp):
+        date_string = datetime.datetime.today().strftime('%Y-%m-%d')
+    else:
+        date_string = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
+    date_dir = os.path.join(out_dir, date_string)
+    if (not os.path.isdir(date_dir)):
+        os.mkdir(date_dir)
+
+    # Save a message about the reason the backup is being performed in the date_dir.
+    modification_notes_path = os.path.join(date_dir, 'README.txt')
+    if (modification_notes is None):
+        modification_notes = str(raw_input("Please enter reason for performing backup. This entry will be written to '"+modification_notes_path+"' for future reference. (press RETURN to skip): "))
+    if (modification_notes != ''):
+        with open(modification_notes_path, 'wb') as handle:
+            handle.write(modification_notes)
+
+    # Loop over projects.
+    for code_name, api_info in projects_to_back_up.iteritems():
+        api_url = api_info['url']
+        api_key = api_info['key']
+
+        pid = str(exportProjectInfo(api_url, api_key)["project_id"])
+        
+        # Backup project
+        backupProject(api_url, api_key, date_dir, date_string, skip_files=args.skip_files)
+        
+    return
+
 if (__name__ == "__main__"):
+    # Create instance of ApiSettings class, containing default output directory, and default path to api_keys.json file.
+    api_settings = ApiSettings()
+        
     # Create argument parser.
-    description = "Back up a set of REDCap projects (Project XML, records)."
+    description = "Back up a set of REDCap projects (project XML, records, and files uploaded to 'file' fields)."
     parser = argparse.ArgumentParser(description=description)
 
     # Define optional arguments.
-    default_in_path = "/Users/steven ufkes/Documents/stroke/backups/project_list.txt"
-    default_out_dir = "/Users/steven ufkes/Documents/stroke/backups/"
-    parser.add_argument("-i", "--in_path", help="path to text file specifying projects to back up. File should contain 1 space-separated (API URL, API KEY) pair per line.", type=str, default=default_in_path)
-    parser.add_argument("-o", "--out_dir", help="path to output directory where backups will be saved", type=str, default=default_out_dir)
-    parser.add_argument("-m", "--modification_notes", action='store', type=str, help='Notes about why a backup is being performed. For example, if data is about to be imported into a project, the user should not the project which will be modified and what changes will be made, back up the project, and then perform the changes. ')
-    parser.add_argument("-p", "--pids", help="list of project IDs to back up. Default: Back up all projects in the list of projects.", nargs="+", metavar=("PID1", "PID2"))
-    parser.add_argument("-t", "--timestamp", help="include the time of day at which the backup was performed in the backup directory name. By default, on the date is used.", action='store_true')
-    parser.add_argument("-s", "--skip_files", help="do not back up files stored in File Upload fields. Note that the File Repository is not backed up regardless of this option", action='store_true')
-    
+    parser.add_argument("-a", "--api_key_path", type=str, help="path to json file containing API URLs and keys of projects to be backed up. Default: '"+api_settings.settings['api_key_path']+"'", default=api_settings.settings['api_key_path'])
+    parser.add_argument("-o", "--out_dir", help="path to output directory where backups will be saved. Default: '"+api_settings.settings['default_backups_dir']+"'", type=str, default=api_settings.settings['default_backups_dir'])
+    parser.add_argument("-n", "--code_name_list", help="list of code names of projects to back up. All code names provided must be present in the api_keys.json file.", nargs="+", metavar=("code_name_1","code_name_2"))
+    parser.add_argument("-m", "--modification_notes", action='store', type=str, help='Notes about why a backup is being performed. For example, if a project is about to be modified, the user should note the project to be modified and what changes will be made, back up the project, and then perform the changes.')
+    parser.add_argument("-t", "--timestamp", help="include the time of day at which the backup was performed in the backup directory name. By default, only the date is used.", action='store_true')
+    parser.add_argument("-s", "--skip_files", help="do not back up files stored in File Upload fields. Note that the File Repository is not backed up regardless of this option", action='store_true')   
     
     # Parse arguments.
     args = parser.parse_args()
 
-    # Check that output directory exists.
-    if (not os.path.isdir(args.out_dir)):
-        cont = raw_input("The specified output directory does not exist. Create directory? [y]/n? ")
-        if (cont.lower() in ["y", "yes"]):
-            os.mkdirs(args.out_dir)
-        elif (cont.lower() in ["n", "no"]):
-            print "Quitting"
-            sys.exit()
-        else:
-            print "Error: Unrecognized response. Quitting"
-            sys.exit()
-    
-    # Check that input path exists.
-    if (not os.path.exists(args.in_path)):
-        print "Error: Input file does not exist. Quitting."
-        sys.exit()
-
-    # Build list of API (url, key) tuples.
-    with open(args.in_path, 'r') as fh:
-        try:
-            api_pairs = [(p.split()[0], p.split()[1]) for p in fh.readlines() if (p.strip() != "") and (p.strip()[0] != "#")] # separate lines by spaces; look only at first two items; skip whitespace lines.
-        except IndexError:
-            print "Error: cannot parse list of API (url, key) pairs. Each line in text file must contain the API url and API key for a single project separated by a space."
-            sys.exit()
-
-    # Create subdirectory for current date.
-    if (not args.timestamp):
-        date_string = datetime.datetime.today().strftime('%Y-%m-%d')
-    else:
-        date_string = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
-    date_dir = os.path.join(args.out_dir, date_string)
-    if (not os.path.isdir(date_dir)):
-        os.mkdir(date_dir)
-
-    # MOVE THE REMAINING STUFF TO A SUBROUTINE.
-    # Save a message about the reason the backup is being performed in the date_dir.
-    if (args.modification_notes == None):
-        args.modification_notes = str(raw_input("Please enter reason for performing backup: "))
-    modification_notes_path = os.path.join(date_dir, 'README.txt')
-    with open(modification_notes_path, 'w') as modification_notes_handle:
-        modification_notes_handle.write(args.modification_notes)
-
-    # Loop over projects. 
-    for api_pair in api_pairs:
-        api_url = api_pair[0]
-        api_key = api_pair[1]
-
-        if (not args.pids == None): # If only backing up specific projects.
-            pid = str(exportProjectInfo(api_url, api_key)["project_id"])
-            if (not pid in args.pids):
-                continue
-        
-        # Backup project
-        backup_project(api_url, api_key, date_dir, date_string, skip_files=args.skip_files)
+    # Back up a list of REDCap projects
+    backupProjects(args.api_key_path, args.out_dir, code_name_list=args.code_name_list, modification_notes=args.modification_notes, timestamp=args.timestamp, skip_files=args.skip_files)

@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
-import sys, argparse
-
+# Standard modules
+import sys
+import argparse
 import pycurl, cStringIO
 import StringIO
+
+# My modules is current directory
+from ApiSettings import ApiSettings
 
 def importMetadata(api_url, api_key, csv_string):
 
@@ -26,22 +30,20 @@ def importMetadata(api_url, api_key, csv_string):
     return
 
 if (__name__ == '__main__'):
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    
     ## Create argument parser.
     description = """Import a data dictionary CSV to a REDCap project.
 Overwrites current data dictionary."""
     parser = argparse.ArgumentParser(description=description)
 
     ## Define positional arguments.
-    parser.add_argument("api_key", help="API key of the project to import to")
     parser.add_argument("in_path", type=str, help="file path of metadata CSV file to import")
 
     ## Define keyword arguments.
-    # API URL argument (API URL determines the REDCap instance from which data will be exported. E.g. External (default), internal, Staff Surveys, or a specified URL.
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("-u", "--api_url", help="API URL. Default: 'https://redcapexternal.research.sickkids.ca/api/'", default="https://redcapexternal.research.sickkids.ca/api/")
-    group.add_argument("--int", help="set api_url to the SickKids internal REDCap API URL.", action='store_true')
-    group.add_argument("--stf", help="set api_url to the SickKids Staff Surveys (AKA clinical) REDCap API URL.", action='store_true')
-
+    # Add arguments for API URL, API key, and code name of project used to retreive these.
+    parser = api_settings.addApiArgs(parser) # Adds args "-n", "--code_name", "-k", "--api_key", "-u", "--api_url" to the argument parser.
+    
     # Print help message if no args input.
     if (len(sys.argv) == 1):
         parser.print_help()
@@ -50,17 +52,12 @@ Overwrites current data dictionary."""
     # Parse arguments.
     args = parser.parse_args()
 
-    # Set the API URL which determines the REDCap instance from which data will be exported.
-    if args.int:
-        api_url = 'https://redcapinternal.research.sickkids.ca/api/'
-    elif args.stf:
-        api_url = 'https://staffsurveys.sickkids.ca/api/'
-    else:
-        api_url = args.api_url
-
+    # Determine the API URL and API token based on the users input and api_keys.json file.
+    api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
+    
     # Read CSV file to string
     with open(args.in_path, 'rb') as handle:
         csv_string = handle.read()
 
     ## Import metadata
-    importMetadata(api_url=args.api_url, api_key=args.api_key, csv_string=csv_string)
+    importMetadata(api_url=api_url, api_key=api_key, csv_string=csv_string)

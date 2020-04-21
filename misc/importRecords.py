@@ -17,6 +17,7 @@ import redcap
 # My modules in current directory
 from exportProjectInfo import exportProjectInfo
 from exportRecords import exportRecords
+from ApiSettings import ApiSettings
 from Color import Color
 from Timer import Timer
 
@@ -52,7 +53,7 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
     
     print "Comparing source data with destination database. Please review the changes below and confirm."
     t_export = Timer('Export data from destination project for comparison')
-    records_dst = exportRecords(api_url, api_key) # Export all data from destination project.
+    records_dst = exportRecords(api_url, api_key, export_form_completion=True) # Export all data from destination project.
     # records_dst has type: list(dict(unicode:unicode))
     t_export.stop()
 
@@ -73,6 +74,14 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
     ## Compare the source data with the destination data.
     t_compare = Timer('Compare source and destination data')
     changes_dict = OrderedDict() # Stores (old_val, new_val)
+
+    # Set up some things for printing aligned columns
+    header_tuple = tuple(primary_key + ['field_name'])
+    column_width = max([len(x) for x in header_tuple])+1
+    header_format = (('{:'+str(column_width)+'s} ')*(len(primary_key)+1)).strip()
+    print header_format
+    header = header_format.format(*header_tuple)
+
     for key, row_src in records_dict_src.iteritems():
         if key in records_dict_dst:
             row_dst = records_dict_dst[key]
@@ -90,7 +99,9 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
                 changes_dict[key]['src'] = val_src
                 changes_dict[key]['dst'] = val_dst
                 if (val_src != ''):
-                    print key, field_name
+                    #print key, field_name
+                    print header
+                    print header_format.format(*tuple(list(key)+[field_name]))
                     if (val_dst != None): # if change is existent -> nonblank
                         print "'"+val_dst+"'"
                     else: # if change is nonexistent -> nonblank
@@ -98,7 +109,9 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
                     print ">"
                     print "'"+val_src+"'"
                 elif (overwrite == 'overwrite') and (val_dst != None): # if change is non-blank -> blank, and overwrite option is selected
-                    print key, field_name
+                    #print key, field_name
+                    print header
+                    print header_format.format(*tuple(list(key)+[field_name]))
                     print "'"+val_dst+"'"
                     print ">"
                     print "''"
@@ -109,7 +122,7 @@ def verifyChanges(api_url, api_key, records_src, def_field, project_info, overwr
     cont = bool(raw_input("These changes will be made to the database. Continue y/[n]? ") == 'y')
     return cont
 
-def importRecords(api_url, api_key, records_src, overwrite='normal', format='json', quick=False, quiet=False, return_content='ids', size_thres=30000): # size_thres = 300000 has not caused error [2019-05-08 ACTUALLY, MAYBE IT HAS]
+def importRecords(api_url, api_key, records_src, overwrite='normal', format='json', quick=False, quiet=False, return_content='ids', size_thres=20000): # size_thres = 300000 has not caused error [2019-05-08 ACTUALLY, MAYBE IT HAS]
     # Load project.
     project = redcap.Project(api_url, api_key)
     project_info = exportProjectInfo(api_url, api_key)
@@ -167,16 +180,17 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
         return_info = project.import_records(records_src, overwrite=overwrite, format='json', return_content=return_content) # If format was 'csv', records_src has been converted to 'json' by this point.
 
         # Print information returned from REDCap.
-        if (not quiet):
-            if (return_content == 'count'):
-                try:
-                    num_modified = return_info["count"]
+        if (return_content == 'count'):
+            try:
+                num_modified = return_info["count"]
+                if (not quiet):
                     print "Number of records imported: "+str(num_modified)
-                except KeyError:
-                    print failure_msg
-                    sys.exit()
-            elif (return_content == 'ids'):
-                if (return_info != {}):
+            except KeyError:
+                print failure_msg
+                sys.exit()
+        elif (return_content == 'ids'):
+            if (return_info != {}):
+                if (not quiet):
                     print "Number of records imported: "+str(len(return_info))
                     print "IDs of records imported:"
                     id_string = ""
@@ -184,9 +198,9 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
                         id_string += id+" "
                     id_string = id_string.rstrip()
                     print id_string
-                else:
-                    print failure_msg
-                    sys.exit()
+            else:
+                print failure_msg
+                sys.exit()
     else:
         row_chunk_size = size_thres/num_col # Python 2 rounds down integers after division (desired)
         if (not quiet):
@@ -210,21 +224,20 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
             return_info = project.import_records(chunk, overwrite=overwrite, format='json', return_content=return_content) # if format was CSV, the CSV string has already been converted to 'json' format.
 
             # Combine import results for each chunk.
-            if (not quiet):
-                if (return_content == 'count'):
-                    try:
-                        num_modified += return_info["count"]
-                    except KeyError:
-                        print failure_msg
-                        sys.exit()
-                elif (return_content == 'ids'):
-                    if (return_info != {}):
-                        ids_imported.extend(return_info)
-                    else:
-                        print chunk
-                        print return_info
-                        print failure_msg
-                        sys.exit()
+            if (return_content == 'count'):
+                try:
+                    num_modified += return_info["count"]
+                except KeyError:
+                    print failure_msg
+                    sys.exit()
+            elif (return_content == 'ids'):
+                if (return_info != {}):
+                    ids_imported.extend(return_info)
+                else:
+                    print chunk
+                    print return_info
+                    print failure_msg
+                    sys.exit()
 
             if (not quiet):
                 completion_percentage = float(chunk_index+1)/float(num_chunks)*100.
@@ -253,17 +266,19 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
 
 # Use function as command-line tool to import csv files.
 if (__name__ == '__main__'):
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+
     # Create argument parser.
     description = """Import records to a REDCap project from a CSV file. The fields to be imported must
 already be defined in the project. The record IDs in the import file need not exist in the project."""
     parser = argparse.ArgumentParser(description=description)
     
-    # Define positional arguments 
-    parser.add_argument("api_key", help="API key of the project to which you wish to import data")
+    # Define positional arguments
     parser.add_argument("in_path", help="file path of CSV file to be imported")
     
     # Define positional arguments
-    parser.add_argument("-u", "--api_url", help="API URL. Default: 'https://redcapexternal.research.sickkids.ca/api/'", default="https://redcapexternal.research.sickkids.ca/api/")
+    # Add arguments for API URL, API key, and code name of project used to retreive these.
+    parser = api_settings.addApiArgs(parser) # Adds args "-n", "--code_name", "-k", "--api_key", "-u", "--api_url" to the argument parser.
     parser.add_argument("--overwrite", help="overwrite values with blanks", action="store_const", const="overwrite", default="normal") # CURRENTLY NOT SET UP.
     parser.add_argument("-q", "--quick", help="do not summarize changes to be made to destination project before importing (much quicker)", action='store_true')
     
@@ -274,10 +289,13 @@ already be defined in the project. The record IDs in the import file need not ex
     
     # Parse arguments
     args = parser.parse_args()
+
+    # Determine the API URL and API token based on the users input and api_keys.json file.
+    api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
     
     # Convert input csv file to string.
     with open(args.in_path, 'rb') as data_file:
         data_string = data_file.read()
     
     # Import data.
-    importRecords(args.api_url, args.api_key, data_string, overwrite=args.overwrite, format='csv', quick=args.quick)
+    importRecords(api_url, api_key, data_string, overwrite=args.overwrite, format='csv', quick=args.quick)

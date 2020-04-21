@@ -106,7 +106,7 @@ for project_index in range(len(api_key_list))[::-1]: # get data from second proj
     
     
     # Load list of events
-    events_list[project_index] = getEvents(project_list[project_index], project_info_list[project_index], project_longitudinal_list[project_index])
+    events_list[project_index] = getEvents(api_url_list[project_index], api_key_list[project_index])#project_list[project_index], project_info_list[project_index], project_longitudinal_list[project_index])
     
     
     # Load raw data dictionary.

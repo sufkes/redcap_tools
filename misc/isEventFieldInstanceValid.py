@@ -1,5 +1,5 @@
 def isEventFieldInstanceValid(project_longitudinal, project_repeating, form_repetition_map, field, row):
-    # Determine if the field should be filled out for the currect row's event, instance.
+    # Determine if the field should be filled out for the current row's event, instance.
 
     # THERE ARE 6 CASES:
     # 1. NON-LONGITUDINAL, NON-REPEATING: CHECK FIELD FOR EVERY ROW
