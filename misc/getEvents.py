@@ -8,7 +8,7 @@ import json
 import redcap # PyCap
 
 # My modules from current directory
-from getEventIDs import getEventIDs # REDCAP API APPARENTLY DOESN'T EXPORT event_id; THIS FUNCTION IS A MAPPING BETWEEN EVENT NAMES AND event_id's
+#from getEventIDs import getEventIDs # REDCAP API APPARENTLY DOESN'T EXPORT event_id; THIS FUNCTION IS A MAPPING BETWEEN EVENT NAMES AND event_id's
 from exportProjectInfo import exportProjectInfo
 from ApiSettings import ApiSettings
 
