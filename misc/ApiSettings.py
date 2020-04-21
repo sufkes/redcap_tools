@@ -26,7 +26,7 @@ Returns
         The settings.json file converted to a dict.
 """
         # Verify that the settings.json file exists
-        if (not os.path.exists(self.settings_path)):
+        if (self.settings_path is None) or (not os.path.exists(self.settings_path)):
             warnings.warn("Settings file not found at path '"+str(self.settings_path)+"'. Copy the file <installation directory>/settings_template.json, to <installation directory>/settings.json and enter appropatiate values in settings.json.")
 
             # If no settings.json file exists in the installation directory, set the values of the settings fields to None, but set the default API url to that stored in settings_template.json.
@@ -107,7 +107,7 @@ parser : argparse.ArgumentParser object
         msg_api_key_path_not_found = "Path to API keys file does not exist: '"+str(api_key_path)+"'"
         msg_code_name_not_found = "Code name corresponding to input (API URL, API token) not found in '"+str(api_key_path)+"'. Returning code_name=None"
         if ((not api_key is None) and (not api_url is None)):
-            if (not os.path.exists(api_key_path)):
+            if (api_key_path is None) or (not os.path.exists(api_key_path)):
                 warnings.warn(msg_api_key_path_not_found)
                 code_name = None
                 return api_url, api_key, code_name
