@@ -2,7 +2,12 @@ import pycurl, cStringIO, json
 
 def exportRepeatingFormsEvents(api_url, api_key, project_repeating):
     """This function is used to export the instrument-event mapping. This functionality
-    is not included in PyCap, so a custom function is defined here."""
+    is not included in PyCap, so a custom function is defined here.
+
+    Returns:
+        list of dicts (one for each repeating instrument in each event) of the form:
+        {u'event_name': u'event_1_arm_1', u'form_name': u'form_1', u'custom_form_label': u'[field_in_event]'}
+"""
     
     if (project_repeating):
         buf = cStringIO.StringIO()

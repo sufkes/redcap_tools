@@ -12,7 +12,7 @@ import redcap # PyCap
 from exportProjectInfo import exportProjectInfo
 from ApiSettings import ApiSettings
 
-def getEvents(api_url, api_key, event_ids_path=None):
+def getEvents(api_url, api_key, event_ids_path=None, quiet=False):
 
     # Get project information
     project = redcap.Project(api_url, api_key)
@@ -26,7 +26,8 @@ def getEvents(api_url, api_key, event_ids_path=None):
         if (event_ids_path is None): # if a path to an event IDs map json file was specified explicitly, use that instead of the path specified in settings.json
             event_ids_path = api_settings.settings['event_ids_path']
         if (not os.path.exists(event_ids_path)):
-            warnings.warn("Path to event ID map does not exist: '"+event_ids_path+"'")
+            if (not quiet):
+                warnings.warn("Path to event ID map does not exist: '"+event_ids_path+"'")
             event_ids_map = {}
         elif (code_name is None):
             event_ids_map = {}
@@ -36,7 +37,8 @@ def getEvents(api_url, api_key, event_ids_path=None):
             try:
                 event_ids_map = event_ids_map_all[code_name]
             except KeyError: # if project_code name does not have an entry in event_ids.json
-                warnings.warn("code_name '"+code_name+"' is not an entry in '"+event_ids_path+"'")
+                if (not quiet):
+                    warnings.warn("code_name '"+code_name+"' is not an entry in '"+event_ids_path+"'")
                 event_ids_map = {}
         
         events = {} # dict with unique_event_name as keys. Items include the 'pretty' event name.
@@ -58,7 +60,8 @@ def getEvents(api_url, api_key, event_ids_path=None):
                 try:
                     event_id = event_ids_map[pycap_event["unique_event_name"]] # SURE HOW TO GET THIS INFORMATION
                 except KeyError:
-                    warnings.warn("Event named '"+pycap_event["unique_event_name"]+"' not found in '"+event_ids_path+"'")
+                    if (not quiet):
+                        warnings.warn("Event named '"+pycap_event["unique_event_name"]+"' not found in '"+event_ids_path+"'")
                     event_id = None
             else:
                 event_id = None

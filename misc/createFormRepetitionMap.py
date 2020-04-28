@@ -7,7 +7,21 @@ def createFormRepetitionMap(project_longitudinal, project_repeating, form_event_
     The purpose of this function is to create a dict with form_name's as keys, and elements which
     specify the events in which the form is non-repeating, independently repeating, or dependently
     repeating. The dict also contains booleans which specify whether the form is ever non-repeating, 
-    independently repeating, or dependently repeating"""
+    independently repeating, or dependently repeating
+
+    Returns:
+        None (if project is not repeating)
+        dict: (if project is repeating)
+            keys: instrument name
+            values: dict:
+                "non_repeat": bool, whether this instrument is non-repeating in any event
+                "indep_repeat": bool, whether this is a repeating instrument in any event
+                "dep_repeat": bool, whether this instrument is in a repeating event. (not present if project is not longitudinal)
+                "events_non_repeat": list of events in which this instrument is non-repeating (not present if project is not longitudinal)
+                "events_indep_repeat": list of events in which this is a repeating-instrument (not present if project is not longitudinal)
+                "events_dep_repeat": list of repeating events containing this instrument (not present if project is not longitudinal)
+    
+"""
 
     if (not project_repeating):
         form_repetition_map = None

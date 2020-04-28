@@ -1,328 +1,328 @@
 #!/usr/bin/env python
 
 import os, sys
+from pprint import pprint
 
 # My modules in other directories
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import misc
 from misc.exportRecords import exportRecords
 from misc.getRecordIDList import getRecordIDList
+from misc.ApiSettings import ApiSettings
 
-def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, inc_pre_2003=True, inc_pre_2014=True, inc_post_20191001=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=True, inc_adult_stroke=True, inc_melas=True, inc_non_ipss=True, inc_non_sips=True, inc_non_sips2=True, inc_non_sips2_cohort1=True, inc_non_sips2_cohort2=True, inc_sips_exclusions=True, inc_sips_exclusions_2=True, inc_patient_info_incomp=True, inc_core_incomplete=True, inc_non_vips_enrolled=True, inc_vips_screen_nonenroll=True, inc_tests=False):
+def getIPSSIDs(from_code_name="ipss_v4", ex_registry_only=False, ex_unknown_stroke_type=False, ex_pre_2003=False, ex_pre_2014=False, ex_post_20191001=False, ex_sk_patients=False, ex_neonatal_stroke=False, ex_placeholders=False, ex_adult_stroke=False, ex_melas=False, ex_non_ipss=False, ex_non_sips=False, ex_non_sips2=False, ex_non_sips2_cohort1=False, ex_non_sips2_cohort2=False, ex_sips_exclusions=False, ex_sips_exclusions_2=False, ex_patient_info_incomp=False, ex_core_incomplete=False, ex_non_vips_enrolled=False, ex_vips_screen_nonenroll=False):
     '''
     Parameters:
-        db:                         str - database to get IDs from. Allowed values: 'ipss', 'arch', 'psom', 'sips2', 'vips2', 'psom2'
-        inc_registry_only:          bool - whether to include IDs of SickKids registry-only patients
-        inc_unknown_stroke_type:    bool - whether to include IDs of records with unknown stroke type
-        inc_pre_2003:               bool - whether to include IDs of patients enrolled before 2003 based on IPSS V3 'dateentered'.
-        inc_pre_2014:               bool - whether to include IDs of patients enrolled before 2014 based on IPSS 'originalipss' field
-        inc_post_20191001           bool - whether to indlude IDs added on or after 2019-10-01 based on the IPSS field 'dateentered'
-        inc_sk_patients:            bool - whether to include IDs of patients with 'hsc' data access group in IPSS
-        inc_neonatal_stroke:        bool - whether to include IDs of patients who suffered a neonatal stroke
-        inc_placeholders:           bool - whether to include IDs of patients with almost no real data, whose records likely exist as placeholders
-        inc_adult_stroke:           bool - whether to include IDs of patients who did not suffer a stroke as a child
-        inc_melas:                  bool - whether to include IDs patients with MELAS
-        inc_non_ipss:               bool - whether to include IDs that do not exist in the IPSS
-        inc_non_sips:               bool - whether to include IDs that are not in SIPS I or SIPS II based on the IPSS field 'substud'
-        inc_non_sips2:              bool - whether to include IDs that are not in SIPS II
-        inc_non_sips2_cohort1       bool - whether to include IDs that are not in SIPS II cohort I
-        inc_non_sips2_cohort2       bool - whether to include IDs that are not in SIPS II cohort II
-        inc_sips_exclusions:        bool - whether to include SIPS patients that were excluded merely screened based on SIPS II field 'screened'
-        inc_sips_exclusions_2:      bool - whether to include SIPS patients that were excluded based screened based on SIPS II field 'screened' and 'actcohortsp'
-        inc_patient_info_incomp     bool - whether to include IDs of patients for whom patient_information_complete != 2 (STILL INCLUDE ALL SLCH PATIENTS).
-        inc_core_incomplete         bool - whether to include IDs of patients for whom any of the 'core' forms are not marked as complete (core forms, here, include 'patient_information', 'cardiac_arteriopathy_risk_factors', 'other_child_and_neonatal_risk_factors', and 'clinical_presentation')
-        inc_non_vips_enrolled:      bool - whether to include patients who are not enrolled in VIPS, based on the condition of the VIPS field vscreen_sfoutc=4.
-        inc_vips_screen_nonenroll:  bool - whether to include patients who are "VIPS screened, not enrolled" based on the IPSS field 'vips_screened'.
-        inc_tests                   bool - whether to include fake records with IDs starting with 'test_'
+        from_code_name:             str - code_name of database to get IDs from. Allowed values are the code names defined in user's api_keys.json file.
+        ex_registry_only:          bool - whether to exclude IDs of SickKids registry-only patients based on IPSS data
+        ex_unknown_stroke_type:    bool - whether to exclude IDs of records with unknown stroke type based on IPSS data
+        ex_pre_2003:               bool - whether to exclude IDs of patients enrolled before 2003 based on IPSS field dateentered
+        ex_pre_2014:               bool - whether to exclude IDs of patients enrolled before 2014 based on IPSS field originalipss
+        ex_post_20191001           bool - whether to indlude IDs added on or after 2019-10-01 based on the IPSS field dateentered
+        ex_sk_patients:            bool - whether to exclude IDs of patients with 'hsc' data access group in IPSS
+        ex_neonatal_stroke:        bool - whether to exclude IDs of patients who suffered a neonatal stroke based on IPSS data
+        ex_placeholders:           bool - whether to exclude IDs of patients with almost no real data, whose records likely exist as placeholders based on IPSS data
+        ex_adult_stroke:           bool - whether to exclude IDs of patients who did not suffer a stroke as a child based on IPSS data
+        ex_melas:                  bool - whether to exclude IDs patients with MELAS based on IPSS data
+        ex_non_ipss:               bool - whether to exclude IDs that do not exist in the IPSS
+        ex_non_sips:               bool - whether to exclude IDs that are not in SIPS I or SIPS II based on IPSS data
+        ex_non_sips2:              bool - whether to exclude IDs that are not in SIPS II based on IPSS data
+        ex_non_sips2_cohort1       bool - whether to exclude IDs that are not in SIPS II cohort I based on IPSS data
+        ex_non_sips2_cohort2       bool - whether to exclude IDs that are not in SIPS II cohort II based on IPSS data
+        ex_sips_exclusions:        bool - whether to exclude SIPS patients that were excluded merely screened based on SIPS II field 'screened'
+        ex_sips_exclusions_2:      bool - whether to exclude SIPS patients that were excluded based screened based on SIPS II field 'screened' and 'actcohortsp'
+        ex_patient_info_incomp     bool - whether to exclude IDs of patients for whom patient_information_complete != 2 in IPSS, *but still include all SLCH patients*.
+        ex_core_incomplete         bool - whether to exclude IDs of patients for whom any of the 'core' forms are not marked as complete (core forms, here, include 'patient_information', 'cardiac_arteriopathy_risk_factors', 'other_child_and_neonatal_risk_factors', and 'clinical_presentation')
+        ex_non_vips_enrolled:      bool - whether to exclude patients who are not enrolled in VIPS, based on the condition of the VIPS field vscreen_sfoutc=4.
+        ex_vips_screen_nonenroll:  bool - whether to exclude patients who are "VIPS screened, not enrolled" based on the IPSS field 'vips_screened'
 
     Returns:
         record_ids:               list - record IDs in the specified database after specified exclusions
     '''
 
+    ## Get list of exlusions requested (i.e. get a list of all args set to False).
+    exclusion_args = []
+    for key, val in locals().iteritems():
+        if (val is True) and (key[:3] == 'ex_'):
+            exclusion_args.append(key)
+    
+    ## Get API tokens and URLs for all projects used in the filters
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.    
 
-    # Define optional arguments.
-    api_pairs_path = "/Users/steven ufkes/Documents/stroke/data_packages/api_url_key_list.txt"
+    token_dict = {} # keys are code names, values are a tuple with (url, token) for that project
+    for code_name in ["ipss_arch", "ipss_v4", "sips2_v2", "vips2", "psom_v2"]:
+        url, key, code_name = api_settings.getApiCredentials(code_name=code_name)
+        token_dict[code_name] = (url, key)
+    
+    ## Get list of all record IDs in the database specified with the 'from_code_name' option
+    from_url, from_key, from_code_name = api_settings.getApiCredentials(code_name=from_code_name)
+    record_ids_all = getRecordIDList(from_url, from_key)
+    
+    ## Generate lists of fields & events which must be exported from each project in order to filter the record IDs. It would be fine to export all data, but this would take a long time.
+    required_data_dict = {
+        "ex_registry_only":{
+            "ipss_v4":{
+                "fields":["substud"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_unknown_stroke_type":{
+            "ipss_v4":{
+                "fields":["stroke_type"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_pre_2003":{
+            "ipss_v4":{
+                "fields":["dateentered"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_pre_2014":{
+            "ipss_v4":{
+                "fields":["originalipss"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_post_20191001":{
+            "ipss_v4":{
+                "fields":["dateentered"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_sk_patients":{
+            "ipss_v4":{
+                "fields":["ipssid"],
+                "events":["acute_arm_1", "followup_arm_1"] # Need both in case record only has data in followup_arm_1
+            }
+        },
+        "ex_neonatal_stroke":{
+            "ipss_v4":{
+                "fields":["strage"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_placeholders":{
+            "ipss_v4":{
+                "forms":["clinical_presentation", "cardiac_and_arteriopathy_risk_factors"], # note that here we need all fields in the form.
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_adult_stroke":{
+            "ipss_v4":{
+                "fields":["birmont", "biryear", "doe", "daent", "strage", "substud"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_melas":{
+            "ipss_v4":{
+                "fields":["genetsy", "genetsys"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_non_ipss":{
+            "ipss_v4":{
+                "fields":["ipssid"],
+                "events":["acute_arm_1", "followup_arm_1"] # Need both in case record only has data in followup_arm_1
+                }
+        },
+        "ex_non_sips":{
+            "ipss_v4":{
+                "fields":["substud"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_non_sips2":{
+            "ipss_v4":{
+                "fields":["substud"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_non_sips2_cohort1":{
+            "ipss_v4":{
+                "fields":["substud", "sip_cohort"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_non_sips2_cohort2":{
+            "ipss_v4":{
+                "fields":["substud", "sip_cohort"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_sips_exclusions":{
+            "sips2_v2":{
+                "fields":["screened"],
+                "events":["confirmation_and_t_arm_1"]
+            }
+        },
+        "ex_sips_exclusions_2":{
+            "sips2_v2":{
+                "fields":["screened", "actcohortsp"],
+                "events":["confirmation_and_t_arm_1", "acute_arm_1"]
+            }
+        },
+        "ex_patient_info_incomp":{
+            "ipss_v4":{
+                "fields":["patient_information_complete"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_core_incomplete":{
+            "ipss_v4":{
+                "fields":["patient_information_complete", "cardiac_and_arteriopathy_risk_factors_complete", "other_child_and_neonatal_risk_factors_complete", "clinical_presentation_complete", "status_at_discharge_complete"],
+                "events":["acute_arm_1"]
+            }
+        },
+        "ex_non_vips_enrolled":{
+            "vips2":{
+                "fields":["vscreen_sfoutc"],
+                "events":["confirmation_and_t_arm_1", "confirmation_and_t_arm_2"]
+            }
+        },
+        "ex_vips_screen_nonenroll":{
+            "ipss_v4":{
+                "fields":["vips_screened"],
+                "events":["acute_arm_1"]
+            }
+        }
+    }
 
-    # Build list of API (url, key) tuples.
-    with open(api_pairs_path, 'r') as fh:
-        try:
-            api_pairs = [(p.split()[0], p.split()[1]) for p in fh.readlines() if (p.strip() != "") and (p.strip()[0] != "#")] # separate lines by spaces; look only at first two items; skip whitespace lines.
-        except IndexError:
-            print "Error: cannot parse list of API (url, key) pairs. Each line in text file must contain the API url and API key for a single project separated by a space."
-            sys.exit()
+    ## Build dicts for arguments to be passed to exportRecords.
+    exportRecords_args = {} # keys are the code names of projects from which data will be export. Values are the args to be passed to exportRecords for those projects.
+    for arg in exclusion_args:
+        for code_name, project_data in required_data_dict[arg].iteritems():
+            if (not code_name in exportRecords_args.keys()):
+                exportRecords_args[code_name] = {"fields":None, "forms":None, "events":None}
+            for key, val in project_data.iteritems():
+                if (exportRecords_args[code_name][key] is None):
+                    exportRecords_args[code_name][key] = val
+                else:
+                    exportRecords_args[code_name][key].extend(val)
 
-    # Get API URL and key for each database
-    url_arch = api_pairs[0][0]
-    url_ipss = api_pairs[1][0]
-    url_psom = api_pairs[2][0]
-    url_sips2 = api_pairs[3][0]
-    url_vips2 = api_pairs[4][0]
-    url_psom2 = api_pairs[5][0]
+    # Remove duplicates from the lists of args (not necessary, but do it for visual clarity).
+    for code_name, args in exportRecords_args.iteritems():
+        for arg, val in args.iteritems():
+            if (not val is None):
+                args[arg] = list(set(val))
 
-    key_arch = api_pairs[0][1]
-    key_ipss = api_pairs[1][1]
-    key_psom = api_pairs[2][1]
-    key_sips2 = api_pairs[3][1]
-    key_vips2 = api_pairs[4][1]
-    key_psom2 = api_pairs[5][1]
+    ## Export all data required for the specified filters. Don't export data from unneed projects.
+    filter_data = {} # keys are project code names; values are the actual data sets exported from the projects.
+    for code_name, args in exportRecords_args.iteritems():
+        api_url = token_dict[code_name][0]
+        api_key = token_dict[code_name][1]
+        filter_data[code_name] = exportRecords(api_url, api_key, **args)
 
-    # Create lists of record IDs with various exclusions.
-    record_ids_arch = getRecordIDList(url_arch, key_arch)
-    record_ids_ipss = getRecordIDList(url_ipss, key_ipss)    
-    record_ids_psom = getRecordIDList(url_psom, key_psom)
-    record_ids_sips2 = getRecordIDList(url_sips2, key_sips2)
-    record_ids_vips2 = getRecordIDList(url_vips2, key_vips2)
-    record_ids_psom2 = getRecordIDList(url_psom2, key_psom2)
 
-    # Export all data required to determine ID exclusions.
-    req_fields_arch = set()
-    req_fields_ipss = set()
-    req_fields_psom = set()
-    req_fields_sips2 = set()
-    req_fields_vips2 = set()
-    req_fields_psom2 = set()
-
-    req_events_ipss = set()
-    req_events_arch = set()
-    req_events_psom = set()
-    req_events_sips2 = set()
-    req_events_vips2 = set()
-    req_events_psom2 = set()
-
-    # Generate list of fields & events which must be exported in order to refine the ID lists.
-    if (not inc_registry_only) or (not inc_non_sips) or (not inc_non_sips2) or (not inc_non_sips2_cohort1) or (not inc_non_sips2_cohort2):
-        req_fields_ipss.update(['substud', 'sip_cohort'])
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_unknown_stroke_type):
-        req_fields_ipss.update(["chais", "chcsvt", "neoais", "neocsvt", "ppis", "ppcsvt", "pvi", "preart", "othcond"])
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_pre_2014):
-        req_fields_ipss.add('originalipss')
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_post_20191001) or (not inc_pre_2003):
-        req_fields_ipss.add('dateentered')
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_sk_patients):
-        pass # only need ipssid and redcap_data_access_group
-    if (not inc_neonatal_stroke):
-        req_fields_ipss.add('strage')
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_adult_stroke):
-        req_fields_ipss.update(['birmont', 'biryear', 'doe', 'daent', 'strage', 'substud'])
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_melas):
-        req_fields_ipss.update(['genetsy', 'genetsys'])
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_placeholders):
-        pass # the data for this filter will be exported separately. 
-    if (not inc_sips_exclusions):
-        req_fields_sips2.add('screened')
-        req_events_sips2.add('confirmation_and_t_arm_1')
-    if (not inc_sips_exclusions_2):
-        req_fields_sips2.update(['screened', 'actcohortsp'])
-        req_events_sips2.update(['confirmation_and_t_arm_1', 'acute_arm_1'])
-    if (not inc_patient_info_incomp):
-        req_fields_ipss.add('patient_information_complete')
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_core_incomplete):
-        req_fields_ipss.update(['patient_information_complete', 'cardiac_and_arteriopathy_risk_factors_complete', 'other_child_and_neonatal_risk_factors_complete', 'clinical_presentation_complete', 'status_at_discharge_complete'])
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_non_vips_enrolled):
-        req_fields_vips2.add('vscreen_sfoutc')
-        req_events_vips2.update(['confirmation_and_t_arm_1', 'confirmation_and_t_arm_2'])
-    if (not inc_vips_screen_nonenroll):
-        req_fields_ipss.add('vips_screened')
-        req_events_ipss.add('acute_arm_1')
-    if (not inc_tests):
-        req_fields_ipss.add('ipssid')
-        req_events_ipss.add('acute_arm_1')
         
-    # Export data required to refine ID lists.
-    if (req_fields_arch != set()): # if data is required from Archive
-        filter_data_arch = exportRecords(url_arch, key_arch, fields=req_fields_arch, events=req_events_arch)
-    if (req_fields_ipss != set()): # if data is required from IPSS
-        filter_data_ipss = exportRecords(url_ipss, key_ipss, fields=req_fields_ipss, events=req_events_ipss)
-    if (req_fields_psom != set()): # if data is required from PSOM
-        filter_data_psom = exportRecords(url_psom, key_psom, fields=req_fields_psom, events=req_events_psom)
-    if (req_fields_sips2 != set()): # if data is required from PSOM
-        filter_data_sips2 = exportRecords(url_sips2, key_sips2, fields=req_fields_sips2, events=req_events_sips2)
-    if (req_fields_vips2 != set()): # if data is required from VIPS V2
-        filter_data_vips2 = exportRecords(url_vips2, key_vips2, fields=req_fields_vips2, events=req_events_vips2)
-    if (req_fields_psom2 != set()): # if data is required from PSOM V2
-        filter_data_psom2 = exportRecords(url_psom2, key_psom2, fields=req_fields_psom2, events=req_events_psom2)
-
-    ## Generate lists of IDs which satisfy certain conditions.
-    # Registry only patients. 
-    if (not inc_registry_only):
+    #### Generate lists of IDs to exclude based on specified exclusions.
+    ## Keep track of which records are excluded by each exclusion argument.
+    excluded_ids = {} # key is exclusin arg; value is list of IDs excluded by that condition.
+    
+    ## SickKids Registry-only patients
+    if ex_registry_only:
         # Registry-only records based on IPSS data
         # * All patients labelled registry-only in Archive are labelled likewise in IPSS.
         # * All '9203-' patients are labelled registry only in IPSS.
-        record_ids_registry_only_ipss = set()
-#        registry_data_ipss = exportRecords(url_ipss, key_ipss, fields=["substud"], events=["acute_arm_1"])
-#        for row in registry_data_ipss:
-        for row in filter_data_ipss:
+        excluded_ids["ex_registry_only"] = set()
+
+        for row in filter_data['ipss_v4']:
             id = row['ipssid']
             if (row["substud___8"] == "1") or ('9203-' in id):
-                record_ids_registry_only_ipss.add(id)
+                excluded_ids["ex_registry_only"].add(id)
 
-    # Unknown stroke type based on IPSS data
-    if (not inc_unknown_stroke_type):
-#        stroke_type_data_ipss = exportRecords(url_ipss, key_ipss, record_id_list=record_ids_ipss, fields=["chais", "chcsvt", "neoais", "neocsvt", "ppis", "ppcsvt", "pvi", "preart", "othcond"], events=["acute_arm_1"])
+                
+    ## Unknown stroke type
+    if ex_unknown_stroke_type:
         record_ids_known_stroke_type_ipss = set()
-#        for row in stroke_type_data_ipss:
-        for row in filter_data_ipss:
-            if (row["chais___1"] == "1") or (row["chcsvt___1"] == "1") or (row["neoais___1"] == "1") or (row["neocsvt___1"] == "1") or (row["ppis___1"] == "1") or (row["ppcsvt___1"] == "1") or (row["pvi___1"] == "1") or (row["preart___1"] == "1") or (row['othcond___1'] == "1"):
+        
+        for row in filter_data['ipss_v4']:
+            if (row["stroke_type___1"] == "1") or (row["stroke_type___2"] == "1") or (row["stroke_type___3"] == "1") or (row["stroke_type___4"] == "1") or (row["stroke_type___5"] == "1") or (row["stroke_type___6"] == "1") or (row["stroke_type___7"] == "1") or (row["stroke_type___8"] == "1") or (row['stroke_type___9'] == "1"):
                 id = row["ipssid"]
                 record_ids_known_stroke_type_ipss.add(id)
-        record_ids_unknown_stroke_type_ipss = [id for id in record_ids_ipss if (not id in record_ids_known_stroke_type_ipss)]
+        excluded_ids["ex_unknown_stroke_type"] = set([id for id in record_ids_all if (not id in record_ids_known_stroke_type_ipss)])
 
-    # Patients that were entered before 2003
-    if (not inc_pre_2003):
-        record_ids_pre_2003_ipss = set()
-        for row in filter_data_ipss:
+        
+    ## Patients that were entered before 2003
+    if ex_pre_2003:
+        excluded_ids["ex_pre_2003"] = set()
+
+        for row in filter_data['ipss_v4']:
             id = row["ipssid"]
             date_entered = row["dateentered"].replace('-','') # convert 2019-01-23 to 20190123
             try:
                 if (int(date_entered) < 20030101):
-                    record_ids_pre_2003_ipss.add(id)
-#                    print "Date is before 2003:", date_entered
+                    excluded_ids["ex_pre_2003"].add(id)
                 else:
-#                    print "Date is after 2003:", date_entered
                     pass
             except ValueError: # occurs when value stored in 'dateentered' is blank (or possible another nonsense format)
-#                print "ID '"+id+"' has invalid date: '"+date_entered+"'"
                 if (id[:2] == '7-'): # all '7-' patients are assume to be added after 2003.
                     continue
                 elif (id[:5] == '9203-'): # all '9203-' patients are known to be entered before 2003.
-                    record_ids_pre_2003_ipss.add(id)                    
+                    excluded_ids["ex_pre_2003"].add(id)                    
                 else: # If record has not dateentered, and is not a 7- or 9203- patient (who are known to be added before 20191001)
                     print "Warning: Assuming record '"+id+"' was added after 2003"
 
-    # Patients that have been entered since the launch of IPSS in REDCap from 2014 to present.
-    if (not inc_pre_2014):
-#        originalipss_data_ipss = exportRecords(url_ipss, key_ipss, fields=["originalipss"], events=["acute_arm_1"])
-        record_ids_pre_2014_ipss = set()
-#        for row in originalipss_data_ipss:
-        for row in filter_data_ipss:
+                
+    ## Patients that have been entered since the launch of IPSS in REDCap from 2014 to present.
+    if ex_pre_2014:
+        excluded_ids["ex_pre_2014"] = set()
+
+        for row in filter_data["ipss_v4"]:
             if (row["originalipss___1"] == '1'):
                 id = row["ipssid"]
-#                if (not id in record_ids_pre_2014_ipss):
-#                    record_ids_pre_2014_ipss.append(id)
-                record_ids_pre_2014_ipss.add(id)
+                excluded_ids["ex_pre_2014"].add(id)
 
-    # Patients that were entered after 2019-10-01.
-    if (not inc_post_20191001):
-        record_ids_post_20191001_ipss = set()
-        for row in filter_data_ipss:
+                
+    ## Patients that were entered after 2019-10-01
+    if ex_post_20191001:
+        excluded_ids["ex_post_20191001"] = set()
+        for row in filter_data["ipss_v4"]:
             id = row["ipssid"]
             date_entered = row["dateentered"].replace('-','') # convert 2019-01-23 to 20190123
             try:
                 if (int(date_entered) >= 20191001):
-                    record_ids_post_20191001_ipss.add(id)
-#                    print "Date is after 2019-10-01:", date_entered
+                    excluded_ids["ex_post_20191001"].add(id)
                 else:
-#                    print "Date is before 2019-10-01:", date_entered
                     pass
             except ValueError: # occurs when value stored in 'dateentered' is blank (or possible another nonsense format)
-#                print "ID '"+id+"' has invalid date: '"+date_entered+"'"
                 if (id[:2] == '7-') or (id[:5] == '9203-'):
                     continue
                 else: # If record has not dateentered, and is not a 7- or 9203- patient (who are known to be added before 20191001)
-                    record_ids_post_20191001_ipss.add(id)
+                    excluded_ids["ex_post_20191001"].add(id)
                     print "Warning: Assuming record '"+id+"' was added after 20191001"
 
-    # SickKids patients (based on DAG)
-    if (not inc_sk_patients):
-#        ipssid_data_ipss = exportRecords(url_ipss, key_ipss, fields=["ipssid"])
-        record_ids_sk_ipss = set()
-#        for row in ipssid_data_ipss:
-        for row in filter_data_ipss:
+                    
+    ## SickKids patients (based on DAG)
+    if ex_sk_patients:
+        excluded_ids["ex_sk_patients"] = set()
+        
+        for row in filter_data["ipss_v4"]:
             if (row["redcap_data_access_group"] == "hsc"):
                 id = row['ipssid']
-#                if (not id in record_ids_sk_ipss):
-#                    record_ids_sk_ipss.append(id)
-                record_ids_sk_ipss.add(id)
+                excluded_ids["ex_sk_patients"].add(id)
 
-    # Neonatal stroke based on IPSS data
-    if (not inc_neonatal_stroke):
-#        stroke_age_data_ipss = exportRecords(url_ipss, key_ipss, record_id_list=record_ids_ipss, fields=['strage'], quiet=True)
-        record_ids_neonatal_ipss = set()
-#        for row in stroke_age_data_ipss:
-        for row in filter_data_ipss:
+                
+    ## Neonatal stroke based on IPSS data
+    if ex_neonatal_stroke:
+        excluded_ids["ex_neonatal_stroke"] = set()
+
+        for row in filter_data["ipss_v4"]:
             if (row['strage'] == '0'):
                 id = row['ipssid']
-#                if (not id in record_ids_neonatal_ipss):
-#                    record_ids_neonatal_ipss.append(id)
-                record_ids_neonatal_ipss.add(id)
+                excluded_ids["ex_neonatal_stroke"].add(id)
 
-    # Non-pediatric stroke (>= 19 years of age at date of stroke)
-    if (not inc_adult_stroke):
-#        adult_stroke_data_ipss = exportRecords(url_ipss, key_ipss, record_id_list=record_ids_ipss, fields=['birmont', 'biryear', 'doe', 'daent', 'strage', 'substud'], quiet=True)
-        record_ids_adult_stroke = set()
-        record_ids_stroke_age_known = set()
-#        for row in adult_stroke_data_ipss:
-        for row in filter_data_ipss:
+                
+    ## Records deemed to be "placeholders" based on condition that they have no data in either the clinical presentation or cardiac risk factors forms.
+    if ex_placeholders:
+        record_ids_nonplaceholder_ipss = set()
+
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
-            if (row['birmont'] != '') and (row['biryear'] != '') and (row['doe'] != ''):
-                record_ids_stroke_age_known.add(id)
-                stroke_age = float(row['doe'][:4]) + float(row['doe'][5:7])/12 - float(row['biryear']) - float(row['birmont'])/12
-                if (stroke_age >= 19.0 + 1.0/12.0): # only year/month of birth is known, so pad cutoff by 1 month.
-                    record_ids_adult_stroke.add(id)
-#                    print id
-            elif (row['birmont'] != '') and (row['biryear'] != '') and (row['daent'] != ''):
-                record_ids_stroke_age_known.add(id)
-                stroke_age = float(row['daent'][:4]) + float(row['daent'][5:7])/12 - float(row['biryear']) - float(row['birmont'])/12
-                if (stroke_age >= 19.0 + 1.0/12.0): # only year/month of birth is known, so pad cutoff by 1 month.
-                    record_ids_adult_stroke.add(id)
-#                    print id
-#            elif (row['strage'] == '0'):
-#                record_ids_stroke_age_known.add(id)
-#            elif (row['substud___8'] == '1'):
-#                record_ids_stroke_age_known.add(id)
-#            elif (row['biryear'] != ''):
-#                if int(row['biryear']) > 2000:
-#                    record_ids_stroke_age_known.add(id)
-#            elif (row['biryear'] != '') and (row['doe'] != ''): # no new information.
-#                record_ids_stroke_age_known.add(id)
-#                stroke_age = float(row['doe'][:4]) + float(row['doe'][5:7])/12 - float(row['biryear'])
-#                if (stroke_age > 19.0 + 1.0):
-#                    record_ids_adult_stroke_ipss.add(id)
-#            elif (row['biryear'] != '') and (row['birmont'] != '') and (row['stk_year'] != ''):
-#                record_ids_stroke_age_known.add(id)
-#                stroke_age = float(row['stk_year']) - float(row['biryear']) - float(row['birmont'])/12
-#                if (stroke_age > 19.0 + 1.0/12.0):
-#                    record_ids_adult_stroke_ipss.add(id)
-#    print len(record_ids_ipss), len(record_ids_stroke_age_known)
- 
-    # MELAS patients
-    if (not inc_melas):
-#        melas_data_ipss = exportRecords(url_ipss, key_ipss, record_id_list=record_ids_ipss, fields=['genetsy', 'genetsys'], quiet=True)
-#        melas_data_arch = exportRecords(url_arch, key_arch, record_id_list=record_ids_arch, fields=['melas'], quiet=True) # Doesn't provide any additional information
-        record_ids_melas = set()
-#        for row in melas_data_ipss:
-        for row in filter_data_ipss:
-            id = row['ipssid']
-            desc = row['genetsys'].lower()
-            if (row['genetsy'] == '1') and (('melas' in desc) or ('mitochondrial encephalopathy' in desc) or ('lactic acidosis' in desc)):
-                record_ids_melas.add(id)
-#        for row in melas_data_arch: # Doesn't provide any additional information
-#            id = row['pk_patient_id']
-#            if (row['melas'] == '1'):
-#                print id, row['melas']
-#                record_ids_melas.add(id)
-            
-    # Records deemed as placeholders based on condition that they have no data in either the clinical presentation or cardiac risk factors forms.
-    if (not inc_placeholders):
-        record_ids_nonplaceholders_ipss = set()
-        placeholder_data_ipss = exportRecords(url_ipss, key_ipss, record_id_list=record_ids_ipss, forms=['clinical_presentation', 'cardiac_and_arteriopathy_risk_factors'], quiet=True)
-        count = 0
-        for row in placeholder_data_ipss:
-            id = row['ipssid']
-            if (id in record_ids_nonplaceholders_ipss):
+            if (id in record_ids_nonplaceholder_ipss):
                 continue
             row_has_data = False
             for field, value in row.iteritems():
-#                print row['ipssid'], field, value
                 if (field in ['ipssid', 'redcap_data_access_group', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance', 'clinical_presentation_complete', 'cardiac_and_arteriopathy_risk_factors_complete']):
                     continue
                 elif ('___' in field): # if it is a checkbox field
@@ -334,215 +334,180 @@ def getIPSSIDs(db="ipss", inc_registry_only=True, inc_unknown_stroke_type=True, 
                         row_has_data = True
                         break
             if row_has_data:
-                record_ids_nonplaceholders_ipss.add(id)
-        record_ids_placeholders_ipss = [id for id in record_ids_ipss if (not id in record_ids_nonplaceholders_ipss)]
+                record_ids_nonplaceholder_ipss.add(id)
+        excluded_ids["ex_placeholders"] = [id for id in record_ids_all if (not id in record_ids_nonplaceholder_ipss)]
+                
+                
+    ## Non-pediatric stroke (>= 19 years of age at date of stroke)
+    if ex_adult_stroke:
+        excluded_ids["ex_adult_stroke"] = set()
+        
+        for row in filter_data["ipss_v4"]:
+            id = row['ipssid']
+            if (row['birmont'] != '') and (row['biryear'] != '') and (row['doe'] != ''):
+                stroke_age = float(row['doe'][:4]) + float(row['doe'][5:7])/12 - float(row['biryear']) - float(row['birmont'])/12
+                if (stroke_age >= 19.0 + 1.0/12.0): # only year/month of birth is known, so pad cutoff by 1 month.
+                    excluded_ids["ex_adult_stroke"].add(id)
+                    
+            elif (row['birmont'] != '') and (row['biryear'] != '') and (row['daent'] != ''):
+                stroke_age = float(row['daent'][:4]) + float(row['daent'][5:7])/12 - float(row['biryear']) - float(row['birmont'])/12
+                if (stroke_age >= 19.0 + 1.0/12.0): # only year/month of birth is known, so pad cutoff by 1 month.
+                    excluded_ids["ex_adult_stroke"].add(id)
 
-    # SIPS I or SIPS II patients:
-    if (not inc_non_sips):
-        # SIPS records based on IPSS data
+
+    ## MELAS patients
+    if ex_melas:
+        excluded_ids["ex_melas"] = set()
+        
+        for row in filter_data["ipss_v4"]:
+            id = row['ipssid']
+            desc = row['genetsys'].lower()
+            if (row['genetsy'] == '1') and (('melas' in desc) or ('mitochondrial encephalopathy' in desc) or ('lactic acidosis' in desc)):
+                excluded_ids["ex_melas"].add(id)
+
+                
+    ## Patients not in IPSS database
+    if ex_non_ipss:
+        ipss_ids = set()
+        for row in filter_data["ipss_v4"]:
+            id = row["ipssid"]
+            ipss_ids.add(id)
+        excluded_ids["ex_non_ipss"] = [id for id in record_ids_all if (not id in ipss_ids)]        
+
+                
+    ## Patients not enrolled in SIPS I or SIPS II
+    if ex_non_sips:
         record_ids_sips_ipss = set()
-        for row in filter_data_ipss:
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
             if (row["substud___4"] == "1") or (row["substud___6"] == "1"):
                 record_ids_sips_ipss.add(id)
+        excluded_ids["ex_non_sips"] = [id for id in record_ids_all if (not id in record_ids_sips_ipss)]
+        
 
-    # SIPS II patients
-    if (not inc_non_sips2):
-        # SIPS2 records based on IPSS data
+    ## Patients not enrolled in SIPS II
+    if ex_non_sips2:
         record_ids_sips2_ipss = set()
-        for row in filter_data_ipss:
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
             if (row["substud___4"] == "1"):
                 record_ids_sips2_ipss.add(id)
+        excluded_ids["ex_non_sips2"] = [id for id in record_ids_all if (not id in record_ids_sips2_ipss)]
 
-    # SIPS II cohort I patients
-    if (not inc_non_sips2_cohort1):
-        # SIPS2 cohort I records based on IPSS data
+                
+    ## SIPS II cohort I patients
+    if ex_non_sips2_cohort1:
         record_ids_sips2_cohort1_ipss = set()
-        for row in filter_data_ipss:
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
             if (row["substud___4"] == "1") and (row['sip_cohort'] == '1'):
                 record_ids_sips2_cohort1_ipss.add(id)
-
-    # SIPS II cohort II patients
-    if (not inc_non_sips2_cohort2):
-        # SIPS2 cohort II records based on IPSS data
+        excluded_ids["ex_non_sips2_cohort1"] = [id for id in record_ids_all if (not id in record_ids_sips2_cohort1_ipss)]
+                
+                
+    ## SIPS II cohort II patients
+    if ex_non_sips2_cohort2:
         record_ids_sips2_cohort2_ipss = set()
-        for row in filter_data_ipss:
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
             if (row["substud___4"] == "1") and (row['sip_cohort'] == '2'):
                 record_ids_sips2_cohort2_ipss.add(id)
-
-    # Patients excluded from SIPS studies based on SIPS II variable 'screened'
-    if (not inc_sips_exclusions):
-        record_ids_sips_exclusions_sips2 = set()
-        for row in filter_data_sips2:
+        excluded_ids["ex_non_sips2_cohort2"] = [id for id in record_ids_all if (not id in record_ids_sips2_cohort2_ipss)]
+                
+                
+    ## Patients excluded from SIPS studies based on SIPS II variable 'screened'
+    if ex_sips_exclusions:
+        excluded_ids["ex_sips_exclusions"] = set()
+        
+        for row in filter_data["sips2_v2"]:
             id = row['ipssid']
             if (row["screened"] in ['1', '3']):
-                record_ids_sips_exclusions_sips2.add(id)
+                excluded_ids["ex_sips_exclusions"].add(id)
 
-    # Patients excluded from SIPS studies based on SIPS II variable 'screened'
-    if (not inc_sips_exclusions_2):
-        record_ids_sips_exclusions_2_sips2 = set()
+                
+    ## Patients excluded from SIPS studies based on SIPS II variables 'screened' and 'actcohortsp'
+    if ex_sips_exclusions_2:
+        excluded_ids["ex_sips_exclusions_2"] = set()
+        
         actcohort2_ids = set()
-        for row in filter_data_sips2:
+        for row in filter_data["sips2_v2"]:
             id = row['ipssid']
             if (row["screened"] in ['1']):
-                record_ids_sips_exclusions_2_sips2.add(id)
+                excluded_ids["ex_sips_exclusions_2"].add(id)
             if (row['actcohortsp'] == '2'):
                 actcohort2_ids.add(id)
-        for row in filter_data_sips2:
+        for row in filter_data["sips2_v2"]:
             id = row['ipssid']
             if (id in actcohort2_ids) and (row['screened'] == '3'):
-                record_ids_sips_exclusions_2_sips2.add(id)
-            
-    # Patients for whom patient_information_complete != 2.
-    if (not inc_patient_info_incomp):
-        print "WARNING: Requested only IDs with patient_information_complete = 2; Including *all* SLCH patients regardless of this field."
+                excluded_ids["ex_sips_exclusions_2"].add(id)
+
+                
+    ## Patients for whom patient_information_complete != 2.
+    if ex_patient_info_incomp:
         record_ids_patient_information_complete_ipss = set()
-        for row in filter_data_ipss:
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
             if (row['patient_information_complete'] == '2') or (row['redcap_data_access_group'] == 'slch'):
                 record_ids_patient_information_complete_ipss.add(id)
+        excluded_ids["ex_patient_info_incomp"] = [id for id in record_ids_all if (not id in record_ids_patient_information_complete_ipss)]
 
-    # Patients for whom any of the "core" forms are not marked as complete
-    if (not inc_core_incomplete):
-        record_ids_core_incomplete_ipss = set()
-        for row in filter_data_ipss:
+        
+    ## Patients for whom any of the "core" forms are not marked as complete
+    if ex_core_incomplete:
+        excluded_ids["ex_core_incomplete"] = set()
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
-            if (row['patient_information_complete'] != '2') or (row['cardiac_and_arteriopathy_risk_factors_complete'] != '2') or (row['other_child_and_neonatal_risk_factors_complete'] != '2') or (row['clinical_presentation_complete'] != '2'):# or (row['status_at_discharge_complete'] != '2'):
-                record_ids_core_incomplete_ipss.add(id)
+            if (row['patient_information_complete'] != '2') or (row['cardiac_and_arteriopathy_risk_factors_complete'] != '2') or (row['other_child_and_neonatal_risk_factors_complete'] != '2') or (row['clinical_presentation_complete'] != '2'):
+                excluded_ids["ex_core_incomplete"].add(id)
 
-    # Patients who are enrolled in VIPS.
-    if (not inc_non_vips_enrolled):
+                
+    # Patients who are not enrolled in VIPS.
+    if ex_non_vips_enrolled:
         record_ids_vips_enrolled = set()
-        for row in filter_data_vips2:
+        for row in filter_data["vips2"]:
             id = row['ipssid']
             if (row['vscreen_sfoutc'] == '4'):
                 record_ids_vips_enrolled.add(id)
+        excluded_ids["ex_non_vips_enrolled"] = [id for id in record_ids_all if (not id in record_ids_vips_enrolled)]
 
+        
     # Patients who are "VIPS screened not enrolled" based on the IPSS field 'vips_screened'.
-    if (not inc_vips_screen_nonenroll):
-        record_ids_vips_screen_nonenroll_ipss = set()
-        for row in filter_data_ipss:
+    if ex_vips_screen_nonenroll:
+        excluded_ids["ex_vips_screen_nonenroll"] = set()
+        for row in filter_data["ipss_v4"]:
             id = row['ipssid']
             if (row['vips_screened'] == '1'):
-                record_ids_vips_screen_nonenroll_ipss.add(id)
+                excluded_ids["ex_vips_screen_nonenroll"].add(id)
 
-    # Fake records whose IDs start with 'test_'
-    if (not inc_tests):
-        record_ids_tests_ipss = set()
-        for row in filter_data_ipss:
-            id = row['ipssid']
-            if (id[:5] == 'test_'):
-                record_ids_tests_ipss.add(id)
-                
 
-    ## Exclude IDs based on request. 
-    if (db == "ipss"):
-        record_ids = record_ids_ipss
-    elif (db == "arch"):
-        record_ids = record_ids_arch
-    elif (db == "psom"):
-        record_ids = record_ids_psom
-    elif (db == "sips2"):
-        record_ids = record_ids_sips2
-    elif (db == "vips2"):
-        record_ids = record_ids_vips2
-    elif (db == "psom2"):
-        record_ids = record_ids_psom2
-
-    if (not inc_registry_only): # if excluding registry-only
-        record_ids = [id for id in record_ids if (not id in record_ids_registry_only_ipss)]
-    if (not inc_unknown_stroke_type): # if excluding unknown stroke type
-        record_ids = [id for id in record_ids if (not id in record_ids_unknown_stroke_type_ipss)]
-    if (not inc_pre_2003): # if excluding patients added before 2003
-        record_ids = [id for id in record_ids if (not id in record_ids_pre_2003_ipss)]
-    if (not inc_pre_2014): # if excluding patients added before 2014
-        record_ids = [id for id in record_ids if (not id in record_ids_pre_2014_ipss)]
-    if (not inc_post_20191001): # if excluding patients added on or after 2019-10-01
-        record_ids = [id for id in record_ids if (not id in record_ids_post_20191001_ipss)]
-    if (not inc_sk_patients): # if excluding SickKids patients
-        record_ids = [id for id in record_ids if (not id in record_ids_sk_ipss)]
-    if (not inc_neonatal_stroke): # if excluding neonatal stroke cases
-        record_ids = [id for id in record_ids if (not id in record_ids_neonatal_ipss)]
-    if (not inc_adult_stroke): # if excluding adult stroke cases
-        record_ids = [id for id in record_ids if (not id in record_ids_adult_stroke)]
-    if (not inc_melas): # if excluding adult stroke cases
-        record_ids = [id for id in record_ids if (not id in record_ids_melas)]
-    if (not inc_placeholders): # if excluding Chloe's list of incomplete patients
-        record_ids = [id for id in record_ids if (not id in record_ids_placeholders_ipss)]
-    if (not inc_non_ipss): # if excluding records not in IPSS.
-        record_ids = [id for id in record_ids if (id in record_ids_ipss)]
-    if (not inc_non_sips): # if excluding records not in SIPS I or SIPS II.
-        record_ids = [id for id in record_ids if (id in record_ids_sips_ipss)]
-    if (not inc_non_sips2): # if excluding records not in SIPS II
-        record_ids = [id for id in record_ids if (id in record_ids_sips2_ipss)]
-    if (not inc_non_sips2_cohort1): # if excluding records not in SIPS II cohort I
-        record_ids = [id for id in record_ids if (id in record_ids_sips2_cohort1_ipss)]
-    if (not inc_non_sips2_cohort2): # if excluding records not in SIPS II cohort II
-        record_ids = [id for id in record_ids if (id in record_ids_sips2_cohort2_ipss)]
-    if (not inc_sips_exclusions): # if excluding records not in SIPS II
-        record_ids = [id for id in record_ids if (not id in record_ids_sips_exclusions_sips2)]
-    if (not inc_sips_exclusions_2): # if excluding records not in SIPS II (method 2)
-        record_ids = [id for id in record_ids if (not id in record_ids_sips_exclusions_2_sips2)]
-    if (not inc_patient_info_incomp):
-        record_ids = [id for id in record_ids if (id in record_ids_patient_information_complete_ipss)]
-    if (not inc_core_incomplete):
-        record_ids = [id for id in record_ids if (not id in record_ids_core_incomplete_ipss)]
-    if (not inc_non_vips_enrolled):
-        record_ids = [id for id in record_ids if (id in record_ids_vips_enrolled)]
-    if (not inc_vips_screen_nonenroll):
-        record_ids = [id for id in record_ids if (not id in record_ids_vips_screen_nonenroll_ipss)]
-    if (not inc_tests):
-        record_ids = [id for id in record_ids if (not id in record_ids_tests_ipss)]
+    ## Remove all excluded IDs, and return the filtered list.
+    record_ids = record_ids_all
+    for exclusion, excluded_id_set in excluded_ids.iteritems():
+        record_ids = [id for id in record_ids if (not id in excluded_id_set)]
     return record_ids
 
 #### Run tests.
 if (__name__ == "__main__"):
-    id_lists = []
-#    id_lists.append(getIPSSIDs())
-#    id_lists.append(getIPSSIDs(inc_core_incomplete=False))
-#    id_lists.append(getIPSSIDs(db='ipss', inc_registry_only=False, inc_unknown_stroke_type=True, inc_pre_2014=True, inc_sk_patients=True, inc_neonatal_stroke=False, inc_placeholders=False, inc_adult_stroke=False, inc_melas=False, inc_non_ipss=False, inc_core_incomplete=False)) # malig
-#    id_lists.append(getIPSSIDs(db='ipss', inc_registry_only=False, inc_unknown_stroke_type=True, inc_pre_2014=True, inc_sk_patients=True, inc_neonatal_stroke=True, inc_placeholders=False, inc_adult_stroke=False, inc_melas=True, inc_non_ipss=False, inc_core_incomplete=False)) # subhem
-#    id_lists.append(getIPSSIDs(db='ipss', inc_non_sips2_cohort1=False))
-#    id_lists.append(getIPSSIDs(db='ipss', inc_non_sips2_cohort2=False))
-#    id_lists.append(getIPSSIDs(db='vips2', inc_non_vips_enrolled=True))
-#    id_lists.append(getIPSSIDs(db='vips2', inc_non_vips_enrolled=False))
+    test_args = ["ex_registry_only", "ex_unknown_stroke_type", "ex_pre_2003", "ex_pre_2014", "ex_post_20191001", "ex_sk_patients", "ex_neonatal_stroke", "ex_placeholders", "ex_adult_stroke", "ex_melas", "ex_non_ipss", "ex_non_sips", "ex_non_sips2", "ex_non_sips2_cohort1", "ex_non_sips2_cohort2", "ex_sips_exclusions", "ex_sips_exclusions_2", "ex_patient_info_incomp", "ex_core_incomplete", "ex_non_vips_enrolled", "ex_vips_screen_nonenroll"]
+
+    all = getIPSSIDs()
+    print "All"
+    print len(all)
+    print
     
-#    sips_final_ids_ipss = getIPSSIDs(db='ipss', inc_non_sips=False, inc_sips_exclusions_2=False)
-#    with open('sips_final_ids_ipss_delete_me.txt', 'wb') as handle:
-#        handle.writelines(sips_final_ids_ipss)
-#    sips_final_ids_sips2 = getIPSSIDs(db='sips2', inc_non_sips=False, inc_sips_exclusions_2=False)
-#    sips_final_ids_psom2 = getIPSSIDs(db='psom2', inc_non_sips=False, inc_sips_exclusions_2=False)
-#    print "union size:", len(set(sips_final_ids_sips2).union(set(sips_final_ids_ipss)))
-#    print "intersection size:", len(set(sips_final_ids_sips2).intersection(set(sips_final_ids_ipss)))
-#    for id in ['10183-1', '559-27', '10184-3']:
-#        if id in sips_final_ids_ipss:
-#            print "Bad ID allowed in IPSS:", id
-#        if id in sips_final_ids_sips2:
-#            print "Bad ID allowed in sips2:", id
-#        if id in sips_final_ids_psom2:
-#            print "Bad ID allowed in psom2:", id
-#    for id in sips_final_ids_ipss:
-#        if id not in sips_final_ids_sips2:
-#            print "ID in IPSS not in SIPS 2:", id
-#    for id in sips_final_ids_psom2:
-#        if id not in sips_final_ids_ipss:
-#            print "ID in PSOM not in IPSS:", id
+    for test_arg in test_args:
+        args_dict = {test_arg:True}
+        print args_dict
+        some = getIPSSIDs(from_code_name='ipss_v4', **args_dict)
+        print len(some)
+        print
 
-#    id_lists.append(sips_final_ids_ipss)
-#    id_lists.append(sips_final_ids_sips2)
-#    id_lists.append(sips_final_ids_psom2)
-
-#    id_lists.append(getIPSSIDs(db='ipss', inc_post_20191001=False))
-
-#    all = getIPSSIDs(db='ipss', inc_vips_screen_nonenroll=True)
-#    some = getIPSSIDs(db='ipss', inc_vips_screen_nonenroll=False)
-
-    all = getIPSSIDs(db='ipss', inc_tests=True)
-    some = getIPSSIDs(db='ipss')
-
+    sys.exit()
+    id_lists = []
+    
+#    all = getIPSSIDs(db='ipss', ex_vips_screen_nonenroll=True)
+#    some = getIPSSIDs(db='ipss', ex_vips_screen_nonenroll=False)
+    
     id_lists.append(all)
     id_lists.append(some)
     for id in all:
