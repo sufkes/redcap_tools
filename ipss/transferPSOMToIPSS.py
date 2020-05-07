@@ -23,13 +23,8 @@ from misc.importRecords import importRecords
 from misc.getRecordIDList import getRecordIDList
 from misc.ApiSettings import ApiSettings
 
-#### Read API keys and URLS from file, to be used as the default arguments for this command line function.
-api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
-url_psom2_default, key_psom2_default, code_name_psom2_default = api_settings.getApiCredentials(code_name="psom_v2")
-url_ipss4_default, key_ipss4_default, code_name_ipss4_default = api_settings.getApiCredentials(code_name="ipss_v4")
-
 #### Define function which transfers data from PSOM V2 to IPSS V4.
-def transferPSOMToIPSS(url_psom=url_psom2_default, key_psom=key_psom2_default, url_ipss=url_ipss4_default, key_ipss=key_ipss4_default, import_non_ipss_ids=False):
+def transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_ids=False):
     """
     Transfer Summary of Impressions data from PSOM V2 to IPSS V4.
     Parameters:
@@ -302,15 +297,31 @@ if (__name__ == '__main__'):
 
     ## Define optional arguments.
     # arguments for API URLs and keys of PSOM and IPSS.
-    parser.add_argument('--url_psom', help='API URL for PSOM project to map from', type=str, default=url_psom2_default)
-    parser.add_argument('--key_psom', help='API key for PSOM project to map from', type=str, default=key_psom2_default)
-    parser.add_argument('--url_ipss', help='API URL for IPSS project to map to', type=str, default=url_ipss4_default)
-    parser.add_argument('--key_ipss', help='API key for IPSS project to map to', type=str, default=key_ipss4_default)
+    parser.add_argument('--url_psom', help="API URL for PSOM project to map from. Default: Read from api_keys.yml file under code name 'psom_v2'", type=str)
+    parser.add_argument('--key_psom', help="API key for PSOM project to map from. Default: Read from api_keys.yml file under code name 'psom_v2'", type=str)
+    parser.add_argument('--url_ipss', help="API URL for IPSS project to map to. Default: Read from api_keys.yml file under code name 'ipss_v4'", type=str)
+    parser.add_argument('--key_ipss', help="API key for IPSS project to map to. Default: Read from api_keys.yml file under code name 'ipss_v4'", type=str)
 
     parser.add_argument('--import_non_ipss_ids', help='Import of records which do not exist in the IPSS (i.e. create new records in IPSS). By default, records are only imported to IPSS if there ID already exists in IPSS. This option exists for debugging purposes only.', action='store_true')
     
     ## Parse arguments.
     args = parser.parse_args()
 
+    #### Read API keys and URLS from file, to be used as the default arguments for this command line function.
+    if (None in [args.url_psom, args.key_psom, args.url_ipss, args.key_ipss]):
+        print "At least one API URL or token was not specified. Attempting to read from user's api_keys.yml file. Any URLs or tokens specified as arguments will be ignored."
+        print
+        api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.
+        url_psom, key_psom, code_name_psom = api_settings.getApiCredentials(code_name="psom_v2")
+        url_ipss, key_ipss, code_name_ipss = api_settings.getApiCredentials(code_name="ipss_v4")
+
+    else:
+        url_psom = args.url_psom
+        key_psom = args.key_psom
+        url_ipss = args.url_ipss
+        key_ipss = args.key_ipss
+    # If, for some reason, user specified only certain keys as arguments, use those keys instead of the ones read from 
+
+    
     ## Transfer data from PSOM to IPSS.
-    transferPSOMToIPSS(url_psom=args.url_psom, key_psom=args.key_psom, url_ipss=args.url_ipss, key_ipss=args.key_ipss, import_non_ipss_ids=args.import_non_ipss_ids)
+    transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_ids=args.import_non_ipss_ids)

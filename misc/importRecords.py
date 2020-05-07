@@ -266,7 +266,7 @@ def importRecords(api_url, api_key, records_src, overwrite='normal', format='jso
 
 # Use function as command-line tool to import csv files.
 if (__name__ == '__main__'):
-    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.
 
     # Create argument parser.
     description = """Import records to a REDCap project from a CSV file. The fields to be imported must
@@ -290,7 +290,7 @@ already be defined in the project. The record IDs in the import file need not ex
     # Parse arguments
     args = parser.parse_args()
 
-    # Determine the API URL and API token based on the users input and api_keys.json file.
+    # Determine the API URL and API token based on the users input and api_keys.yml file.
     api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
     
     # Convert input csv file to string.

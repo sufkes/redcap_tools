@@ -1,49 +1,54 @@
-## High-level settings which affect data from all projects.
-settings:
-  # Specify whether to save data from each project in a separate file.
+options:
   file_split_type: chunks # Can be: none, projects, chunks
   out_dir: ~/Desktop/data_package_tests
 
-## Args to be passed into getIPSSIDs(). The record IDs returned will be exported from all projects (unless they don't exist in that project).
-getIPSSIDs_args:
-  from_code_name: dptest_l_r
-
-
-## Project-specific settings - what data to export, and how to format it.
-# Each entry in this section must be a project code name which appears in the users api_keys.json file.
 projects:
-  dptest_l_r:
-    # format_options - choose from: none, events_only, repeat_forms_events, all_forms_events, forms_only
-    format_options:
-      split_type: repeat_forms_events
+  - code_name: dptest_l_r
+    options:
+      split_type: all_forms_events
+      use_getIPSSIDs: False # If True, the record_id_list option in exportRecords_args will be ignored.
 
-    ## Set arguments to be passed into exportRecords for this project.
-    # If use_getIPSSIDs is True, the record_id_list argument in this section is ignored.
+    getIPSSIDs_args:
+      from_code_name: dptest_l_r
+
     exportRecords_args:
       export_form_completion: True
 
-  dptest_l_nr:
-    format_options:
-      split_type: repeat_forms_events
+  - code_name: dptest_l_nr
+    options:
+      split_type: all_forms_events
+      use_getIPSSIDs: False
+
     exportRecords_args:
       export_form_completion: True
 
-  dptest_nl_r:
-    format_options:
-      split_type: repeat_forms_events
+
+  - code_name: dptest_nl_r
+    options:
+      split_type: all_forms_events
+      use_getIPSSIDs: False
+
     exportRecords_args:
       export_form_completion: True
 
-  dptest_nl_nr:
-    format_options:
-      split_type: repeat_forms_events
+
+  - code_name: dptest_nl_nr
+    options:
+      split_type: all_forms_events
+      use_getIPSSIDs: False
+
     exportRecords_args:
       export_form_completion: True
 
-  ipss_v4:
-    format_options:
-      split_type: repeat_forms_events
+  - code_name: ipss_v4
+    options:
+      split_type: all_forms_events
+      use_getIPSSIDs: True
       
+    getIPSSIDs_args:
+      from_code_name: ipss_v4
+      ex_sk_patients: True
+
     exportRecords_args:
        fields:
          - chd
@@ -57,3 +62,6 @@ projects:
 #        - acute_arm_1
 #        - followup_arm_1
 #      export_form_completion: True
+       record_id_list:
+         - 106
+         - 107

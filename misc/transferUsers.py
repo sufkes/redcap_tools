@@ -69,7 +69,7 @@ Returns
     return
 
 if (__name__ == '__main__'):
-    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.
     
     ## Create argument parser.
     description = """Transfer users from one REDCap project to another. Data access group ID numbers, and users roles are not preserved.
@@ -91,7 +91,7 @@ Specify the code names (or API tokens) of two projects. The first project is the
     # Parse arguments.
     args = parser.parse_args()
     
-    # Determine the API URL and API token based on the users input and api_keys.json file.
+    # Determine the API URL and API token based on the users input and api_keys.yml file.
     api_url_1, api_key_1, code_name_1 = api_settings.getApiCredentials(api_url=args.api_urls[0], api_key=args.api_keys[0], code_name=args.code_names[0])
     api_url_2, api_key_2, code_name_2 = api_settings.getApiCredentials(api_url=args.api_urls[1], api_key=args.api_keys[1], code_name=args.code_names[1])
 

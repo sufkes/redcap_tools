@@ -13,7 +13,7 @@ from misc.ApiSettings import ApiSettings
 def getIPSSIDs(from_code_name="ipss_v4", ex_registry_only=False, ex_unknown_stroke_type=False, ex_pre_2003=False, ex_pre_2014=False, ex_post_20191001=False, ex_sk_patients=False, ex_neonatal_stroke=False, ex_placeholders=False, ex_adult_stroke=False, ex_melas=False, ex_non_ipss=False, ex_non_sips=False, ex_non_sips2=False, ex_non_sips2_cohort1=False, ex_non_sips2_cohort2=False, ex_sips_exclusions=False, ex_sips_exclusions_2=False, ex_patient_info_incomp=False, ex_core_incomplete=False, ex_non_vips_enrolled=False, ex_vips_screen_nonenroll=False):
     '''
     Parameters:
-        from_code_name:             str - code_name of database to get IDs from. Allowed values are the code names defined in user's api_keys.json file.
+        from_code_name:            str - code_name of database to get IDs from. Allowed values are the code names defined in user's api_keys.yml file.
         ex_registry_only:          bool - whether to exclude IDs of SickKids registry-only patients based on IPSS data
         ex_unknown_stroke_type:    bool - whether to exclude IDs of records with unknown stroke type based on IPSS data
         ex_pre_2003:               bool - whether to exclude IDs of patients enrolled before 2003 based on IPSS field dateentered
@@ -47,7 +47,7 @@ def getIPSSIDs(from_code_name="ipss_v4", ex_registry_only=False, ex_unknown_stro
             exclusion_args.append(key)
     
     ## Get API tokens and URLs for all projects used in the filters
-    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.    
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.    
 
     token_dict = {} # keys are code names, values are a tuple with (url, token) for that project
     for code_name in ["ipss_arch", "ipss_v4", "sips2_v2", "vips2", "psom_v2"]:
@@ -212,7 +212,6 @@ def getIPSSIDs(from_code_name="ipss_v4", ex_registry_only=False, ex_unknown_stro
         api_url = token_dict[code_name][0]
         api_key = token_dict[code_name][1]
         filter_data[code_name] = exportRecords(api_url, api_key, **args)
-
 
         
     #### Generate lists of IDs to exclude based on specified exclusions.

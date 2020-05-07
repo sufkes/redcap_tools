@@ -59,7 +59,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
 #            print "Record with ID", record_id, "in Archive, but not in IPSS"
 
     # Create one list of record ID which are non-registry and have known stroke type.
-    record_ids = getIPSSIDs(inc_registry_only=False, inc_unknown_stroke_type=False)
+    record_ids = getIPSSIDs(ex_registry_only=True, ex_unknown_stroke_type=True)
 
     ## Create dict with patient information: {record_id: {dag:"...", enroll_date:"...", ...} }
     patient_info = {}

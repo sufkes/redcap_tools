@@ -2,7 +2,7 @@
 
 # Standard modules
 import os, sys, argparse
-import json
+import yaml
 import datetime
 import warnings
 from collections import OrderedDict
@@ -79,17 +79,17 @@ def backupProjects(api_key_path, out_dir, code_name_list=None, modification_note
                 print "Unrecognized response. Please try again."
                 pass
     
-    # Check that the json file containing the project API URLs and keys exists
+    # Check that the yaml file containing the project API URLs and keys exists
     if (not os.path.exists(api_key_path)):
         raise ValueError("Input API key file '"+api_key_path+"' does not exist.")
 
     # Create OrderedDict of projects to backup
     with open(api_key_path, 'r') as handle:
-        projects_to_back_up = json.load(handle, object_pairs_hook=OrderedDict)
+        projects_to_back_up = yaml.load(handle, Loader=yaml.SafeLoader)
 
     ## If a specific set of project code names was given, check that their keys exist, and remove all other projects from the OrderedDict.
     if (not code_name_list is None):
-        # Check that each code_name appears in the json.
+        # Check that each code_name appears in the api_keys file.
         for code_name in code_name_list:
             if (not code_name in projects_to_back_up.keys()):
                 raise ValueError("Requested project code name '"+code_name+"' not found in '"+api_key_path+"'")
@@ -126,7 +126,7 @@ def backupProjects(api_key_path, out_dir, code_name_list=None, modification_note
     return
 
 if (__name__ == "__main__"):
-    # Create instance of ApiSettings class, containing default output directory, and default path to api_keys.json file.
+    # Create instance of ApiSettings class, containing default output directory, and default path to api_keys.yml file.
     api_settings = ApiSettings()
         
     # Create argument parser.
@@ -134,9 +134,9 @@ if (__name__ == "__main__"):
     parser = argparse.ArgumentParser(description=description)
 
     # Define optional arguments.
-    parser.add_argument("-a", "--api_key_path", type=str, help="path to json file containing API URLs and keys of projects to be backed up. Default: '"+api_settings.settings['api_key_path']+"'", default=api_settings.settings['api_key_path'])
+    parser.add_argument("-a", "--api_key_path", type=str, help="path to yaml file containing API URLs and keys of projects to be backed up. Default: '"+api_settings.settings['api_key_path']+"'", default=api_settings.settings['api_key_path'])
     parser.add_argument("-o", "--out_dir", help="path to output directory where backups will be saved. Default: '"+api_settings.settings['default_backups_dir']+"'", type=str, default=api_settings.settings['default_backups_dir'])
-    parser.add_argument("-n", "--code_name_list", help="list of code names of projects to back up. All code names provided must be present in the api_keys.json file.", nargs="+", metavar=("code_name_1","code_name_2"))
+    parser.add_argument("-n", "--code_name_list", help="list of code names of projects to back up. All code names provided must be present in the api_keys.yml file.", nargs="+", metavar=("code_name_1","code_name_2"))
     parser.add_argument("-m", "--modification_notes", action='store', type=str, help='Notes about why a backup is being performed. For example, if a project is about to be modified, the user should note the project to be modified and what changes will be made, back up the project, and then perform the changes.')
     parser.add_argument("-t", "--timestamp", help="include the time of day at which the backup was performed in the backup directory name. By default, only the date is used.", action='store_true')
     parser.add_argument("-s", "--skip_files", help="do not back up files stored in File Upload fields. Note that the File Repository is not backed up regardless of this option", action='store_true')   

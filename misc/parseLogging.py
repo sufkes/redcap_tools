@@ -203,7 +203,7 @@ def createReport(log_paths, records=None, fields=None, out_path=None, quiet=Fals
 
 #### Execute main function if script is called directly.
 if (__name__ == '__main__'):
-    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.
     
     # Create argument parser.
     description = """

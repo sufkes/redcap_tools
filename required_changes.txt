@@ -1,12 +1,8 @@
-# This is a list of all of the changes I need to make to my scripts before I finish:
-
-Scripts that need to read lists of specific API tokens and URLs.
+Scripts that need to work properly with and without settings.yml and api_keys.yml:
+transferPSOMToIPSS.py
 
 Scripts that require specific logging files:
 /misc/parseLogging.py
-
-Scripts that require an output folder:
-
 
 Scripts that require event_id numbers:
 /misc/getEventIDs.py
@@ -16,14 +12,17 @@ Things I need to set up to work with IPSS V4:
 /misc/parseLogging.py
 /reports/makeDataPackage.py
 
-Other:
-- Change the way that all scripts read API keys. I should set it up so that a user will have a single file with the format:
-<project id> <api url> <api key>
-and they can simply specify the project_id as an argument to the script.
-- getEventIDs.py should read from a JSON file. 
-- Set it up so that there is a single supplementary (nonpublic) folder containing:
-    - API URL/token & project ID files.
-    - Logging for IPSS V1, V2, V3, V4.
-    - Output for:
-        - qc
-	- makeDataPackage.py
+# Action items from Alex:
+- Data package.
+- Reports: active users by DAG, Cumulative enrollment by DAG, Total enrollment (excluding HSC registry)
+- PSOM Script v2 to v4
+- backing up projects
+- Quality control (checking for missing fields)
+- Import records and import metadata
+- Transfer all users between projects (useful for database migrations)
+- Parse the logging information (e.g. find all changes to field 'indet' in record '123' over IPSS V1, V2, V3, V4)
+- Overwrite red "form_complete" fields with blanks in empty forms.
+- Script for generating lists of record IDs based on commonly used criteria 
+- Documentation
+- add api_key.yml template
+- add event_ids.yml template

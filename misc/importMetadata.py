@@ -30,7 +30,7 @@ def importMetadata(api_url, api_key, csv_string):
     return
 
 if (__name__ == '__main__'):
-    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.
     
     ## Create argument parser.
     description = """Import a data dictionary CSV to a REDCap project.
@@ -52,7 +52,7 @@ Overwrites current data dictionary."""
     # Parse arguments.
     args = parser.parse_args()
 
-    # Determine the API URL and API token based on the users input and api_keys.json file.
+    # Determine the API URL and API token based on the users input and api_keys.yml file.
     api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
     
     # Read CSV file to string

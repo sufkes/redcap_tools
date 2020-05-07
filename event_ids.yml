@@ -1,0 +1,90 @@
+## Note that the sections in this file are code_names define in the user's api_keys.yml file, so changing thse section names will break getEventIDs.py.
+
+vips2:
+  confirmation_and_t_arm_1: 28163
+  biosamples_arm_1: 28166
+  neuroimaging_arm_1: 28165
+  acute_arm_1: 18585
+  recurrence_arm_1: 28172
+  12_month_arm_1: 18587
+  arteriopathy_class_arm_1: 28237
+  additional_fup_1_arm_1: 18618
+  additional_fup_2_arm_1: 18619
+  additional_fup_3_arm_1: 18620
+  additional_fup_4_arm_1: 18621
+  confirmation_and_t_arm_2: 28164
+  biosamples_arm_2: 28167
+  clinical_requireme_arm_2: 20714
+
+ipss_arch:
+  acute_arm_1: 23369
+  follow_up_arm_1: 23393
+  treatment_with_rec_arm_1: 23406
+
+sips2_eeg:
+  eeg__1_arm_1: 24540
+  eeg__2_arm_1: 24541
+  eeg__3_arm_1: 24542
+  eeg__4_arm_1: 24543
+  eeg__5_arm_1: 24544
+  eeg__6_arm_1: 24545
+  eeg__7_arm_1: 24546
+  eeg__8_arm_1: 24547
+  eeg__9_arm_1: 24548
+  eeg__10_arm_1: 24549
+
+ipss_v3:
+  acute_arm_1: 24670
+  followup_arm_1: 24671
+
+satpcs: 
+
+sips1: 
+
+sips2_v2:
+  confirmation_and_t_arm_1: 28070
+  neuroimaging_arm_1: 28135
+  acute_arm_1: 28092
+  3_month_arm_1: 28071
+  12_month_arm_1: 28072
+  additional_fup1_arm_1: 28087
+  additional_fup2_arm_1: 28088
+  additional_fup3_arm_1: 28089
+  additional_fup4_arm_1: 28090
+  additional_fup5_arm_1: 28091
+  additional_fup6_arm_1: 28078
+
+issls:
+ 
+ipss_neuro:
+  acute_arm_1: 30854
+  followup_arm_1: 32701
+
+ipss_v4:
+  acute_arm_1: 34247
+  followup_arm_1: 34327
+
+
+sppt_phi:
+
+psom_v1:
+  initial_psom_arm_1: 11566
+  follow_up_psom_arm_1: 11567
+
+psom_v2:
+  acute_hospitalizat_arm_1: 13428
+  initial_psom_arm_1: 13425
+  follow_up_psom_arm_1: 13426
+
+ 
+psom_clin:
+  psom_initial_arm_1: 1425
+  psom_followup_arm_1: 1427
+
+npsych:
+  patient_informatio_arm_1: 1451
+  preschool_35_yrs_arm_1: 1452
+  schoolage_616_yrs_arm_1: 1453
+  older_adolescent_1_arm_1: 1454
+  other_arm_1: 1459
+

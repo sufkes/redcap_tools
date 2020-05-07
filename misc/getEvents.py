@@ -2,7 +2,7 @@
 # Standard modules
 import os
 import warnings
-import json
+import yaml
 
 # Non-standard modules
 import redcap # PyCap
@@ -20,10 +20,10 @@ def getEvents(api_url, api_key, event_ids_path=None, quiet=False):
     project_longitudinal = bool(project_info["is_longitudinal"])
     
     if project_longitudinal:
-        # Read the mapping from event name to event IDs at the path indicated in settings.json
+        # Read the mapping from event name to event IDs at the path indicated in settings.yml
         api_settings = ApiSettings()
-        api_url, api_key, code_name = api_settings.getApiCredentials(api_url=api_url, api_key=api_key) # code_name will be None if the entry does not exist in api_keys.json
-        if (event_ids_path is None): # if a path to an event IDs map json file was specified explicitly, use that instead of the path specified in settings.json
+        api_url, api_key, code_name = api_settings.getApiCredentials(api_url=api_url, api_key=api_key) # code_name will be None if the entry does not exist in api_keys.yml
+        if (event_ids_path is None): # if a path to an event IDs map yaml file was specified explicitly, use that instead of the path specified in settings.yml
             event_ids_path = api_settings.settings['event_ids_path']
         if (not os.path.exists(event_ids_path)):
             if (not quiet):
@@ -33,10 +33,15 @@ def getEvents(api_url, api_key, event_ids_path=None, quiet=False):
             event_ids_map = {}
         else:
             with open(event_ids_path, 'r') as handle:
-                event_ids_map_all = json.load(handle)
+                event_ids_map_all = yaml.load(handle, Loader=yaml.SafeLoader)
+
+                # Convert the event_ids to strings.
+                for ii, event_ids_map in event_ids_map_all.iteritems():
+                    if (not event_ids_map is None):
+                        event_ids_map_all[ii] = {k:str(v) for k,v in event_ids_map.iteritems()}
             try:
                 event_ids_map = event_ids_map_all[code_name]
-            except KeyError: # if project_code name does not have an entry in event_ids.json
+            except KeyError: # if project_code name does not have an entry in event_ids.yml
                 if (not quiet):
                     warnings.warn("code_name '"+code_name+"' is not an entry in '"+event_ids_path+"'")
                 event_ids_map = {}
@@ -58,7 +63,7 @@ def getEvents(api_url, api_key, event_ids_path=None, quiet=False):
 #            events[pycap_event["unique_event_name"]]["event_id"] = getEventIDs(api_url, api_key, pycap_event["unique_event_name"]) # NOT SURE HOW TO GET THIS INFORMATION AUTOMATICALLY.
             if (event_ids_map != {}):
                 try:
-                    event_id = event_ids_map[pycap_event["unique_event_name"]] # SURE HOW TO GET THIS INFORMATION
+                    event_id = event_ids_map[pycap_event["unique_event_name"]] 
                 except KeyError:
                     if (not quiet):
                         warnings.warn("Event named '"+pycap_event["unique_event_name"]+"' not found in '"+event_ids_path+"'")
@@ -69,3 +74,4 @@ def getEvents(api_url, api_key, event_ids_path=None, quiet=False):
     else:
         events = None
     return events
+

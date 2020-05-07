@@ -54,18 +54,6 @@ def exportRecordsChunked(project, record_ids=None, events=None, fields=None, for
             # Export a chunk of records. Format is a csv-format string.
             chunked_response = project.export_records(records=record_chunk, events=events, fields=fields, forms=forms, export_data_access_groups=True, format=format) # includes column headers
             
-#            if (format == "csv"):
-#                if column_headers_written: # only write column headers for first chunk.
-#                    response.extend(chunked_response.splitlines()[1:]) # remove first row of current chunk (the column headers).
-#                else:
-#                    response.extend(chunked_response.splitlines()) # include first row of current chunk.
-#                    column_headers_written = True
-#            elif (format == "json"):
-#                response.extend(chunked_response)
-#        if (format == "csv"):
-#            response = "\n".join(response) # convert list of csv lines back into a csv.
-#            response += "\n" # append newline to match format of non-chunked export.
-
             if (format == 'csv'):
                 if (not column_headers_written):
                     # Add current chunk of data including column headers.
@@ -233,14 +221,6 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
             warnings.warn("Specific forms or fields were requested, but none of them exist in the project. Returning no data.")
         project_empty = True
 
-
-#    first_col = project.export_records(records=record_id_list, fields=[project.def_field], events=events)
-#    try:
-#        first_record_id = first_col[0][project.def_field]
-#        project_empty = False
-#    except IndexError: # Catch case in which project contains no records.
-#        project_empty = True
-
     if project_empty:
         if (format == 'json'):
             return []
@@ -290,7 +270,7 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
 
 ## Use function as a command-line tool.
 if (__name__ == '__main__'):
-    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to the find file containing API keys and URLs.
     
     ## Create argument parser.
     description = """Export records from a REDCap project to a csv file. By default, all records, fields, and events are exported. Use optional arguments to export data for only certain records, fields, or 
@@ -321,7 +301,7 @@ events. User must provide either a project API key or a project code name, not b
     # Parse arguments.
     args = parser.parse_args()
     
-    # Determine the API URL and API token based on the users input and api_keys.json file.
+    # Determine the API URL and API token based on the users input and api_keys.yml file.
     api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
     
     # Export records.

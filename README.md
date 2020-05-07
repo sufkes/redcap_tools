@@ -8,4 +8,6 @@ Most of the scripts require the Python module "PyCap". See https://github.com/re
 
 PyCap requires the module "requests". See https://pypi.org/project/requests
 
-Some of the scripts require the Python module "Pandas". See https://pandas.pydata.org/pandas-docs/stable/install.html 
+Some scripts require the Python module "pyyaml". See https://pypi.org/project/PyYAML
+
+Some scripts require the Python module "Pandas". See https://pandas.pydata.org/pandas-docs/stable/install.html

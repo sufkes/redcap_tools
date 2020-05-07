@@ -203,7 +203,7 @@ print "saveData(): "+"{:.3g}".format(e-s)+"s"
 
 
 if (__name__ == '__main__'):
-    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find json file containing API keys and URLs.
+    api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.
     
     ## Create argument parser.
     description = """Export records from a REDCap project to a csv file. By default, all records, fields, and events are exported. Use optional arguments to export data for only certain records, fields, or 
@@ -234,5 +234,5 @@ events. User must provide either a project API key or a project code name, not b
     # Parse arguments.
     args = parser.parse_args()
     
-    # Determine the API URL and API token based on the users input and api_keys.json file.
+    # Determine the API URL and API token based on the users input and api_keys.yml file.
     api_url, api_key, code_name = api_settings.getApiCredentials(api_url=args.api_url, api_key=args.api_key, code_name=args.code_name)
