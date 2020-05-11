@@ -286,7 +286,8 @@ def writeBranchingLogicFunction(def_field, project_longitudinal, project_repeati
         # SHOULD BE DEFINED ELSEWHERE ONCE AND FOR ALL TO AVOID DISCREPANCIES.
         operators = ["==", "!=", "<", ">", "<=", ">=", " and ", " or ", ")", "(", "+", "-", "*", "/"]
         operators_disallowed = ["+", "-", "*", "/"] # Arithmetic found to not work well in branching logic. Raise warnings if these are used.
-
+        operators_disallowed.append("!") # Can't handle logic of the type !([field1] = '1' and [field2]='2')
+        
         # Identify the arguments of the branching logic function:
         args = []
         for token in translated_tokens:
@@ -300,7 +301,7 @@ def writeBranchingLogicFunction(def_field, project_longitudinal, project_repeati
         # Check for smart variables and quit if any are found.
         for arg_index in range(len(args)):
             arg = args[arg_index]
-            if ("-" in arg["token"]): # All smart variables contain dashes.
+            if ("-" in arg["token"]): # All smart variables seem to contain dashes.
                 error_msg = "ERROR IN BRANCHING LOGIC: The field '"+field_name+"' in the form '"+metadata_without_branching_logic[field_name].form_name+"' has branching logic which appears to contain a Smart Variable. This quality control script cannot currently interpret Smart Variables."
                 metadata_without_branching_logic[field_name].branching_logic_errors.append(error_msg)
                 branching_logic_valid = False
@@ -308,9 +309,10 @@ def writeBranchingLogicFunction(def_field, project_longitudinal, project_repeati
         # Check for arithmetic operators (and others) which are known to malfunction in branching logic.
         for token in translated_tokens:
             if token in operators_disallowed:
-                error_msg = "ERROR IN BRANCHING LOGIC: The field '"+field_name+"' in the form '"+metadata_without_branching_logic[field_name].form_name+"' has branching logic which uses arithmetic operations. These are known to malfunction when used in branching logic."
+                error_msg = "ERROR IN BRANCHING LOGIC: The field '"+field_name+"' in the form '"+metadata_without_branching_logic[field_name].form_name+"' has branching logic which uses arithmetic operations, or uses logic of the form ![field]='1'. These are not handled by this script."
                 metadata_without_branching_logic[field_name].branching_logic_errors.append(error_msg)
                 branching_logic_valid = False
+                break
                 
         # Interpret each argument as [event][variable(checkbox)][instance]
         if (not project_repeating) and (not project_longitudinal):
@@ -482,6 +484,6 @@ def writeBranchingLogicFunction(def_field, project_longitudinal, project_repeati
                 print "Branching logic:", branching_logic_string
                 for error_msg in metadata_without_branching_logic[field_name].branching_logic_errors:
                     print error_msg
-                print Color.red + "ERRORS IN BRANCHING LOGIC: The branching logic for field '"+field_name.split("___")[0]+"' is invalid. The branching logic function for this field will always return True." + Color.end
+                print Color.red + "ERRORS IN BRANCHING LOGIC: The branching logic for field '"+field_name.split("___")[0]+"' is invalid, or is not handled by this script. The branching logic function for this field will always return True." + Color.end
                 print                
     return branching_logic

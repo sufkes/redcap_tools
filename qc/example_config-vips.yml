@@ -1,0 +1,22 @@
+## General settings
+out_dir: /Users/steven ufkes/Desktop/garb # Where to save the reports to.
+
+## Specify REDCap project.
+code_name: vips2 # This must be a section in your api_keys.yml file
+
+## Specify which records to check. 
+# If use_custom_record_id_list is True, there must be an entry 'record_id_list' containg a list of IDs.
+# If use_getIPSSIDs is True, there must be an entry 'getIPSSIDs_args', containing valid arguments to pass to the getIPSSIDs function.
+# If use_custom_record_id_list and use_getIPSSIDs are both False, all records in the project are checked.
+# Cannot have use_custom_record_id_list and use_getIPSSIDs both True.
+use_custom_record_id_list: False
+use_getIPSSIDs: True
+getIPSSIDs_args:
+  from_code_name: vips2
+  ex_non_vips_enrolled: True
+
+# Which checks to perform. For each entry their must be a Python script called <entry>.py which returns a list called "checklist", containing instances of the "Check" object defined in Check.py
+checks:
+  - checklist_default
+  - checklist_hidden_data
+  - checklist_vips2

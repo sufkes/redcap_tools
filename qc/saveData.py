@@ -1,7 +1,7 @@
 import os
 import pickle
 
-def saveData(out_dir, project, forms, project_info, metadata, record_id_map, dags_used, dags, check_results):
+def saveData(out_dir, project, forms, project_info, metadata, record_id_map, dags_used, dags, check_results, save_all=False):
     """This function is used to save data exported from REDCap, and the results of the checks performed.
     Functions such as the branching logic functions are not saved, as functions are not straigtforward
     to pickle in Python (and aren't needed currently)."""

@@ -489,6 +489,10 @@ def getIPSSIDs(from_code_name="ipss_v4", ex_registry_only=False, ex_unknown_stro
 if (__name__ == "__main__"):
     test_args = ["ex_registry_only", "ex_unknown_stroke_type", "ex_pre_2003", "ex_pre_2014", "ex_post_20191001", "ex_sk_patients", "ex_neonatal_stroke", "ex_placeholders", "ex_adult_stroke", "ex_melas", "ex_non_ipss", "ex_non_sips", "ex_non_sips2", "ex_non_sips2_cohort1", "ex_non_sips2_cohort2", "ex_sips_exclusions", "ex_sips_exclusions_2", "ex_patient_info_incomp", "ex_core_incomplete", "ex_non_vips_enrolled", "ex_vips_screen_nonenroll"]
 
+    rr = getIPSSIDs(from_code_name="ipss_v4", ex_sk_patients=True)
+    print rr
+    sys.exit()
+    
     all = getIPSSIDs()
     print "All"
     print len(all)

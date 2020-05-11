@@ -6,24 +6,14 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import misc
 from misc.getRecord import getEntryLR
 
-# THIS SHOULD BE PUT IN THE DEFAULT CHECKLIST; I DIDN'T DO IT THE FIRST TIME BECAUSE I NEED TO HANDLE ALL CASES (LONGITUDINAL, REPEATING) IN getRecords() FUNCTIONS.
-
 # Create list of checks (must be called 'checklist').
 checklist = []
-
  
 # Define check by specifying each of the parameters in the 'Check' class.
 
-
-# For project-wide checks, include all rows in records, even those which should not exist based on 
-# the events and repeating forms settings.
-# Checks performed once per project include:
-# - Check for (near) duplicate records.
-# - Check for entries lying in fields hidden by branching logic.
-
 #### Check: Fields that are hidden by branching logic but contain data
 name = "hidden_with_data"
-description = "Fields that are hidden by branching logic but contain data"
+description = "Fields that are hidden by branching logic but contain data. (This gives false positives when branching logic compares values with numbers not enclosed in quotes (e.g. [field] = 1)"
 report_forms = True
 inter_project = False
 whole_row_check = False

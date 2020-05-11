@@ -55,7 +55,7 @@ def readConfig(config_path):
     """
     
     with open(args.config_path, "r") as handle:
-        config = yaml.load(handle, Loader=yaml.BaseLoader)
+        config = yaml.load(handle, Loader=yaml.SafeLoader)
     
     ## Verify that YAML file has the required entries and format.
     # Required format for YAML file:
@@ -102,6 +102,9 @@ def readConfig(config_path):
     return config
 
 def buildProjects(config):
+    #### Read user's settings.yml file, which will be used to get API tokens and URLs.
+    api_settings = ApiSettings()
+    
     ## Build a list of "projects" - dicts which store data and settings for the project.
     projects = config["projects"]
     
@@ -430,10 +433,7 @@ def makeDataPackage(config_path):
     saveData(config, projects)
         
 ## Use script from command line.
-if (__name__ == "__main__"):
-    #### Read user's settings.yml file, which will be used to get API tokens and URLs.
-    api_settings = ApiSettings()
-    
+if (__name__ == "__main__"):    
     #### Parse command-line arguments.
     ## Create argument parser
     description = "Create data package using settings specified in YAML configuration file."

@@ -166,25 +166,13 @@ def checkDriver(checklist, out_dir, def_field, forms, project_info, project_long
 
     for check in checklist:
         # Determine which (tuples of) entries in the records to check.
-        print "getElementsToCheck()"
-        s = time.time()
         elements_to_check = getElementsToCheck(check, def_field, project_longitudinal, project_repeating, repeating_forms_events, form_repetition_map, metadata, records, record_id_map)
-        e = time.time()
-        print "getElementToCheck(): "+"{:.3g}".format(e-s)+"s"
 
         # Identify which (tuples of) entries in the records (row_index, field_name) have issues.
-        print "getCheckResults()"
-        s = time.time()
         bad_elements = getCheckResults(check, elements_to_check, def_field, metadata, records, record_id_map, repeating_forms_events, form_repetition_map)
-        e = time.time()
-        print "getCheckResults(): "+"{:.3g}".format(e-s)+"s"
 
         # Report which (tuples of) entries in the records have issues.
-        print "reportCheckResults()"
-        s = time.time()
         reportCheckResults(elements_to_check, bad_elements, check, out_dir, def_field, project_info, project_longitudinal, project_repeating, events, forms, form_repetition_map, metadata, records, record_id_map, dags_used, dags, dag_record_map)
-        e = time.time()
-        "reportCheckResults(): "+"{:.3g}".format(e-s)+"s"
 
         # Add check results to list for saving.
         check_results.append((check, bad_elements))
