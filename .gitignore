@@ -40,5 +40,5 @@ __pycache__/
 *.csv
 *.xls*
 
-# A user's own settings.json file
-settings.json
+# A user's own settings.yml file
+settings.yml

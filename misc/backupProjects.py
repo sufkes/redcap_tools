@@ -51,7 +51,7 @@ def backupProject(api_url, api_key, date_dir, date_string, skip_files=False):
         fh.write(project_xml)
 
     # Backup project records.
-    records = exportRecords(api_url, api_key, format="csv")
+    records = exportRecords(api_url, api_key, format="csv", export_form_completion=True)
     records_path = os.path.join(project_dir, "records"+file_suffix+".csv")
     with open(records_path, 'w') as fh:
         fh.write(records)

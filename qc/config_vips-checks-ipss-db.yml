@@ -9,17 +9,12 @@ code_name: ipss_v4 # This must be a section in your api_keys.yml file
 # If use_getIPSSIDs is True, there must be an entry 'getIPSSIDs_args', containing valid arguments to pass to the getIPSSIDs function.
 # If use_custom_record_id_list and use_getIPSSIDs are both False, all records in the project are checked.
 # Cannot have use_custom_record_id_list and use_getIPSSIDs both True.
-use_custom_record_id_list: True
-record_id_list:
-  - 108
-  - 109
-
-use_getIPSSIDs: False
+use_custom_record_id_list: False
+use_getIPSSIDs: True
 getIPSSIDs_args:
-  from_code_name: ipss_v4
-  ex_sk_patients: True
+  from_code_name: vips2
+  ex_non_vips_enrolled: True
 
 # Which checks to perform. For each entry their must be a Python script called <entry>.py which returns a list called "checklist", containing instances of the "Check" object defined in Check.py
 checks:
   - checklist_default
-  - checklist_hidden_data
