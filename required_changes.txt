@@ -30,3 +30,4 @@ Things I need to set up to work with IPSS V4:
 - [This line was modified in branch master] Remove the hello git branch.
 - Don't tell hello about this note.
 - [line was modified in blue branch.] This change was made on the hello branch.
+- This line was added in the blue branch.
