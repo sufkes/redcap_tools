@@ -27,6 +27,6 @@ Things I need to set up to work with IPSS V4:
 - add api_key.yml template
 - add event_ids.yml template
 - Couple more things in email from Alex. Prioritize those.
-- Remove the hello git branch.
+- [This line was modified in branch master] Remove the hello git branch.
 - Don't tell hello about this note.
 - This change was made on the hello branch.
