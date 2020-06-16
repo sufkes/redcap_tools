@@ -28,3 +28,4 @@ Things I need to set up to work with IPSS V4:
 - add event_ids.yml template
 - Couple more things in email from Alex. Prioritize those.
 - Hurry up! (added from master, not included in newFeature branch yet.)
+- Delete garbage such as this message.
