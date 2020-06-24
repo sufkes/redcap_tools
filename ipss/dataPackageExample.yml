@@ -55,9 +55,9 @@ projects:
          - patient_information_complete
          - datefu
          - psomdate
-#      forms:
-#        - patient_information
-#        - summary_of_impressions
+      forms:
+        - patient_information
+        - summary_of_impressions
 #      events:
 #        - acute_arm_1
 #        - followup_arm_1

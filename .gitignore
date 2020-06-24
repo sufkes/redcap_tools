@@ -38,7 +38,8 @@ __pycache__/
 ## My very own trash
 # Text and spreadsheet files
 *.csv
-*.xls*
+*.xlsx
+*.xls
 
 # A user's own settings.yml file
 settings.yml
