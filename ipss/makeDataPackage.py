@@ -465,7 +465,7 @@ def makeDataPackage(config_path):
     # Build the list of projects, containing data and format settings.
     t_buildProjects = Timer("Running buildProjects")
     projects = buildProjects(config)
-    t_builtProjects.stop()
+    t_buildProjects.stop()
     
     # Split the data into pieces for each project.
     t_splitData = Timer("Running splitData")
@@ -473,7 +473,7 @@ def makeDataPackage(config_path):
     t_splitData.stop()
     
     # Save the data package.
-    t_saveData("Running saveData")
+    t_saveData= Timer("Running saveData")
     saveData(config, projects)
     t_saveData.stop()
         
