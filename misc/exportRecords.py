@@ -102,7 +102,7 @@ def exportRecords(api_url, api_key, record_id_list=None, events=None, fields=Non
                     if (not id in missing_ids):
                         missing_ids.append(id)
             if (missing_ids != []): # if any of the requested IDs is missing from the project
-                warnings.warn("The following requested IDs were not found: "+" ".join(["'"+missing_id+"'" for missing_id in missing_ids]))
+                warnings.warn("The following requested IDs were not found: "+" ".join(["'"+str(missing_id)+"'" for missing_id in missing_ids]))
                 record_id_list = [id for id in record_id_list if (not id in missing_ids)]
         if (events != None):
             # If specific events are requested, ensure that they all exist in the project. Raise warnings for requested events not found in the project. If none of the requested events are found in the project, return nothing.

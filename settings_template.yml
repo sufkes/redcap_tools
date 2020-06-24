@@ -3,7 +3,7 @@ default_api_url: https://redcapexternal.research.sickkids.ca/api/ # This is the 
 
 # Input paths
 api_key_path: /Users/steven ufkes/redcap_directory/input/api_keys.yml # Scripts will pull API URLs and tokens from this file. Do not upload this file online.
-event_ids_path: /Users/steven ufkes/redcap_directory/input/event_ids.json # Some scripts will look here for the event_id associated with a REDCap event. 
+event_ids_path: /Users/steven ufkes/redcap_directory/input/event_ids.yml # Some scripts will look here for the event_id associated with a REDCap event. 
 logging_path: /Users/steven ufkes/redcap_directory/input/logs # parseLogging.py will look in this directory for log files.
 
 # Output paths

@@ -29,7 +29,7 @@ from misc.exportRepeatingFormsEvents import exportRepeatingFormsEvents
 from misc.exportFormsOrdered import exportFormsOrdered
 from misc.createFormRepetitionMap import createFormRepetitionMap
 from misc.parseMetadata import parseMetadata
-
+from misc.Timer import Timer
 
 #### Set default formatting options. The default options will be used for all projects except those projects which override them in the YAML configuration file.
 format_options_defaults = {
@@ -65,7 +65,7 @@ def readConfig(config_path):
     #projects:
     #  - code_name: [code name of a project in user's API keys file]
     #    options:
-    #      split_type: none, events_only, repeat_forms_events, all_forms_events, forms_only (unsupported)
+    #      split_type: none, events_only, repeat_forms_events, all_forms_events
     #      use_getIPSSIDs: True, False
     #    exportRecords_args:         
     #    getIPSSIDs_args:       <- optional; required if use_getIPSSIDs is True for this project.
@@ -98,7 +98,7 @@ def readConfig(config_path):
     for project in config["projects"]:
         if (not project["options"]["split_type"] in allowed_project_options_split_types):
             raise Exception("YAML configuration file, project '"+code_name+"' has an invalid split type. Choose from "+str(allowed_project_options_split_types))
-        
+
     return config
 
 def buildProjects(config):
@@ -115,7 +115,6 @@ def buildProjects(config):
         # Get args to pass to exportRecords.
         if (not "exportRecords_args" in project) or (project["exportRecords_args"] is None):
             project["exportRecords_args"] = {}
-            print "DEBUG: setting 'exportRecords_args' to {}"
 
         # If use_getIPSSIDs is True, get list of record IDs to export.
         if project["options"]["use_getIPSSIDs"]:
@@ -135,8 +134,20 @@ def buildProjects(config):
             project["exportRecords_args"]["record_id_list"] = record_id_list
                 
         ## Get args to pass to exportRecords. If key does not exist, or it is not set to a value, set it to an empty dict (i.e. 
-        exportRecords_args = project["exportRecords_args"] # has a value (possibly {})
+        exportRecords_args = project["exportRecords_args"] # has a value (possibly {}).
 
+        # Convert exportRecords_args arguments to strings as needed.
+        convert_to_strings = ["fields", "forms", "events", "record_id_list"]
+        for arg in convert_to_strings:
+            if arg in exportRecords_args.keys():
+                if (exportRecords_args[arg] == 'None'): # these arguments could be lists or None
+                    # Convert string 'None' to Python None.
+                    exportRecords_args[arg] = None
+                else: 
+                    # Convert list to list of strings. Currently, list might contain integers etc.
+                    new_list = [str(val) for val in exportRecords_args[arg]]
+                    exportRecords_args[arg] = new_list
+        
 
         ## Get API credentials for current project.
         api_url, api_key, code_name = api_settings.getApiCredentials(code_name=code_name)
@@ -407,6 +418,7 @@ def saveData(config, projects):
         
         ## Save each data chunk as a tab in an XLSX file, or a separate file.
         chunk_number = 1
+        t_write_chunks = Timer("Adding chunks to package")
         for chunk in project["chunks"]:
             ## Add chunk to appropriate location.
             if (config["options"]["file_split_type"] == "none"):
@@ -429,27 +441,41 @@ def saveData(config, projects):
                 writer.close()
     
             chunk_number += 1
+            print chunk_number
+        t_write_chunks.stop()
 
         if (config["options"]["file_split_type"] == "projects"):
+            
             # Save and close the XLSX, which now has a tab for each chunk.
             writer.close()
     if (config["options"]["file_split_type"] == "none"):
+        
         # Save and close the XLSX, which now has a tab for each chunk.
+        t_save = Timer("Saving data package to file")
         writer.close()
+        t_save.stop()
     
 
 def makeDataPackage(config_path):
     # Read the configuration file.
+    t_readConfig = Timer("Running readConfig")
     config = readConfig(config_path)
+    t_readConfig.stop()
     
     # Build the list of projects, containing data and format settings.
+    t_buildProjects = Timer("Running buildProjects")
     projects = buildProjects(config)
-
+    t_builtProjects.stop()
+    
     # Split the data into pieces for each project.
+    t_splitData = Timer("Running splitData")
     projects = splitData(config, projects)
-
+    t_splitData.stop()
+    
     # Save the data package.
+    t_saveData("Running saveData")
     saveData(config, projects)
+    t_saveData.stop()
         
 ## Use script from command line.
 if (__name__ == "__main__"):    
