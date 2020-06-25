@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 # Standard modules
 import os
 import sys
