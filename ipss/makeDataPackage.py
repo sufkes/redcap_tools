@@ -98,6 +98,7 @@ def readConfig(config_path):
         if (not project["options"]["split_type"] in allowed_project_options_split_types):
             raise Exception("YAML configuration file, project '"+code_name+"' has an invalid split type. Choose from "+str(allowed_project_options_split_types))
 
+    pprint(config)
     return config
 
 def buildProjects(config):
@@ -440,7 +441,6 @@ def saveData(config, projects):
                 writer.close()
     
             chunk_number += 1
-            print chunk_number
         t_write_chunks.stop()
 
         if (config["options"]["file_split_type"] == "projects"):
