@@ -188,22 +188,21 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
     print "Number of records with unidentified stroke type:", len(record_ids_with_unidentified_stroke_type)    
     return patient_info
 
-def reportPatientInfo(patient_info, out_dir, path_dag_info, min_year=2003, max_year=2020):
+def reportPatientInfo(patient_info, out_dir, path_dag_info=None, min_year=2003, max_year=2020):
     ## Miscellaneous items used in all of the enrolment reports
     year_list = range(min_year, max_year+1)
 
-    records_ipss = exportRecords(url_ipss, key_ipss, fields=["ipssid"])
-    dags = getDAGs(records_ipss)[1]
-    # Put "Unassigned" at end of list.
+    # Generate a list of DAGs
+    dags = set()
+    for record_id, record in patient_info.iteritems():
+        dag = record["dag"]
+        dags.add(dag)
+    dags = list(dags)
+    
+    # Put "" ("Unassigned") at end of list.
     dags_old = dags
     dags = sorted(dags_old)[1:]
     dags.extend(sorted(dags_old)[:1])
-
-
-    # Check if all records belong to one of the DAGs in the list just created.
-    for record_id, record in patient_info.iteritems():
-        if (not record["dag"] in dags):
-            print "Record with ID", record_id, "in DAG", record["dag"], "is part of unidentified DAG."
 
     # Enrolment by site per year
     report_path = os.path.join(out_dir, "enrolment_dag.csv")    
@@ -235,7 +234,8 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info, min_year=2003, max_y
     report_df = report_df.append(report_df.sum(axis=0).astype(int).rename("Total")) # Total row
 
     # Add instition name and country columns to dataframe.
-    report_df = addDAGInfo(report_df, path_dag_info)
+    if (not path_dag_info is None):
+        report_df = addDAGInfo(report_df, path_dag_info)
 
     report_df.to_csv(report_path)
     print report_df
