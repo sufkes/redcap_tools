@@ -297,27 +297,26 @@ if (__name__ == "__main__"):
     api_settings = ApiSettings()
     
     ## Create argument parser.
-    description = """This script automatically generates the following reports:
-    - number of patients enrollled per year per DAG
-    - cumulative number of patients entrolled per year per DAG
-    - number of AIS, CSVT etc. patients enrollled per year (per DAG?)
+    description = """
+This script automatically generates the following reports:
+- Number of patients enrollled per year per DAG
+- Number of AIS, CSVT etc. patients enrollled per year
 
-    Schematic:
-    1. Compile list of record IDs in Archive and IPSS
-    2. Assign an enrolllment date to each ID according to the following rules:
-      - Archive: Try 'dateofentry', then another variable, then logging data if needed.
-      - IPSS: Try 'dateentered', then date of clinical onsent, then another variable.
-    3. Create reports
-    4. Export users
-    5. Create reports"""
+Enrollment dates are taken from the first non-empty field in the following list:
+(1) IPSS Archive: 'dateofentry'
+(2) IPSS Archive: 'visit_date'
+(3) IPSS V4: 'dateentered'
 
-    parser = argparse.ArgumentParser(description=description)
+Stroke types are taken from the IPSS V4 field 'stroke_type'
+    """
+
+    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
 
     # Define positional arguments.
     parser.add_argument("out_dir", help="directory to save reports to", type=str)
     
     # Define optional arguments.
-    parser.add_argument("-d", "--dag_info", help="path to CSV file containing supplementary information about each data accses group. The columns must be labelled 'dag', 'institution_name', 'country'. If this is provided, the institution name and country will be added to the reports.", type=str)
+    parser.add_argument("-d", "--dag_info", help="path to CSV file containing supplementary information about each data access group. The first column must contain the DAG code. The other columns can contain any additional information about that DAG (e.g. institution name, country). If this argument is provided, the additional DAG information will be included in the reports..", type=str)
     parser.add_argument("--min_year", help="earliest enrollment year to report. Default: 2003", type=int, default=2003)
     parser.add_argument("--max_year", help="latest enrollment year to report. Default: 2020", type=int, default=2020)
     
