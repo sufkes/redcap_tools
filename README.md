@@ -56,6 +56,12 @@ Most scripts allow the user to specify an API token and URL as arguments. To lim
 
 # Documentation
 The scripts are organized in three directories:
-* `ipss` contains scripts that perform functions associated with REDCAp projects in the Stroke team at SickKids.
+* `ipss` contains scripts that perform functions associated with REDCap projects in the Stroke team at SickKids.
 * `misc` contains various scripts which can be used with any REDCap project.
 * `qc` contains contains project quality control scripts, which can be used with any REDCap project.
+
+This section contains a list of the most useful functions in this repository, and limited information about their usage. Most of the useful scripts are command-line tools which will print usage information if the `-h/--help` option is provided. E.g. to understand how to use the exportRecords.py script:
+```
+python exportRecords -h
+```
+will print the usage information.
