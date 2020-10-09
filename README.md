@@ -64,6 +64,23 @@ python exportRecords.py -h
 to print the usage information.
 
 The scripts are organized in three directories:
-* `ipss` contains scripts that perform functions associated with REDCap projects in the Stroke team at SickKids.
 * `misc` contains various scripts which can be used with any REDCap project.
 * `qc` contains contains project quality control scripts, which can be used with any REDCap project.
+* `ipss` contains scripts that perform functions associated with REDCap projects in the Stroke team at SickKids.
+
+## `misc`
+* `exportRecords.py`
+  Export records from a project. Can request specific records, events, instruments, or fields.
+
+  E.g. Export all records from project `ipss_v4`:
+  ```
+  python exportRecords my_file.csv -n ipss_v4
+  ```
+  E.g. Export fields `sex` and `weight` for records `123` and `345` in project `ipss_v4`:
+  ```
+  python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
+  ```
+
+## `qc`
+
+## `ipss`
