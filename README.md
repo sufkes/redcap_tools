@@ -76,7 +76,7 @@ E.g. export all records from project `ipss_v4`:
 ```
 python exportRecords my_file.csv -n ipss_v4
 ```
-E.g. export fields `sex` and `weight` for records `123` and `345` in project `ipss_v4`:
+E.g. export fields `sex` and `weight` for records `123` and `345` from project `ipss_v4`:
 ```
 python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
 ```
