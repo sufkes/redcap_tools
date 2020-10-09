@@ -61,7 +61,7 @@ E.g. to figure out how to use `exportRecords.py`, do:
 ```
 python exportRecords.py -h
 ```
-to print the usage information.
+to print the usage information. Note that the `python ` may be omitted depending on the user's Python configuration.
 
 The scripts are organized in three directories:
 * `misc` contains various scripts which can be used with any REDCap project.
@@ -80,5 +80,28 @@ E.g. export fields `sex` and `weight` for records `123` and `345` in project `ip
 ```
 python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
 ```
+### `importRecords.py`
+Import records to a project. The input records must be stored in a CSV file.
+
+E.g. import the data in `my_file.csv` into `ipss_v4`:
+```
+python importRecords my_file.csv -n ipss_v4
+```
+### `backupProjects.py`
+Backup REDCap projects. Project settings are saved to an XML file; all records are saved to a CSV file; files stored in "file upload" fields are saved.
+
+E.g. save a backup of project `ipss_v4`, to a specified directory:
+```
+python backupProjects.py -n ipss_v4 -o /home/steve/Desktop/
+```
+E.g. save a backup of every project with an entry in your `api_keys.yml` file:
+```
+python backupProjects.py -o /home/steve/Desktop/
+```
+E.g. save a backup of project `ipss_v4` to the default backup location specified in your `settings.yml` file:
+```
+python backupProjects.py -n ipss_v4
+```
+
 ## qc - Quality control scripts for any REDCap project
 ## ipss - Scripts for special tasks related to the Stroke Team at SickKids
