@@ -53,3 +53,9 @@ Most scripts allow the user to specify an API token and URL as arguments. To lim
 
      **Note for Stroke team:** This file already contains entries for all REDCap projects associated with the Stroke team as of April 2020. You simply need to modify the `event_ids_path` entry in your `settings.yml` file to point to it.
    * (**Optional**) Set the `default_backups_dir`. This is the default directory to which project backups will be saved by backupProjects.py.
+
+# Documentation
+The scripts are organized in three directories:
+* `ipss` contains scripts that perform functions associated with REDCAp projects in the Stroke team at SickKids.
+* `misc` contains various scripts which can be used with any REDCap project.
+* `qc` contains contains project quality control scripts, which can be used with any REDCap project.
