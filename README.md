@@ -94,7 +94,7 @@ E.g. save a backup of project `ipss_v4`, to a specified directory:
 ```
 python backupProjects.py -n ipss_v4 -o /home/steve/Desktop/
 ```
-E.g. save a backup of every project with an entry in your `api_keys.yml` file:
+E.g. save a backup of every project that has an entry in your `api_keys.yml` file:
 ```
 python backupProjects.py -o /home/steve/Desktop/
 ```
