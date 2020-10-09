@@ -21,16 +21,16 @@ from misc.getRecordIDList import getRecordIDList
 from misc.getDAGs import getDAGs
 
 def addDAGInfo(report_df, path_dag_info):
-    """This function adds columns for institution name and country Pandas DataFrames with DAG as the 
+    """This function adds columns for institution name and country Pandas DataFrames with DAG as the
     index."""
     # Get list of column headers for rearrangement later.
     column_headers_old = list(report_df)
-    
+
     # Add columns for DAG institution name and country.
     dag_info_df = pandas.read_csv(path_dag_info, index_col=0)
     dag_info_headers = list(dag_info_df)
     report_df = report_df.join(dag_info_df).fillna('')
-    
+
     # Rearrange columns so that dag, institiution name, and country are first.
     column_headers_new = dag_info_headers
     column_headers_new.extend(column_headers_old)
@@ -40,8 +40,8 @@ def addDAGInfo(report_df, path_dag_info):
 
 ## Define functions to generate data and write reports.
 def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003, enroll_date_max=2020):
-    
-    
+
+
     ## Get list of record IDs for each project. Exclude registry-only patients. Exclude patients with unknown stroke type.
 #    record_ids_arch = getRecordIDList(url_arch, key_arch)
 #    registry_arch = exportRecords(url_arch, key_arch, record_id_list=record_ids_arch, fields=["registry"], events=["acute_arm_1"])
@@ -74,7 +74,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
 #        patient_info[record_id] = {}
 #        patient_info[record_id]["in_arch"] = False
 #        patient_info[record_id]["in_ipss"] = True
-    
+
 
     ## Get enrolment date for each record.
     # Archive - Use 'dateofentry', then 'visit_date".
@@ -89,7 +89,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
 #                    break
 #            if (not id_in_data):
 #                print "Record with ID "+str(record_id)+" not found in exported data"
-#    num_missing = 0 
+#    num_missing = 0
     for row in dateofentry_arch:
         if (row["dateofentry"] == ""):
 #            num_missing += 1
@@ -101,10 +101,10 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
             patient_info[row["pk_patient_id"]]["enroll_date"] = int(row["dateofentry"][:4])
 
     num_missing = len([id for id in record_ids if (not "enroll_date" in patient_info[id])])
-   
+
 #    print "Field used     : dateofentry"
 #    print "Number missing : ", num_missing
-    
+
     record_ids_leftover = [id for id in record_ids if (not "enroll_date" in patient_info[id])]
     visit_date_leftover = exportRecords(url_arch, key_arch, record_id_list=record_ids_leftover, fields=["visit_date"], events=["acute_arm_1"], validate=False)
 #    num_missing = 0
@@ -116,12 +116,12 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
             if ("enroll_date" in patient_info[row["pk_patient_id"]]):
                 print "This record was counted twice: "+str(row["pk_patient_id"])
                 continue
-            patient_info[row["pk_patient_id"]]["enroll_date"] = int(row["visit_date"][:4]) 
+            patient_info[row["pk_patient_id"]]["enroll_date"] = int(row["visit_date"][:4])
     num_missing = len([id for id in record_ids if (not "enroll_date" in patient_info[id])])
-   
+
 #    print "Field used     : visit_date"
 #    print "Number missing : ", num_missing
-    
+
     # IPSS - use 'dateentered' (works for all but 6 patients).
 #    print
 #    print "Project        : IPSS"
@@ -135,7 +135,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
 #                    id_in_data = True
 #                    break
 #            if (not id_in_data):
-#                print "Record with ID "+str(record_id)+" not found in exported data"    
+#                print "Record with ID "+str(record_id)+" not found in exported data"
 #    num_missing = 0
     for row in dateentered_ipss:
         if (row["dateentered"] == ""):
@@ -159,7 +159,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
         else:
             print "Record with no enrolment date:", id
 #    print "enroll_dates:", sorted(list(enroll_dates))
-    
+
     ## Get DAG for each record:
     dags_arch = exportRecords(url_arch, key_arch, record_id_list=record_ids, fields=["pk_patient_id"], validate=False)
     dags_ipss = exportRecords(url_ipss, key_ipss, record_id_list=record_ids, fields=["ipssid"], validate=False)
@@ -172,12 +172,12 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
         dag = row["redcap_data_access_group"]
         if (not "dag" in patient_info[record_id]) or (patient_info[record_id]["dag"] == ""): # add DAG from IPSS if not added already
             patient_info[record_id]["dag"] = dag # overwriting DAG for records in Archive should not be a problem.
-    
+
 #    for id in patient_info:
 #        if (not "dag" in patient_info[id]) or (patient_info[id]["dag"] == ""):
 #            print "Record with ID", id, "does not have a DAG assigned"
-        
-    
+
+
     ## Get stroke type for each patient. # Need to decide how we want to break this down further.
 #    stroke_type_arch = exportRecords(url_arch, key_arch, record_id_list=record_ids_arch, fields=["ais", "csvt", "pperi", "preart", "other_stroke", "age_at_event"], events=["acute_arm_1"])
     stroke_type_ipss = exportRecords(url_ipss, key_ipss, record_id_list=record_ids, fields=["chais", "chcsvt", "neoais", "neocsvt", "ppis", "ppcsvt", "pvi", "preart", "othcond"], events=["acute_arm_1"])
@@ -226,7 +226,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
         if (not identified_type):
 #            print "Record with ID", id, "has an unidentified stroke type."
             record_ids_with_unidentified_stroke_type.append(id)
-    
+
     # Check if stroke type can be identified in Archive instead.
 #    stroke_type_arch_leftover = exportRecords(url_arch, key_arch, record_id_list=record_ids_with_unidentified_stroke_type, fields=["ais", "csvt", "pperi", "preart", "other_stroke", "age_at_event"], events=["acute_arm_1"])
 #    for row in stroke_type_arch_leftover:
@@ -258,7 +258,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
     num_no_dag = 0
     for record_id, record in patient_info.iteritems():
         if (record["dag"] == ""):
-            num_no_dag += 1 
+            num_no_dag += 1
         if (not "enroll_date" in record):
             num_no_year += 1
     print "Number of duplicated record IDs:", len(record_ids) - len(set(record_ids))
@@ -266,7 +266,7 @@ def getPatientInfo(url_arch, url_ipss, key_arch, key_ipss, enroll_date_min=2003,
     print "Number of record IDs in patient_info:", len(patient_info)
     print "Number of records with no DAG:", num_no_dag
     print "Number of records with no enrolment date:", num_no_year
-    print "Number of records with unidentified stroke type:", len(record_ids_with_unidentified_stroke_type)    
+    print "Number of records with unidentified stroke type:", len(record_ids_with_unidentified_stroke_type)
     return patient_info
 
 # User reports
@@ -289,7 +289,7 @@ def getUserInfo(url_ipss, key_ipss):
         user_info[username]["dag"] = user["data_access_group"]
         user_info[username]["current"] = True
         user_info[username]["action_dates"] = set()
-    
+
     # Julie Paterson is not created in the logs for any of IPSS 1, 2, or 3. Add her manually here. She is not accounted for in the logs in the sense that, since she created IPSS V1, V2, and V3, there is no record of her username being added to the logs.
     user_info["julie.paterson"] = {}
     user_info["julie.paterson"]["dag"] = ""
@@ -301,7 +301,7 @@ def getUserInfo(url_ipss, key_ipss):
     redcap_admins = set()
 
     # Get get the year each user was added.
-    for df in log_list:    
+    for df in log_list:
         for index in df.index[::-1]: # Reverse to read in order or occurrence.
             user_action = str(df["Username"][index]).lower() # User who performed an action in current log row
             action = str(df["Action"][index])
@@ -321,7 +321,7 @@ def getUserInfo(url_ipss, key_ipss):
             if ("Assign user to data access group" in changes): # Look for DAG assignment in log.
                 username = changes.split("'")[1].lower()
                 dag = changes.split("'")[3].lower()
-                user_info[username]["dag"] = dag 
+                user_info[username]["dag"] = dag
 #                print changes, username, dag
             # Add date of user's action to action_dates
             # Assume a currently unidentified user is a REDCap admin, becuase the addition of their username to the project did not occur before they started performing actions in the project. The only ways this is known to happen is if the person is a REDCap administrator, or they created the project (which is why Julie Paterson is added manually above).
@@ -405,10 +405,10 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info, min_year=2003, max_y
             print "Record with ID", record_id, "in DAG",record[dag],"is part of unidentified DAG."
 
     # Enrolment by site per year
-    report_path = os.path.join(out_dir, "enrolment_dag.csv")    
+    report_path = os.path.join(out_dir, "enrolment_dag.csv")
 
     # Write row/column headings
-    columns = year_list    
+    columns = year_list
     index = [dag if (dag != "") else "Unassigned" for dag in dags]
 
     # Create pandas DataFrame to store report.
@@ -423,7 +423,7 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info, min_year=2003, max_y
         for year in year_list:
             num_enrolled_dag_year = 0
             for record_id, record in patient_info.iteritems():
-                if ("enroll_date" in record) and (type(record["enroll_date"]) != type(year)): 
+                if ("enroll_date" in record) and (type(record["enroll_date"]) != type(year)):
                     print "WARNING: comparison of different types in 'enroll_date'."
                 if (record["dag"] == dag) and ("enroll_date" in record) and (record["enroll_date"] == year):
                     num_enrolled_dag_year += 1
@@ -441,13 +441,13 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info, min_year=2003, max_y
 
     ## Enrolment by stroke type per year
     report_path = os.path.join(out_dir, "enrolment_stroke_type.csv")
-    
+
     # Write row/column headings
     columns = year_list
     index = ["Neonatal AIS", "Neonatal CSVT", "Neonatal AIS & CSVT", "Childhood AIS", "Childhood CSVT", "Childhood AIS & CSVT", "Presumed perinatal AIS", "Presumed perinatal CSVT", "Presumed perinatal AIS & CSVT", "Presumed perinatal VI", "Arteriopathy", "Other"]
-    
+
     report_df = pandas.DataFrame(0, columns=columns, index=index)
-    
+
     # Add each patient with known stroke type to report.
     for id, record in patient_info.iteritems():
         if ("enroll_date" in record) and (record["enroll_date"] in columns): # If enrolment date is known and included in the report.
@@ -479,9 +479,9 @@ def reportPatientInfo(patient_info, out_dir, path_dag_info, min_year=2003, max_y
 
     report_df["Total"] = report_df.sum(axis=1).astype(int) # Total column
     report_df = report_df.append(report_df.sum(axis=0).astype(int).rename("Total")) # Total row
-    report_df.to_csv(report_path)            
+    report_df.to_csv(report_path)
     print report_df
-           
+
     return
 
 def reportUserInfo(user_info, out_dir, path_dag_info, min_year=2014, max_year=2020):
@@ -532,7 +532,7 @@ def reportUserInfo(user_info, out_dir, path_dag_info, min_year=2014, max_year=20
     for username, info in user_info.iteritems():
         if (not 'year_added' in info):
             print "User with no 'year_added':", username
-            
+
 
     report_df["Total"] = report_df.loc[:,[col for col in report_df.columns if (not col=='usernames')]].sum(axis=1).astype(int) # Total column (except for the column storing usernames)
     report_df = report_df.append(report_df.loc[:, [col for col in report_df.columns if (not col=='usernames')]].sum(axis=0).astype(int).rename("Total")) # Total row
@@ -552,7 +552,7 @@ def reportUserInfo(user_info, out_dir, path_dag_info, min_year=2014, max_year=20
 
 def reportActiveUserInfo(user_info, out_dir, path_dag_info, active_start_date=20180701, active_end_date=20190630, period_name=None):
     # This is a sketchy hacked version of reportUserInfo() which was hastily assembled to complete the task:
-    
+
     # Users per DAG
     report_path = os.path.join(out_dir, "user_dag_active.csv")
 
@@ -568,13 +568,13 @@ def reportActiveUserInfo(user_info, out_dir, path_dag_info, active_start_date=20
 
     # Write column, row headings.
  #   columns = year_list
-    
+
     if (period_name == None):
         count_column_name = 'number_of_active_users_between_'+str(active_start_date)+'_and_'+str(active_end_date)
     else:
         count_column_name = 'number_of_active_users_in_'+str(period_name)
 
-        
+
 
     columns = [count_column_name]
     index = [dag if (dag != "") else "Unassigned" for dag in dags]

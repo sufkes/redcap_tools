@@ -29,14 +29,14 @@ def parseID(column_action):
         return strings[3]
 
 def parseEventName(column_action):
-    """Extract event name / arm name. This is not guaranteed to work every time but usually will. Currently does not generate the unique event name, but could enable it to possibly."""    
+    """Extract event name / arm name. This is not guaranteed to work every time but usually will. Currently does not generate the unique event name, but could enable it to possibly."""
     if (column_action[-1] != ')'):
         return ''
     else:
         return column_action.split(')')[-2].split('(')[-1]
 
 def parseInstance(column_changes):
-    """Extract the instance number from the Changes column in the logging (for record modification rows only)."""    
+    """Extract the instance number from the Changes column in the logging (for record modification rows only)."""
     try:
         return column_changes.split('[instance = ')[1].split(']')[0]
     except IndexError:
@@ -45,7 +45,7 @@ def parseInstance(column_changes):
 def parseChanges(column_changes):
     changes = {} # list of (field_name, value) tuples
 
-    # Examples: 
+    # Examples:
     # carcath(1) = checked, cath(2) = checked, ballo(1) = checked, ballod = '2015-09-02', othpro(1) = unchecked, othprosp = '', othprod = ''
     # doe = '2006-08-01', othcond(1) = checked, othconsp = 'PPERI', dateest = '1', childrac(9) = unchecked, fathrac(9) = unchecked, mothrac(9) = unchecked
 
@@ -137,10 +137,10 @@ def createReport(log_paths, records=None, fields=None, out_path=None, quiet=Fals
         sublog_df['log_num'] = log_num
         log_num += 1
         log_df = log_df.append(sublog_df)
-    
+
     # Remove all rows that do not correspond to a record modification.
     log_df = log_df.loc[(log_df['Action'].str.contains('Created Record')) | (log_df['Action'].str.contains('Updated Record')), :]
-    
+
     # Separate date and time into separate columns.
     log_df = separateTimeDate(log_df)
 
@@ -148,20 +148,20 @@ def createReport(log_paths, records=None, fields=None, out_path=None, quiet=Fals
     log_df.sort_values(['log_num', 'date', 'time'], ascending=(False, False, False), inplace=True)
 
     # Reset index.
-    log_df.reset_index(inplace=True, drop=True)    
+    log_df.reset_index(inplace=True, drop=True)
 
     # Change name of column from 'List of Data Changes OR Fields Exported' to 'Changes'.
     new_columns = {'List of Data Changes OR Fields Exported':'Changes'}
     log_df.rename(columns=new_columns, inplace=True)
-    
+
     # Add columns to store record ID, instance number
     log_df['record_id'] = log_df['Action'].apply(parseID)
     log_df['event'] = log_df['Action'].apply(parseEventName)
     log_df['instance'] = log_df['Changes'].apply(parseInstance)
-    
+
     # Add column to store list of tuples: (field_name, value)
     log_df['change_dict'] = log_df['Changes'].apply(parseChanges)
-    
+
     # Generate report on requested record and field
     report_df = log_df.copy()
 
@@ -176,7 +176,7 @@ def createReport(log_paths, records=None, fields=None, out_path=None, quiet=Fals
         # Remove all rows not corresponding to changes in the requested fields.
         report_df = report_df.loc[(report_df[fields]!='').any(axis=1), :]
 
-        
+
     # Reorder columns.
     if (fields != None):
         report_df = report_df[['log_num', 'source', 'date', 'time', 'record_id', 'event', 'instance', 'Username', 'Action', 'Changes'] + fields]
@@ -191,41 +191,41 @@ def createReport(log_paths, records=None, fields=None, out_path=None, quiet=Fals
 #            cols_to_print.extend(fields)
 #        else:
 #            cols_to_print.append('Changes')
-#        print report_df[cols_to_print]    
+#        print report_df[cols_to_print]
 
     if (out_path != None):
         writer = pandas.ExcelWriter(out_path, engine='openpyxl')
         report_df.to_excel(writer, encoding='utf-8', index=False)
         writer.close()
-    
+
     return report_df
 
 
 #### Execute main function if script is called directly.
 if (__name__ == '__main__'):
     api_settings = ApiSettings() # Create instance of ApiSettings class. Use this to find file containing API keys and URLs.
-    
+
     # Create argument parser.
     description = """
     Returns:
         A summary of the data history entries in the specified REDCap logs. The data history query can be limited to specifics record and/or fields. The returned summary can be saved by specifying an output path.
     """
-    
+
     # Create argument parser.
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
-    
+
     # Define positional arguments.
-    
+
     # Define optional arguments.
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-l', '--log_paths', action='store', type=str, nargs='*', help='paths to logs to be parsed. If multiple paths are specified, the logs will be concatenated and treated as a single log. If logs correspond to different versions of a REDCap project, list the logs in order of version number (i.e. most recent version last).', metavar=('LOG_PATH_1,', 'LOG_PATH_2'))
-    group.add_argument('-n', '--code_name', help="If this option is used, all CSV files in the directory '"+os.path.join(api_settings.settings['logging_path'], 'CODE_NAME')+"' will be assumed to be logging CSV files, and this script will parse them all together.", type=str)
+    #group.add_argument('-n', '--code_name', help="If this option is used, all CSV files in the directory '"+os.path.join(api_settings.settings['logging_path'], 'CODE_NAME')+"' will be assumed to be logging CSV files, and this script will parse them all together.", type=str)
     group.add_argument('-d', '--logs_dir', help="Path to directory containing log files. If this option is used, all CSV files in the specified directory will be assumed to be logging CSV files, and this script will parse them all together.", type=str)
     parser.add_argument('-r', '--records', help='record IDs to query', action='store', type=str, nargs="+", metavar=("ID_1", "ID_2"))
     parser.add_argument('-f', '--fields', help='fields to query', action='store', type=str, nargs="+", metavar=("FIELD_1", "FIELD_2"))
     parser.add_argument('-o', '--out_path', action='store', type=str, help='path to save report to. If none specified, report will not be saved.')
     parser.add_argument('-q', '--quiet', action='store_true', help='do not print report to screen')
-    
+
     # Parse arguments.
     args = parser.parse_args()
 
@@ -235,11 +235,10 @@ if (__name__ == '__main__'):
     elif (not args.logs_dir is None):
         log_paths = [os.path.join(args.logs_dir, name) for name in os.listdir(args.logs_dir) if name.endswith(".csv")]
         log_paths.sort()
-    elif (not args.code_name is None):
-        logs_dir = os.path.join(api_settings.settings['logging_path'], args.code_name)
-        log_paths = [os.path.join(logs_dir, name) for name in os.listdir(logs_dir) if name.endswith(".csv")]
-        log_paths.sort()
-    print 'DEBUG: log_paths:', log_paths
-        
+    #elif (not args.code_name is None):
+        #logs_dir = os.path.join(api_settings.settings['logging_path'], args.code_name)
+        #log_paths = [os.path.join(logs_dir, name) for name in os.listdir(logs_dir) if name.endswith(".csv")]
+        #log_paths.sort()
+
     # Generate report
     createReport(log_paths=log_paths, records=args.records, fields=args.fields, out_path=args.out_path, quiet=args.quiet)
