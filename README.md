@@ -70,6 +70,7 @@ The scripts are organized in three directories:
 
 ## misc
 * `exportRecords.py`
+
     Export records from a project. Can request specific records, events, instruments, or fields.
 
     E.g. export all records from project `ipss_v4`:
