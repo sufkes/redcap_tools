@@ -68,7 +68,7 @@ The scripts are organized in three directories:
 * `qc` contains contains project quality control scripts, which can be used with any REDCap project.
 * `ipss` contains scripts that perform functions associated with REDCap projects in the Stroke Team at SickKids.
 
-## misc -- Miscellaneous scripts for any REDCap project
+## misc - Miscellaneous scripts for any REDCap project
 ### `exportRecords.py`
 Export records from a project. Can request specific records, events, instruments, or fields.
 
@@ -80,5 +80,5 @@ E.g. export fields `sex` and `weight` for records `123` and `345` in project `ip
 ```
 python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
 ```
-## qc -- Quality control scripts for any REDCap project
-## ipss -- Scripts for special tasks related to the Stroke Team at SickKids
+## qc - Quality control scripts for any REDCap project
+## ipss - Scripts for special tasks related to the Stroke Team at SickKids
