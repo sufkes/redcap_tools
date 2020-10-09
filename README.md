@@ -20,7 +20,7 @@ Most scripts use REDCap API functions. To interact with a REDCap project through
 | Internal | https://redcapinternal.research.sickkids.ca/api/ |
 | Internal Survey | https://staffsurveys.sickkids.ca/api/ |
 
-Most scripts allow the user to specify an API token and URL as arguments. To limit the need to retrieve passwords, a user can instead configure their settings.yml file and an api_keys.yml file so that API Tokens and URLs can be retrieved using a short, user-defined keyword ("code name"). To do this:
+Most scripts allow the user to specify an API token and URL as arguments. To limit the need to retrieve passwords, a user can instead configure a `settings.yml` file and an `api_keys.yml` file, so that API Tokens and URLs can be retrieved using a short, user-defined keyword ("code name"). To do this:
 1. Create an `api_keys.yml` file. This is a YAML file which assigns a code name to each (API URL, API token) pair. An entry should be created for each project with which the user will interact. The `api_keys.yml` file can be saved in any safe location on your computer, but should not be readable to other users.
 
    Each entry must be of the form:
