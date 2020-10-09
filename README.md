@@ -70,16 +70,16 @@ The scripts are organized in three directories:
 
 ## `misc`
 * `exportRecords.py`
-  Export records from a project. Can request specific records, events, instruments, or fields.
+    Export records from a project. Can request specific records, events, instruments, or fields.
 
-  E.g. Export all records from project `ipss_v4`:
-  ```
-  python exportRecords my_file.csv -n ipss_v4
-  ```
-  E.g. Export fields `sex` and `weight` for records `123` and `345` in project `ipss_v4`:
-  ```
-  python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
-  ```
+    E.g. export all records from project `ipss_v4`:
+    ```
+    python exportRecords my_file.csv -n ipss_v4
+    ```
+    E.g. export fields `sex` and `weight` for records `123` and `345` in project `ipss_v4`:
+    ```
+    python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
+    ```
 
 ## `qc`
 
