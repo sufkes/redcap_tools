@@ -33,4 +33,6 @@ Most scripts allow the user to specify an API token and URL as arguments. To lim
      url: https://redcapexternal.research.sickkids.ca/api/
      key: 1234567890ABCDEFGHIJKLMNOPQRSTUV
    ```
-hello
+   Note that the URL and token must be indented from the code name using the same number of spaces, and tab characters must not be used.
+2. Hello.
+3. Goodbye.
