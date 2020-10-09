@@ -57,9 +57,9 @@ Most scripts allow the user to specify an API token and URL as arguments. To lim
 # Documentation
 This section contains a list of the most useful functions in this repository, and limited information about their usage. Most of the useful scripts are command-line tools which will print usage information if the `-h/--help` option is provided.
 
-E.g. to figure out how to use the `exportRecords.py` script, do:
+E.g. to figure out how to use `exportRecords.py`, do:
 ```
-python exportRecords -h
+python exportRecords.py -h
 ```
 to print the usage information.
 
