@@ -12,6 +12,9 @@ Thumbs.db
 \#*\#
 .\#*
 
+# IPython
+.ipynb_checkpoints
+
 # Vim
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]
