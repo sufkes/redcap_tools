@@ -36,6 +36,7 @@ Most scripts allow the user to specify an API token and URL as arguments. To lim
      key: 1234567890ABCDEFGHIJKLMNOPQRSTUV
    ```
    Note that the URL and token must be indented from the code name using the same number of spaces, and tab characters must not be used.
-   *Note for Stroke team:* This repository has a template api_keys.yml file, which has an entry for most projects associated with the Stroke team at SickKids. If you are using this repository in the Stroke team, simply copy that file to another location, and replace the API key entries with your own tokens. For consistency within the Stroke team
+
+   **Note for Stroke team:** This repository has a template api_keys.yml file, which has an entry for most projects associated with the Stroke team at SickKids. If you are using this repository in the Stroke team, simply copy that file to another location, and replace the API key entries with your own tokens. For consistency within the Stroke team
 2. Hello.
 3. Goodbye.
