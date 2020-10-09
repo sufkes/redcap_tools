@@ -60,8 +60,10 @@ The scripts are organized in three directories:
 * `misc` contains various scripts which can be used with any REDCap project.
 * `qc` contains contains project quality control scripts, which can be used with any REDCap project.
 
-This section contains a list of the most useful functions in this repository, and limited information about their usage. Most of the useful scripts are command-line tools which will print usage information if the `-h/--help` option is provided. E.g. to understand how to use the exportRecords.py script:
+This section contains a list of the most useful functions in this repository, and limited information about their usage. Most of the useful scripts are command-line tools which will print usage information if the `-h/--help` option is provided.
+
+E.g. to figure out how to use the exportRecords.py script, do:
 ```
 python exportRecords -h
 ```
-will print the usage information.
+to print the usage information.
