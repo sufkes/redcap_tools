@@ -61,7 +61,7 @@ E.g. to figure out how to use `exportRecords.py`, do:
 ```
 python exportRecords.py -h
 ```
-Note that the `python ` may be omitted depending on the user's Python configuration.
+Note that the `python` may be omitted depending on the user's Python configuration.
 
 The scripts are organized in three directories:
 * `misc` contains various scripts which can be used with any REDCap project.
