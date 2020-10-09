@@ -13,8 +13,8 @@ Some scripts require the Python module "pyyaml". See https://pypi.org/project/Py
 
 Some scripts require the Python module "Pandas". See https://pandas.pydata.org/pandas-docs/stable/install.html
 ## Configure `settings.yml` and `api_keys.yml`
-Most scripts use REDCap API functions. To interact with a REDCap project through the API, a user must have API rights enabled in the User Rights tab of the REDCap project, and an API token. Users can then interact with the project using their API token and the API URL for the project. The API URL for a project can be found in the API Playground of the project. The API URLs for the REDCap instances at SickKids are:
-| Instance | API URL |
+Most scripts use REDCap API functions. To interact with a REDCap project through the API, a user must have API rights enabled in the User Rights tab of the REDCap project page, and an API token. Users can then interact with the project using their API token and the API URL of the REDCap instance in which the project is hosted. The API URL for a REDCap instance can be found in the API Playground of any of the projects it hosts. The API URLs for the REDCap instances at SickKids are:
+| REDCap Instance | API URL |
 |:-|:-|
 | External | https://redcapexternal.research.sickkids.ca/api/ |
 | Internal | https://redcapinternal.research.sickkids.ca/api/ |
