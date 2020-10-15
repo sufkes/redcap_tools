@@ -217,7 +217,7 @@ This directory contains a few useful command line tools, helper scripts used in 
 #### `enrollmentReportIPSS.py`
 Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission.
 #### `makeDataPackage.py`
-Generate a formatted data package based on a user-specified configuration file. Data can be taken from multiple projects. The package can include specific instruments, events, forms, fields, and records.
+Generate a formatted data package based on a user-specified configuration file. Data can be taken from multiple projects. The package can include specific instruments, events, forms, fields, and records. The user can specify settings which apply to the whole data package, and specific settings for each project included.
 
 To generate a data package, first create a configuration YAML. An example configuration file for a package containing data from two projects is given in `dataPackageExample.yml`. The configuration file must obey the format described below:
 
@@ -239,11 +239,12 @@ projects:
   - code_name: <code name of second project, defined in user's api_keys.yml file>
 ...
 ```
-The settings are defined as follows:
+The package-wide settings, specified in the `options` section, are defined as follows:
 * `file_split_type` - Determines how data will be separated into files. Can be set to:
   * `none` - A single file is generated, containing data from all projects.
   * `projects` - The data from each project is saved to a separate file.
   * `chunks` - The data from each "chunk" of data (determined by the project `split_type`; defined below) is saved to a separate file.
+* `out_dir` - The directory to which the data package will be saved.
 #### `transferPSOMToIPSS.py`
 Transfer data from the REDCap project PSOM V2 into IPSS V4.
 ### Helper scripts in `ipss`
