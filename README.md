@@ -146,7 +146,7 @@ E.g. Automatically overwrite `0`/`Incomplete`, `1`/`Unverified`, and `2`/`Comple
 python setFormCompleteBlanks.py -n ipss_v4 -s 0 1 2
 ```
 #### `transferUsers.py`
-Transfer users between two projects. This function can be useful when creating a new version of a project, and all users from the original project need to be added to the new one.
+Transfer users between two projects. This function can be useful when creating a new version of a project and all users in the original project need to be added to the new one.
 
 E.g. Transfer all users from project `ipss_v3` to `ipss_v4`:
 ```
