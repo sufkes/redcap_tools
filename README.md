@@ -181,5 +181,5 @@ These are small scripts in the `misc` directory which are used in various places
 * `writeBranchingLogicFunction.py` - Attempts to create a Python function mimicking the behaviour of a field's branching logic function. The returned function will not behave identically to the REDCap branching logic in all cases.
 
 ## qc - Quality control scripts for any REDCap project
-This directory contains scripts for quality assurance of REDCap projects. These can be used with any REDCap project. The primary command line tool is `mainIntraProject.py`, which performs quality checks within a single project. There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspecial.py` which no longer work, and are kept only for reference. The rest of the scripts are helpers. 
+This directory contains scripts for quality assurance of REDCap projects. These can be used with any REDCap project. The primary command line tool is `mainIntraProject.py`, which performs quality checks within a single project. There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspecial.py` which perform quality checks that compare data between two REDCap projects. These old scripts are kept for reference, and instructions for their use are not provided. The rest of the scripts are helpers. 
 ## ipss - Scripts for special tasks related to the Stroke Team at SickKids
