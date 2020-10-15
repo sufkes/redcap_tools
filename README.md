@@ -252,7 +252,7 @@ In the `projects` section, a separate entry must be created for each project inc
     * `split_type` - Determines how data from the current project will be separated into chunks. Each chunk of data will appear on a separate tab of the spreadsheet or in a separate file, depending on the package-wide setting `file_split_type`. `split_type` can be set to:
       * `none` - All data for the current project will appear in a single chunk.
       * `events_only` - Data from different events will be separated.
-      * `repeat_forms_events` - Data will be separated based on the REDCap columns `redcap_event_name` and `redcap_repeat_instrument`. (E.g. two repeating instruments in a single event will be separated into two chunks; all non-repeating instruments in a single event will appear in a single chunk; all instruments in a repeating event will appear in a single chunk).
+      * `repeat_forms_events` - Data will be separated based on the REDCap columns `redcap_event_name` and `redcap_repeat_instrument` (e.g. two repeating instruments in a single event will be separated into two chunks; all non-repeating instruments in a single event will appear in a single chunk; all instruments in a repeating event will appear in a single chunk).
       * `all_forms_events` - A separate chunk will be created for each instrument, and each event in which the instrument appears.
     * `use_getIPSSIDs` - Whether or not the `getIPSSIDs` function will be used to determine the set of record IDs whose data will be included for the current project.
 #### `transferPSOMToIPSS.py`
