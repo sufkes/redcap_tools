@@ -112,9 +112,23 @@ This directory contains a few useful command line tools (described now), and man
   Generate a CSV containing information about each REDCap user.
 
 #### `importMetadata.py`
-
+Import a data dictionary CSV to a REDCap project. Overwrites current data dictionary.
 
 #### `parseLogging.py`
+Parse logging CSV files exported from REDCap using the "Export all logging (CSV)" button. The information can be filtered by record ID or field. Multiple logging files can be parsed at once.
+
+E.g. See all changes to record `123` stored in `log.csv`:
+```
+parseLogging.py -l log.csv -r 123
+```
+E.g. See all changes to fields `sex` and `weight` for records `123` and `345` stored in `log.csv`:
+```
+parseLogging.py -l log.csv -r 123 345 -f sex weight
+```
+E.g. See all changes to record `123` stored in `log1.csv` and `log2.csv`; save parsed data to a new CSV:
+```
+parseLogging.py -l log1.csv log2.csv -r 123 -o parsed_data.csv
+```
 
 #### `setFormCompleteBlanks.py`
 
