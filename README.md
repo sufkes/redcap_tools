@@ -223,7 +223,7 @@ To generate a data package, first create a configuration YAML. The configuration
 
 ```
 options:
-  file_split_type: <none, projects, chunks> # Can be: none, projects, chunks
+  file_split_type: <none, projects, chunks>
   out_dir: </directory/to/save/package/>
 
 projects:
