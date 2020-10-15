@@ -189,23 +189,24 @@ The primary command line tool is `mainIntraProject.py`, which performs quality c
 
 There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspecial.py` which perform quality checks that compare data between two REDCap projects. These old scripts are kept for reference, and instructions for their use are not provided. The rest of the scripts are helpers.
 ### How to perform quality control checks on a project.
+[REPLACE_ME_WITH_CONTENT]
 ### Helper scripts in `qc`
-* `Check.py` -
-* `checkDriver.py` -
-* `checkDriverInterProject.py` -
-* `checklist_default.py` -
-* `checklist_hidden_data.py` -
-* `checklist_extra.py` -
-* other `checklist_` files -
-* `createChecklist.py` -
-* `dates.py` -
-* `formatStrings.py` -
-* `isProjectCompatible.py` -
-* `readConfig.py` -
-* `recordsFromFile.py` -
-* `reportCheckResults.py` -
-* `saveData.py` -
-* `saveRecords.py` -
+* `Check.py` - [REPLACE_ME_WITH_CONTENT]
+* `checkDriver.py` - [REPLACE_ME_WITH_CONTENT]
+* `checkDriverInterProject.py` - [REPLACE_ME_WITH_CONTENT]
+* `checklist_default.py` - [REPLACE_ME_WITH_CONTENT]
+* `checklist_hidden_data.py` - [REPLACE_ME_WITH_CONTENT]
+* `checklist_extra.py` - [REPLACE_ME_WITH_CONTENT]
+* other `checklist_` files - [REPLACE_ME_WITH_CONTENT]
+* `createChecklist.py` - [REPLACE_ME_WITH_CONTENT]
+* `dates.py` - [REPLACE_ME_WITH_CONTENT]
+* `formatStrings.py` - [REPLACE_ME_WITH_CONTENT]
+* `isProjectCompatible.py` - [REPLACE_ME_WITH_CONTENT]
+* `readConfig.py` - [REPLACE_ME_WITH_CONTENT]
+* `recordsFromFile.py` - [REPLACE_ME_WITH_CONTENT]
+* `reportCheckResults.py` - [REPLACE_ME_WITH_CONTENT]
+* `saveData.py` - [REPLACE_ME_WITH_CONTENT]
+* `saveRecords.py` - [REPLACE_ME_WITH_CONTENT]
 ### Old scripts in `qc`
 * `mainInterProject.py` - Performs quality checks that compare data between two REDCap projects. This script may still work, but instructions for its use are not provided.
 * `mainInterProject_vipsspecial.py` - Performs quality checks that compare data between IPSS V3 and VIPS II. This script may still work, but instructions for its use are not provided.
@@ -216,6 +217,8 @@ This directory contains a few useful command line tools, helper scripts used in 
 ### Command-line tools in `ipss`
 #### `enrollmentReportIPSS.py`
 Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission.
+
+[REPLACE_ME_WITH_CONTENT]
 #### `makeDataPackage.py`
 Generate a formatted data package based on a user-specified configuration file. Data can be taken from multiple projects. The package can include specific instruments, events, forms, fields, and records. The user can specify settings which apply to the whole data package, and specific settings for each project included.
 
@@ -259,6 +262,8 @@ In the `projects` section, a separate entry must be created for each project inc
   * `exportRecords_args` - Arguments passed to the `exportRecords` function, defined in `exportRecords.py`. These options can be used to specify which events, instruments, fields (and record IDs) to include for the current project. See documentation on `exportRecords.py` for more information. If the project setting `use_getIPSSIDs` is `True`, the `record_id_list` argument passed to `exportRecords` will be ignored (i.e. the set of record IDs to include will be solely determined by `getIPSSIDs`).
 #### `transferPSOMToIPSS.py`
 Transfer data from the REDCap project PSOM V2 into IPSS V4.
+
+[REPLACE_ME_WITH_CONTENT]
 ### Helper scripts in `ipss`
 * `dataPackageExample.yml` - example YAML configuration file for the `makeDataPackage.py` script.
 * `getIPSSIDs.py` - tool which generates a list of record IDs satisfying user-defined conditions based on data in IPSS-associated projects. This function first generates a list of all records in the project specified in the `from_code_name` argument, which must be defined in the user's `api_keys.yml` file. It then removes records from the list using specific exclusion criteria based on data stored in various IPSS-associated projects. This script is an important part the data package creation and quality control scripts.
