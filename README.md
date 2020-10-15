@@ -112,7 +112,7 @@ python backupProjects.py -n ipss_v4
 
 ### `transferUsers.py`
 
-### `misc` - Helper scripts
+### Helper scripts in `misc`
 * `ApiSettings.py` - Defines the `ApiSettings` class, with methods for parsing the user's `settings.yml` file, and retrieving API (URL, token) pairs from the user's `api_keys.yml` file.
 * `Color.py` - Defines the `Color` class for coloured terminal output.
 * `Field.py` - Defines the `Field` class, which gets attributes and methods from the data dictionary.
