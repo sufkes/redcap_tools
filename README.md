@@ -71,7 +71,7 @@ The scripts are organized in three directories:
 ## misc - Miscellaneous scripts for any REDCap project
 This directory contains a few useful command line tools (described now), and many helper scripts.
 ### Command-line tools in `misc`
-* `exportRecords.py`
+####* `exportRecords.py`
 
   Export records from a project. Can request specific records, events, instruments, or fields.
 
@@ -91,7 +91,7 @@ This directory contains a few useful command line tools (described now), and man
   ```
   python importRecords my_file.csv -n ipss_v4
   ```
-* `backupProjects.py`
+####* `backupProjects.py`
 
   Backup REDCap projects. Project settings are saved to an XML file; all records are saved to a CSV file; files stored in "file upload" fields are saved.
 
@@ -107,7 +107,7 @@ This directory contains a few useful command line tools (described now), and man
   ```
   python backupProjects.py -n ipss_v4
   ```
-* `exportUsers.py`
+####* `exportUsers.py`
 
   Generate a CSV containing information about each REDCap user.
 
