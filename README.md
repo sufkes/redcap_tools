@@ -243,7 +243,7 @@ The settings are defined as follows:
 * `file_split_type` - Determines how data will be separated into files. Can be set to:
   * `none` - A single file is generated, containing data from all projects.
   * `projects` - The data from each project is saved to a separate file.
-  * `chunks` - The data from each "chunk" of data (determined by the project `split_type` below) is saved to a separate file.
+  * `chunks` - The data from each "chunk" of data (determined by the project `split_type`; defined below) is saved to a separate file.
 #### `transferPSOMToIPSS.py`
 Transfer data from the REDCap project PSOM V2 into IPSS V4.
 ### Helper scripts in `ipss`
