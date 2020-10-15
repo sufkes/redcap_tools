@@ -219,7 +219,7 @@ Generate a report on patient enrolment in the IPSS, broken down by stroke type, 
 #### `makeDataPackage.py`
 Generate a formatted data package based on a user-specified configuration file. Data can be taken from multiple projects. The package can include specific instruments, events, forms, fields, and records. The user can specify settings which apply to the whole data package, and specific settings for each project included.
 
-To generate a data package, first create a configuration YAML. An example configuration file for a package containing data from two projects is given in `dataPackageExample.yml`. The configuration file must obey the format described below:
+To generate a data package, first create a configuration YAML file. An example configuration file for a package containing data from two projects is given in `dataPackageExample.yml`. The configuration file must obey the format described below:
 
 ```
 options:
