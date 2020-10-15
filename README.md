@@ -255,6 +255,8 @@ In the `projects` section, a separate entry must be created for each project inc
       * `repeat_forms_events` - Data will be separated based on the REDCap columns `redcap_event_name` and `redcap_repeat_instrument` (e.g. two repeating instruments in a single event will be separated into two chunks; all non-repeating instruments in a single event will appear in a single chunk; all instruments in a repeating event will appear in a single chunk).
       * `all_forms_events` - A separate chunk will be created for each instrument, and each event in which the instrument appears.
     * `use_getIPSSIDs` - Whether or not the `getIPSSIDs` function will be used to determine the set of record IDs whose data will be included for the current project.
+  * `getIPSSIDs_args` - Arguments passed to the `getIPSSIDs` function, defined in `getIPSSIDs.py`. These options can be used to specify which records to include for the current project. See the documentation on `getIPSSIDs.py` for more information. If the project setting `use_getIPSSIDs` is `False`, these options will be ignored.
+  * `exportRecords_args` - Arguments passed to the `exportRecords` function, defined in `exportRecords.py`. These options can be used to specify which events, instruments, fields (and record IDs) to include for the current project. See documentation on `exportRecords.py` for more information. Note that if the project setting `use_getIPSSIDs` is `True`, the `record_id_list` argument passed to `exportRecords` will be ignored (i.e. the set of record IDs to include will be solely determined by `getIPSSIDs`).
 #### `transferPSOMToIPSS.py`
 Transfer data from the REDCap project PSOM V2 into IPSS V4.
 ### Helper scripts in `ipss`
