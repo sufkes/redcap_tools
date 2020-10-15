@@ -3,65 +3,26 @@ options:
   out_dir: /Users/steven ufkes/Desktop/data_package_tests
 
 projects:
-  - code_name: dptest_l_r
-    options:
-      split_type: none
-      use_getIPSSIDs: False # If True, the record_id_list option in exportRecords_args will be ignored.
-
-    getIPSSIDs_args:
-      from_code_name: dptest_l_r
-
-    exportRecords_args:
-      export_form_completion: True
-
-  - code_name: dptest_l_nr
-    options:
-      split_type: all_forms_events
-      use_getIPSSIDs: False
-
-    exportRecords_args:
-      export_form_completion: True
-
-
-  - code_name: dptest_nl_r
-    options:
-      split_type: all_forms_events
-      use_getIPSSIDs: False
-
-    exportRecords_args:
-      export_form_completion: True
-
-
-  - code_name: dptest_nl_nr
-    options:
-      split_type: all_forms_events
-      use_getIPSSIDs: False
-
-    exportRecords_args:
-      export_form_completion: True
-
   - code_name: ipss_v4
     options:
       split_type: all_forms_events
       use_getIPSSIDs: True
-      
     getIPSSIDs_args:
       from_code_name: ipss_v4
-      ex_sk_patients: True
-
+      ex_non_sips2: True
     exportRecords_args:
-       fields:
-         - chd
-         - patient_information_complete
-         - datefu
-         - psomdate
+      fields:
+        - chd
+        - ahd
+      events:
+        - acute_arm_1
+        
+  - code_name: sips2_v2
+    options:
+      split_type: all_forms_events
+      use_getIPSSIDs: False
+    exportRecords_args:
       forms:
-        - patient_information
-        - summary_of_impressions
-#      events:
-#        - acute_arm_1
-#        - followup_arm_1
-#      export_form_completion: True
-       record_id_list:
-         - 106
-         - 107
+        - acute_crf
+      
+      

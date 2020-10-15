@@ -178,7 +178,7 @@ These are small scripts in the `misc` directory which are used in various places
 * `getRecord.py` - Helper methods used to retrieve records in the branching logic functions
 * `getRecordIDList.py` - Method that returns a list of record IDs in a project, without duplicates. This function may fail to return record IDs which contain no data in the instrument which contains the record ID field (i.e. the first instrument in the project).
 * `isEventFieldInstanceValid.py` - Method which determines whether or not a specific field can contain data in a specific row of exported data. For example, in a longitudinal project, rows corresponding to a particular event will only contain fields that are part of the event; all other fields will be blank.
-* `labelRecords.py` - Method which attempts to replace values in exported records. Values are replaced with the label `rr_hidden` if the field is hidden by branching logic; `rr_invalid` if the field cannot contain data in the current row (e.g. if the field is not part of the event to which the current row corresponds); and `rr_error` if there is an error in the field's branching logic or the branching logic cannot be parsed. The branching logic labels (`rr_hidden`) are not always consistent with REDCap (i.e. a field may be marked hidden, but be visible in REDCap).
+* `labelRecords.py` - Method which attempts to replace values in exported records. Values are replaced with the label `rr_hidden` if the field is hidden by branching logic; `rr_invalid` if the field cannot contain data in the current row (e.g. if the field is not part of the event to which the current row corresponds); and `rr_blerror` if there is an error in the field's branching logic or the branching logic cannot be parsed. The branching logic labels (`rr_hidden`) are not always consistent with REDCap (i.e. a field may be marked hidden, but be visible in REDCap).
 * `parseMetadata.py` - Method that reads a data dictionary and returns a dictionary mapping field names to instances of the `Field` class (defined in `Field.py`)
 * `tokenizeBranchingLogic.py` - Helper method used in `writeBranchingLogicFunction.py`
 * `translateTokens.py` - Helper method used in `writeBranchingLogicFunction.py`
@@ -217,7 +217,9 @@ This directory contains a few useful command line tools, helper scripts used in 
 #### `enrollmentReportIPSS.py`
 Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission.
 #### `makeDataPackage.py`
-Generate a data package.
+Generate a formatted data package based on a user-specified configuration file. Data can be taken from multiple projects. The package can include specific instruments, events, forms, fields, and records.
+
+To generate a data package, first create a configuration YAML. The configuration file must obey the format described below. An example configuration is `dataPackageExample.yml`.
 #### `transferPSOMToIPSS.py`
 Transfer data from the REDCap project PSOM V2 into IPSS V4.
 ### Helper scripts in `ipss`

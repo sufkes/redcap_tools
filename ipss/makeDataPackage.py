@@ -98,6 +98,7 @@ def readConfig(config_path):
         if (not project["options"]["split_type"] in allowed_project_options_split_types):
             raise Exception("YAML configuration file, project '"+code_name+"' has an invalid split type. Choose from "+str(allowed_project_options_split_types))
 
+    print "The following settings will be used to generate the data package:"
     pprint(config)
     return config
 
