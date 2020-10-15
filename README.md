@@ -219,7 +219,27 @@ Generate a report on patient enrolment in the IPSS, broken down by stroke type, 
 #### `makeDataPackage.py`
 Generate a formatted data package based on a user-specified configuration file. Data can be taken from multiple projects. The package can include specific instruments, events, forms, fields, and records.
 
-To generate a data package, first create a configuration YAML. The configuration file must obey the format described below. An example configuration is `dataPackageExample.yml`.
+To generate a data package, first create a configuration YAML. The configuration file must obey the format described below:
+
+```
+options:
+  file_split_type: <none, projects, chunks> # Can be: none, projects, chunks
+  out_dir: </directory/to/save/package/>
+
+projects:
+  - code_name: <code name of first project, defined in user's api_keys.yml file>
+    options:
+      split_type: <none, events_only, repeat_forms_events, all_forms_events>
+      use_getIPSSIDs: <True, False>
+    getIPSSIDs_args:
+      [arguments accepted by the getIPSSIDs function]
+    exportRecords_args:
+      [arguments accepted by the exportRecords function]
+
+  - code_name: <code name of second project, defined in user's api_keys.yml file>
+     ...
+```
+An example configuration is `dataPackageExample.yml`.
 #### `transferPSOMToIPSS.py`
 Transfer data from the REDCap project PSOM V2 into IPSS V4.
 ### Helper scripts in `ipss`
