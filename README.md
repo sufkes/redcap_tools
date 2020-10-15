@@ -52,7 +52,7 @@ Most scripts allow the user to specify an API token and URL as arguments. To lim
    * (**Optional**) The `event_ids_path` can be set to the full path of the `event_ids.yml` file which sits in the root directory of this repository, or to the path of a user's own `event_ids.yml` file. The `event_ids.yml` file associates the human-readable event names defined in the REDCap (e.g. `acute_arm_1`) with the numeric codes associated with those events that appear in URL addresses for pages corresponding to those events (e.g. `34247`). This is *only* used in the quality control script. Its sole purpose is to enable automatic generation of a REDCap link for a specific record, instrument, and event name. This file must be updated for each project for which a user wishes to automatically generate links in the quality control script. Note that the code names used in this file must match the code names used in the the user's `api_keys.yml` file.
 
      **Note for Stroke Team:** This file already contains entries for all REDCap projects associated with the Stroke Team as of April 2020. You simply need to modify the `event_ids_path` entry in your `settings.yml` file to point to it.
-   * (**Optional**) Set the `default_backups_dir`. This is the default directory to which project backups will be saved by backupProjects.py.
+   * (**Optional**) Set the `default_backups_dir`. This is the default directory to which project backups will be saved by `backupProjects.py`.
 
 # Documentation
 This section contains a list of the most useful functions in this repository, and limited information about their usage. Most of the useful scripts are command-line tools which will print usage information if the `-h/--help` option is provided.
@@ -102,6 +102,10 @@ E.g. save a backup of project `ipss_v4` to the default backup location specified
 ```
 python backupProjects.py -n ipss_v4
 ```
+### Helper scripts
+* `ApiSettings.py` - Defines the `ApiSettings` class, with methods for parsing the user's `settings.yml` file, and retrieving API (URL, token) pairs from the user's `api_keys.yml` file.
+* `Color.py` - Defines the `Color` class for coloured terminal output.
+* `Field.py` - Defines the `Field` class, which gets attributes and methods from the data dictionary.
 
 ## qc - Quality control scripts for any REDCap project
 ## ipss - Scripts for special tasks related to the Stroke Team at SickKids
