@@ -224,7 +224,7 @@ To generate a data package, first create a configuration YAML. The configuration
 ```
 options:
   file_split_type: <none, projects, chunks>
-  out_dir: </directory/to/save/package/>
+  out_dir: </directory/to/save/package/to/>
 
 projects:
   - code_name: <code name of first project, defined in user's api_keys.yml file>
@@ -239,7 +239,11 @@ projects:
   - code_name: <code name of second project, defined in user's api_keys.yml file>
      ...
 ```
-An example configuration is `dataPackageExample.yml`.
+An example configuration file for a package containing data from two projects is given in `dataPackageExample.yml`. The settings are defined as follows:
+* `file_split_type` - Determines how data will be separated into separate files. Can be set to `none`, `projects`, or `chunks`.
+  * `none` - A single file is generated, containing data from all projects.
+  * `projects` - The data from each project is saved to a separate file.
+  * `chunks` - The data from each "chunk" of data (determined by the project `split_type` below) is saved to a separate file.
 #### `transferPSOMToIPSS.py`
 Transfer data from the REDCap project PSOM V2 into IPSS V4.
 ### Helper scripts in `ipss`
