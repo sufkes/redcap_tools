@@ -245,6 +245,7 @@ The package-wide settings, specified in the `options` section, are defined as fo
   * `projects` - The data from each project is saved to a separate file.
   * `chunks` - The data from each "chunk" of data (determined by the project `split_type`; defined below) is saved to a separate file.
 * `out_dir` - The directory to which the data package will be saved.
+
 The project-specific settings, defined in the `projects` section, are defined as follows:
   * `code_name` - The code name of the project. this must appear in the user's `api_keys.yml` file.
   * `options`
