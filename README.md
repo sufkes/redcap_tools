@@ -70,42 +70,49 @@ The scripts are organized in three directories:
 
 ## misc - Miscellaneous scripts for any REDCap project
 This directory contains a few useful command line tools (described now), and many helper scripts.
-### `exportRecords.py`
-Export records from a project. Can request specific records, events, instruments, or fields.
+### Command-line tools in `misc`
+* `exportRecords.py`
 
-E.g. export all records from project `ipss_v4`:
-```
-python exportRecords my_file.csv -n ipss_v4
-```
-E.g. export fields `sex` and `weight` for records `123` and `345` from project `ipss_v4`:
-```
-python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
-```
-### `importRecords.py`
-Import records to a project. The input records must be stored in a CSV file.
+  Export records from a project. Can request specific records, events, instruments, or fields.
 
-E.g. import the data in `my_file.csv` into `ipss_v4`:
-```
-python importRecords my_file.csv -n ipss_v4
-```
-### `backupProjects.py`
-Backup REDCap projects. Project settings are saved to an XML file; all records are saved to a CSV file; files stored in "file upload" fields are saved.
+  E.g. export all records from project `ipss_v4`:
+  ```
+  python exportRecords my_file.csv -n ipss_v4
+  ```
+  E.g. export fields `sex` and `weight` for records `123` and `345` from project `ipss_v4`:
+  ```
+  python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
+  ```
+* `importRecords.py`
 
-E.g. save a backup of project `ipss_v4`, to a specified directory:
-```
-python backupProjects.py -n ipss_v4 -o /home/steve/Desktop/
-```
-E.g. save a backup of every project that has an entry in your `api_keys.yml` file:
-```
-python backupProjects.py -o /home/steve/Desktop/
-```
-E.g. save a backup of project `ipss_v4` to the default backup location specified in your `settings.yml` file:
-```
-python backupProjects.py -n ipss_v4
-```
-### `exportUsers.py`
+  Import records to a project. The input records must be stored in a CSV file.
+
+  E.g. import the data in `my_file.csv` into `ipss_v4`:
+  ```
+  python importRecords my_file.csv -n ipss_v4
+  ```
+* `backupProjects.py`
+
+  Backup REDCap projects. Project settings are saved to an XML file; all records are saved to a CSV file; files stored in "file upload" fields are saved.
+
+  E.g. save a backup of project `ipss_v4`, to a specified directory:
+  ```
+  python backupProjects.py -n ipss_v4 -o /home/steve/Desktop/
+  ```
+  E.g. save a backup of every project that has an entry in your `api_keys.yml` file:
+  ```
+  python backupProjects.py -o /home/steve/Desktop/
+  ```
+  E.g. save a backup of project `ipss_v4` to the default backup location specified in your `settings.yml` file:
+  ```
+  python backupProjects.py -n ipss_v4
+  ```
+* `exportUsers.py`
+
+  Generate a CSV containing information about each REDCap user.
 
 ### `importMetadata.py`
+
 
 ### `parseLogging.py`
 
