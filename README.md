@@ -83,7 +83,7 @@ This directory contains a few useful command line tools (described now), and man
   ```
   python exportRecords my_file.csv -n ipss_v4 -r 123 345 -f sex weight
   ```
-* `importRecords.py`
+#### `importRecords.py`
 
   Import records to a project. The input records must be stored in a CSV file.
 
@@ -111,14 +111,14 @@ This directory contains a few useful command line tools (described now), and man
 
   Generate a CSV containing information about each REDCap user.
 
-### `importMetadata.py`
+#### `importMetadata.py`
 
 
-### `parseLogging.py`
+#### `parseLogging.py`
 
-### `setFormCompleteBlanks.py`
+#### `setFormCompleteBlanks.py`
 
-### `transferUsers.py`
+#### `transferUsers.py`
 
 ### Helper scripts in `misc`
 These are small scripts in the `misc` directory which are used in various places throughout the repository. Most of these are rarely useful on their own.
