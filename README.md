@@ -113,31 +113,32 @@ python backupProjects.py -n ipss_v4
 ### `transferUsers.py`
 
 ### Helper scripts in `misc`
+These are small scripts in the `misc` directory which are used in various scripts throughout the repository. Most of theses helper scripts are rarely useful on their own.
 * `ApiSettings.py` - Defines the `ApiSettings` class, with methods for parsing the user's `settings.yml` file, and retrieving API (URL, token) pairs from the user's `api_keys.yml` file.
-* `Color.py` - Defines the `Color` class for coloured terminal output.
-* `Field.py` - Defines the `Field` class, which gets attributes and methods from the data dictionary.
-* `ProgressBar.py`
-* `Timer.py`
-* `createDAGRecordMap.py`
-* `createFormRepetitionMap.py`
-* `createRecordIDMap.py`
-* `deleteRecords.py`
-* `exportFiles.py`
-* `exportFormEventMapping.py`
-* `exportFormsOrdered.py`
-* `exportProjectInfo.py`
-* `exportProjectXML.py`
-* `exportRepeatingFormsEvents.py`
-* `getDAGs.py`
-* `getEvents.py`
-* `getRecord.py`
-* `getRecordIDList.py`
-* `isEventFieldInstanceValid.py`
-* `labelRecords.py`
-* `parseMetadata.py`
-* `tokenizeBranchingLogic.py`
-* `translateTokens.py`
-* `writeBranchingLogicFunction.py`
+* `Color.py` - Class for coloured terminal output.
+* `Field.py` - Class which gets attributes and methods from the data dictionary.
+* `ProgressBar.py` - Class for terminal progress bar.
+* `Timer.py` - Class for timing execution.
+* `createDAGRecordMap.py` - Method that returns a dictionary with information about each data access group.
+* `createFormRepetitionMap.py` - Method that returns a dictionary with information about how and where each instrument repeats.
+* `createRecordIDMap.py` Method that returns dictionary that maps record IDs to a list of row numbers in the exported data.
+* `deleteRecords.py` - Method that deletes all or specific records in a project. This script has not been thoroughly tested.
+* `exportFiles.py` - Method that exports files uploaded to "file upload` fields. This is used in `backupProjects.py`.
+* `exportFormEventMapping.py` - Method that returns a list of dictionaries specifying the events in which each instrument appears.
+* `exportFormsOrdered.py` - Method that returns a list of instruments and information about them, in the order in which they appear in the project.
+* `exportProjectInfo.py` - Method that returns a dictionary containing information about the project (e.g. project name, project ID).
+* `exportProjectXML.py` - Method that export the project XML, containing all settings for the project. This is used by `backupProjects.py`.
+* `exportRepeatingFormsEvents.py` - Method that returns a list of dictionaries, specifying the events in which each instrument appears.
+* `getDAGs.py` - Method that returns a list of data access groups for which records exists. Data access groups with no records are excluded.
+* `getEvents.py` - Method that returns a dictionary containing information about each event. This script attempts to read numeric event IDs from the user's `event_ids.yml` file, if present.
+* `getRecord.py` - Helper methods used to retrieve records in the branching logic functions.
+* `getRecordIDList.py` - Method that returns a list of record IDs in a project, without duplicates. This function may fail to return record IDs which contain no data in the instrument which contains the record ID field (i.e. the first instrument in the project).
+* `isEventFieldInstanceValid.py` - Method which determines whether or not a specific field can contain data in a specific row of exported data. For example, in a longitudinal project, rows corresponding to a particular event will only contain fields that are part of the event; all other fields will be blank.
+* `labelRecords.py` - Method which attempts to replace values in exported records. Values are replaced with the label "rr_hidden" if the field is hidden by branching logic; "rr_invalid" if the field is not completed for the current row; and "rr_error" if there is an error in the field's branching logic or the branching logic cannot be parsed.
+* `parseMetadata.py` - Method that reads a data dictionary and returns a dictionary mapping field names to instances of the `Field` class (defined in `Field.py`).
+* `tokenizeBranchingLogic.py` - Helper method used in `writeBranchingLogicFunction.py`.
+* `translateTokens.py` - Helper method used in `writeBranchingLogicFunction.py`.
+* `writeBranchingLogicFunction.py` - Attempts to create a Python function mimicking the behaviour of a field's branching logic function. The returned function will not behave identically to the REDCap branching logic in all cases.
 
 ## qc - Quality control scripts for any REDCap project
 ## ipss - Scripts for special tasks related to the Stroke Team at SickKids
