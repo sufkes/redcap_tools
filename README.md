@@ -210,12 +210,12 @@ There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspeci
 ## ipss - Scripts for special tasks related to the Stroke Team at SickKids
 This directory contains a few useful command line tools, helper scripts used in various places throughout this repository, and some old scripts which are no longer useful and are kept only for reference.
 ### Command-line tools in `ipss`
-#### enrollmentReportIPSS.py
+#### `enrollmentReportIPSS.py`
 Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission.
-#### makeDataPackage.py
+#### `makeDataPackage.py`
 Generate a data package.
-#### transferPSOMToIPSS.py
-Transfer data from the REDCap project PSOM V2 into IPSS V4. 
+#### `transferPSOMToIPSS.py`
+Transfer data from the REDCap project PSOM V2 into IPSS V4.
 ### Helper scripts in `ipss`
 * `dataPackageExample.yml` - example YAML configuration file for the `makeDataPackage.py` script.
 * `getIPSSIDs.py` - tool which generates lists of records satisfying user-defined conditions based on data in IPSS-associated projects.
