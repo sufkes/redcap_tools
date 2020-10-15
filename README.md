@@ -69,7 +69,7 @@ The scripts are organized in three directories:
 * `ipss` contains scripts that perform functions associated with REDCap projects in the Stroke Team at SickKids.
 
 ## misc - Miscellaneous scripts for any REDCap project
-This directory contains a few useful command line tools (described now), and many helper scripts.
+This directory contains a few useful command line tools, and many helper scripts.
 ### Command-line tools in `misc`
 #### `exportRecords.py`
 
