@@ -181,5 +181,52 @@ These are small scripts in the `misc` directory which are used in various places
 * `writeBranchingLogicFunction.py` - Attempts to create a Python function mimicking the behaviour of a field's branching logic function. The returned function will not behave identically to the REDCap branching logic in all cases.
 
 ## qc - Quality control scripts for any REDCap project
-This directory contains scripts for quality assurance of REDCap projects. These can be used with any REDCap project. The primary command line tool is `mainIntraProject.py`, which performs quality checks within a single project. There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspecial.py` which perform quality checks that compare data between two REDCap projects. These old scripts are kept for reference, and instructions for their use are not provided. The rest of the scripts are helpers. 
+The primary command line tool is `mainIntraProject.py`, which performs quality checks within a single project. This script reads YAML configuration files. The `.yml` files are example configurations. There are a few old scripts which may no longer be useful and are kept only for reference
+
+There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspecial.py` which perform quality checks that compare data between two REDCap projects. These old scripts are kept for reference, and instructions for their use are not provided. The rest of the scripts are helpers.
+### How to perform quality control checks on a project.
+### Helper scripts in `qc`
+* `Check.py` -
+* `checkDriver.py` -
+* `checkDriverInterProject.py` -
+* `checklist_default.py` -
+* `checklist_hidden_data.py` -
+* `checklist_extra.py` -
+* other `checklist_` files -
+* `createChecklist.py` -
+* `dates.py` -
+* `formatStrings.py` -
+* `isProjectCompatible.py` -
+* `readConfig.py` -
+* `recordsFromFile.py` -
+* `reportCheckResults.py` -
+* `saveData.py` -
+* `saveRecords.py` -
+### Old scripts in `qc`
+* `mainInterProject.py` - Performs quality checks that compare data between two REDCap projects. This script may still work, but instructions for its use are not provided.
+* `mainInterProject_vipsspecial.py` - Performs quality checks that compare data between IPSS V3 and VIPS II. This script may still work, but instructions for its use are not provided.
+* `combineSiteReports.py` - This script can be used to combine site-specific reports output by the `mainIntraProject.py` into a single file.
+
 ## ipss - Scripts for special tasks related to the Stroke Team at SickKids
+This directory contains a few useful command line tools, helper scripts used in various places throughout this repository, and some old scripts which are no longer useful and are kept only for reference.
+### Command-line tools in `ipss`
+#### enrollmentReportIPSS.py
+Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission.
+#### makeDataPackage.py
+Generate a data package.
+#### transferPSOMToIPSS.py
+Transfer data from the REDCap project PSOM V2 into IPSS V4. 
+### Helper scripts in `ipss`
+* `dataPackageExample.yml` - example YAML configuration file for the `makeDataPackage.py` script.
+* `getIPSSIDs.py` - tool which generates lists of records satisfying user-defined conditions based on data in IPSS-associated projects.
+### Old scripts in `ipss`
+* `combineDates_sips_final.py` - date-matching tool used in creation of a data package for the SIPS study
+* `combineDates_sips_final_exact.py` - date-matching tool used in creation of a data package for the SIPS study
+* `ids_mod_from_arch.py` - used in generation of an old data package
+* `ids_mod_from_arch.txt` - used in generation of an old data package
+* `ipss_conf_2019_enrollment_report.py` - generates reports on patient enrolment and REDCap users. This has been replaced by `enrollmentReportIPSS.py'
+* `ipss_conf_2019_var_completion_report.py` - generates reports on patient enrolment and REDCap users. This has been replaced by `enrollmentReportIPSS.py'
+* `ipss_conf_20200211_enrollment_report.py` - generates reports on patient enrolment and REDCap users. This has been replaced by `enrollmentReportIPSS.py'
+* `makeDataPackage_2019.py` - generates an old data package
+* `makeEegDataPackage_garbage.py` - generates an old data package
+* `sips_both_groups.txt` - used in generation of an old data package
