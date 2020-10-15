@@ -123,7 +123,7 @@ These are small scripts in the `misc` directory which are used in various places
 * `createFormRepetitionMap.py` - Method that returns a dictionary with information about how and where each instrument repeats
 * `createRecordIDMap.py` Method that returns dictionary that maps record IDs to a list of row numbers in the exported data
 * `deleteRecords.py` - Method that deletes all or specific records in a project. This script has not been thoroughly tested.
-* `exportFiles.py` - Method that exports files uploaded to "file upload` fields. This is used in `backupProjects.py`.
+* `exportFiles.py` - Method that exports files uploaded to "file upload" fields. This is used in `backupProjects.py`.
 * `exportFormEventMapping.py` - Method that returns a list of dictionaries specifying the events in which each instrument appears
 * `exportFormsOrdered.py` - Method that returns a list of instruments and information about them, in the order in which they appear in the project
 * `exportProjectInfo.py` - Method that returns a dictionary containing information about the project (e.g. project name, project ID)
