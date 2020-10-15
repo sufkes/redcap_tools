@@ -16,7 +16,7 @@ projects:
         - ahd
       events:
         - acute_arm_1
-        
+
   - code_name: sips2_v2
     options:
       split_type: all_forms_events
@@ -24,5 +24,4 @@ projects:
     exportRecords_args:
       forms:
         - acute_crf
-      
-      
+        - screening_form

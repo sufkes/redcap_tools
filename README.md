@@ -237,7 +237,7 @@ projects:
       [arguments accepted by the exportRecords function]
 
   - code_name: <code name of second project, defined in user's api_keys.yml file>
-     ...
+...
 ```
 The settings are defined as follows:
 * `file_split_type` - Determines how data will be separated into separate files. Can be set to `none`, `projects`, or `chunks`.
