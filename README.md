@@ -246,7 +246,7 @@ The package-wide settings, specified in the `options` section, are defined as fo
   * `chunks` - The data from each "chunk" of data (determined by the project `split_type`; defined below) is saved to a separate file.
 * `out_dir` - The directory to which the data package will be saved.
 
-The project-specific settings, defined in the `projects` section, are defined as follows:
+In the `projects` section, a separate entry must be created for each project included in the package. The project-specific settings are defined as follows:
   * `code_name` - The code name of the project. this must appear in the user's `api_keys.yml` file.
   * `options`
     * `split_type` - Determines how data from the current project will be separated into chunks. Each chunk of data will appear on a separate tab of the spreadsheet or in a separate file, depending on the package-wide setting `file_split_type`. `split_type` can be set to:
