@@ -121,7 +121,7 @@ if (__name__ == '__main__'):
     group.add_argument("-o", "--out_dir", help="directory to save form_complete fields that would be set to blanks by this function. If an output directory is specified, the form_complete fields are not overwritten with blanks, only saved for review. If an output directory is not specified, the form_complete fields are overwritten with blanks directly.")
     group.add_argument("-q", "--quick_import", help="do not summarize the changes that will be made to the database before confirming import, and do not ask for confirmation before importing each field. The user must still confirm import of the first form_complete field to ensure that the correct project was selected.", action="store_true")
     parser.add_argument("-i", "--instruments", help="list of instruments whose form_complete fields will be modified. Default: Modify all instruments.", nargs="+", metavar="INSTRUMENT")
-    parser.add_argument("-s", "--statuses", help="list of form complete statuses to set to blank if the form is otherwise empty.", nargs="+", type=str, choices=["0","1","2"], default=["0"])
+    parser.add_argument("-s", "--statuses", help="list of form complete statuses to set to blank if the form is otherwise empty. By default, only the '0' (Incomplete) status will be overwritten.", nargs="+", type=str, choices=["0","1","2"], default=["0"])
     
     # Print help if no args input.
     if (len(sys.argv) == 1):

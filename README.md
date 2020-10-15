@@ -119,21 +119,39 @@ Parse logging CSV files exported from REDCap using the "Export all logging (CSV)
 
 E.g. See all changes to record `123` stored in `log.csv`:
 ```
-parseLogging.py -l log.csv -r 123
+python parseLogging.py -l log.csv -r 123
 ```
 E.g. See all changes to fields `sex` and `weight` for records `123` and `345` stored in `log.csv`:
 ```
-parseLogging.py -l log.csv -r 123 345 -f sex weight
+python parseLogging.py -l log.csv -r 123 345 -f sex weight
 ```
 E.g. See all changes to record `123` stored in `log1.csv` and `log2.csv`; save parsed data to a new CSV:
 ```
-parseLogging.py -l log1.csv log2.csv -r 123 -o parsed_data.csv
+python parseLogging.py -l log1.csv log2.csv -r 123 -o parsed_data.csv
 ```
 
 #### `setFormCompleteBlanks.py`
+An instrument's completion status may be set to `Complete` (green), `Incomplete` (red), or `Unverified` (yellow), even if the instrument contains no data. In such cases, it is often desired to set the completion status to blank. This script finds all empty forms, and replaces their completion statuses with blanks. The user may also generate a CSV file which can be manually imported to overwrite the completion statuses blank (safer; recommended).
 
+E.g. Generate CSV files which can be imported to overwrite `0` (`Incomplete`) form completion statuses to blank for every empty instrument in project `ipss_v4`:
+```
+python setFormCompleteBlanks.py -n ipss_v4 -o /directory/to/save/csv/files/to/
+```
+E.g. Automatically overwrite `0` (`Incomplete`) form completion statuses to blank for every empty instrument in project `ipss_v4`:
+```
+python setFormCompleteBlanks.py -n ipss_v4
+```
+E.g. Automatically overwrite `0` (`Incomplete`), `1` (`Unverified`), and `2` (`Complete`) form completion statuses to blank for every empty instrument in project `ipss_v4`:
+```
+python setFormCompleteBlanks.py -n ipss_v4 -s 0 1 2
+```
 #### `transferUsers.py`
+Transfer users between two projects. This function can be useful when creating a new version of a project, and all users from the original project need to be added to the new one.
 
+E.g. Transfer all users from project `ipss_v3` to `ipss_v4`:
+```
+python transferUsers.py -n ipss_v3 ipss_v4
+```
 ### Helper scripts in `misc`
 These are small scripts in the `misc` directory which are used in various places throughout the repository. Most of these are rarely useful on their own.
 * `ApiSettings.py` - Defines the `ApiSettings` class, with methods for parsing the user's `settings.yml` file, and retrieving API (URL, token) pairs from the user's `api_keys.yml` file
