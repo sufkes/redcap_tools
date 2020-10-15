@@ -131,17 +131,17 @@ python parseLogging.py -l log1.csv log2.csv -r 123 -o parsed_data.csv
 ```
 
 #### `setFormCompleteBlanks.py`
-An instrument's completion status can be set to `0`/`Incomplete` (red), `1`/`Unverified` (yellow), or `2`/`Complete` (green), even if the instrument contains no data. In such cases, it is often desired to set the completion status to blank. This script finds all empty forms, and replaces their completion statuses with blanks. The user may also generate a CSV file which can be manually imported to overwrite the completion statuses with blanks (safer; recommended).
+An instrument's completion status can be set to `0`/`Incomplete` (red), `1`/`Unverified` (yellow), or `2`/`Complete` (green), even if the instrument contains no data. In such cases, it is often desired to set the completion status to blank. This script finds all empty forms, and replaces their completion statuses with blanks. The user may also generate CSV files which can be manually imported to overwrite the completion statuses with blanks (safer; recommended).
 
 E.g. Generate CSV files which can be imported to overwrite `0` (`Incomplete`) form completion statuses to blank for every empty instrument in project `ipss_v4`:
 ```
 python setFormCompleteBlanks.py -n ipss_v4 -o /directory/to/save/csv/files/to/
 ```
-E.g. Automatically overwrite `0` (`Incomplete`) form completion statuses to blank for every empty instrument in project `ipss_v4`:
+E.g. Automatically overwrite `0`/`Incomplete` form completion statuses to blank for every empty instrument in project `ipss_v4`:
 ```
 python setFormCompleteBlanks.py -n ipss_v4
 ```
-E.g. Automatically overwrite `0` (`Incomplete`), `1` (`Unverified`), and `2` (`Complete`) form completion statuses to blank for every empty instrument in project `ipss_v4`:
+E.g. Automatically overwrite `0`/`Incomplete`, `1`/`Unverified`, and `2`/`Complete` form completion statuses to blank for every empty instrument in project `ipss_v4`:
 ```
 python setFormCompleteBlanks.py -n ipss_v4 -s 0 1 2
 ```
