@@ -102,10 +102,42 @@ E.g. save a backup of project `ipss_v4` to the default backup location specified
 ```
 python backupProjects.py -n ipss_v4
 ```
-### Helper scripts
+### `exportUsers.py`
+
+### `importMetadata.py`
+
+### `parseLogging.py`
+
+### `setFormCompleteBlanks.py`
+
+### `transferUsers.py`
+
+### `misc` - Helper scripts
 * `ApiSettings.py` - Defines the `ApiSettings` class, with methods for parsing the user's `settings.yml` file, and retrieving API (URL, token) pairs from the user's `api_keys.yml` file.
 * `Color.py` - Defines the `Color` class for coloured terminal output.
 * `Field.py` - Defines the `Field` class, which gets attributes and methods from the data dictionary.
+* `ProgressBar.py`
+* `Timer.py`
+* `createDAGRecordMap.py`
+* `createFormRepetitionMap.py`
+* `createRecordIDMap.py`
+* `deleteRecords.py`
+* `exportFiles.py`
+* `exportFormEventMapping.py`
+* `exportFormsOrdered.py`
+* `exportProjectInfo.py`
+* `exportProjectXML.py`
+* `exportRepeatingFormsEvents.py`
+* `getDAGs.py`
+* `getEvents.py`
+* `getRecord.py`
+* `getRecordIDList.py`
+* `isEventFieldInstanceValid.py`
+* `labelRecords.py`
+* `parseMetadata.py`
+* `tokenizeBranchingLogic.py`
+* `translateTokens.py`
+* `writeBranchingLogicFunction.py`
 
 ## qc - Quality control scripts for any REDCap project
 ## ipss - Scripts for special tasks related to the Stroke Team at SickKids
