@@ -219,6 +219,7 @@ The options are defined as follows:
 * `checks` - List of "checklists" to perform on the project. Each checklist must have a corresponding script `qc/<checklist name>.py` which returns a list of `Check` objects defined in `Check.py`. The `qc` directory contains two commonly used checklists:
   * `checklist_default.py` - (1) checks for missing data in required fields; and (2) checks for missing data in all fields.
   * `checklist_hidden_data.py` - checks for data lying in fields hidden by branching logic.
+
 The other checklist files are old checks that were performed on specific projects, and have been kept only for reference. The user can create their own checklist files by following the format of the existing checklists.
 
 ### Helper scripts in `qc`
