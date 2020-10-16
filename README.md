@@ -268,10 +268,10 @@ In the `projects` section, a separate entry must be created for each project inc
   * `exportRecords_args` - Arguments passed to the `exportRecords` function, defined in `exportRecords.py`. These options can be used to specify which events, instruments, fields (and record IDs) to include for the current project. See documentation on `exportRecords.py` for more information. If the project setting `use_getIPSSIDs` is `True`, the `record_id_list` argument passed to `exportRecords` will be ignored (i.e. the set of record IDs to include will be solely determined by `getIPSSIDs`).
 #### `transferPSOMToIPSS.py`
 Copy data from the "Summary of Impressions" instrument in PSOM V2 into the "Summary of Impressions" instrument in IPSS V4. Various modifications are made to the PSOM data before import into IPSS:
-* Rows with a blank PSOM date (`fuionset_soi`) are excluded.
+* Rows with a blank PSOM date in PSOM V2 (`fuionset_soi`) are excluded.
 * Record IDs which do not exist in IPSS are excluded.
 * Events and repeat instance values are reassigned:
-  * Map the instance of the PSOM `summary_of_impressions` form which has the latest `fuionset_soi` date in the `acute_hospitalizat_arm_1` event into the IPSS `'`summary_of_impressions` form in the `acute_arm_1` event.
+  * Map the instance of the PSOM `summary_of_impressions` form which has the latest `fuionset_soi` date in the `acute_hospitalizat_arm_1` event into the IPSS `summary_of_impressions` form in the `acute_arm_1` event.
     * Instances of the PSOM `summary_of_impressions` form in the `acute_hospitalizat_arm_1` event that have earlier dates will not be transferred to IPSS.
   * Map the PSOM `summary_of_impressions` form in the `initial_psom_arm_1` and `follow_up_psom_arm_1` events to the IPSS `summary_of_impression` form in the `followup_arm_1` event.
     * Repeat instance numbers are assigned in order of ascending PSOM date (`fuionset_soi` in PSOM).
