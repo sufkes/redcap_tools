@@ -217,10 +217,10 @@ The options are defined as follows:
 * `use_getIPSSIDs` -  Whether or not the `getIPSSIDs` function will be used to determine the set of record IDs whose data will be checked. Cannot be set `True` if a `record_id_list` is specified.
 * `getIPSSIDs_args` - Arguments passed to the `getIPSSIDs` function, defined in `getIPSSIDs.py`. These options can be used to specify which record IDs to check. See the documentation on `getIPSSIDs.py` for more information. If the project setting `use_getIPSSIDs` is `False`, these options will be ignored.
 * `checks` - List of "checklists" to perform on the project. Each checklist must have a corresponding script `qc/<checklist name>.py` which returns a list of `Check` objects defined in `Check.py`. The `qc` directory contains two commonly used checklists:
-  * `checklist_default.py` - (1) checks for missing data in required fields; and (2) checks for missing data in all fields.
+  * `checklist_default.py` - checks for missing data in required fields; and checks for missing data in all fields.
   * `checklist_hidden_data.py` - checks for data lying in fields hidden by branching logic.
 
-The other checklist files are old checks that were performed on specific projects, and have been kept only for reference. The user can create their own checklist files by following the format of the existing checklists.
+  The other checklist files are old checks that were performed on specific projects, and have been kept only for reference. The user can create their own checklist files by following the format of the existing checklists.
 
 ### Helper scripts in `qc`
 * `Check.py` - [REPLACE_ME_WITH_CONTENT]
