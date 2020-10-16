@@ -158,7 +158,7 @@ python transferUsers.py -n ipss_v3 ipss_v4
 ```
 ### Helper scripts in `misc`
 These are small scripts in the `misc` directory which are used in various places throughout the repository. Most of these are rarely useful on their own.
-* `ApiSettings.py` - Defines the `ApiSettings` class, with methods for parsing the user's `settings.yml` file, and retrieving API (URL, token) pairs from the user's `api_keys.yml` file
+* `ApiSettings.py` - Class with methods for parsing the user's `settings.yml` file, and retrieving API (URL, token) pairs from the user's `api_keys.yml` file
 * `Color.py` - Class for coloured terminal output
 * `Field.py` - Class which gets attributes and methods from the data dictionary
 * `ProgressBar.py` - Class for terminal progress bar
@@ -189,7 +189,28 @@ The primary command line tool is `mainIntraProject.py`, which performs quality c
 
 There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspecial.py` which perform quality checks that compare data between two REDCap projects. These old scripts are kept for reference, and instructions for their use are not provided. The rest of the scripts are helpers.
 ### How to perform quality control checks on a project.
-[REPLACE_ME_WITH_CONTENT]
+Quality checks can be performed on a single project using the script `mainIntraProject.py`. To perform quality checks, first create a configuration YAML file. An example configuration file is given in `example_config-intraProject.yml`. The configuration file must obey the format described below:
+```
+out_dir: </directory/to/save/output/to/>
+
+code_name: <code name of project, defined in user's api_keys.yml file>
+
+use_custom_record_id_list: <True, False>
+record_id_list:
+  - <record ID 1>
+  - <record ID 2>
+...
+
+use_getIPSSIDs: <True, False>
+getIPSSIDs_args:
+  [arguments accepted by the getIPSSIDs function]
+
+checks:
+  - <name of 1st list of checks to perform>
+  - <name of 2nd list of checks to perform>
+...
+```
+
 ### Helper scripts in `qc`
 * `Check.py` - [REPLACE_ME_WITH_CONTENT]
 * `checkDriver.py` - [REPLACE_ME_WITH_CONTENT]
