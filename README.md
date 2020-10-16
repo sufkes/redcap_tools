@@ -220,25 +220,33 @@ The options are defined as follows:
   * `checklist_default.py` - checks for missing data in required fields; and checks for missing data in all fields.
   * `checklist_hidden_data.py` - checks for data lying in fields hidden by branching logic.
 
-  The other checklist files are old checks that were performed on specific projects, and have been kept only for reference. The user can create their own checklist files by following the format of the existing checklists.
+The other checklist files are checks that were performed on specific projects, and have been kept for reference. To create your own checklist, you must write a script which returns a list of `Check` objects (defined in `Check.py`). The easiest way to create a new checklist is to copy an existing checklist script and modify it. For more information, see the documentation for `Check.py`.
 
 ### Helper scripts in `qc`
-* `Check.py` - [REPLACE_ME_WITH_CONTENT]
-* `checkDriver.py` - [REPLACE_ME_WITH_CONTENT]
-* `checkDriverInterProject.py` - [REPLACE_ME_WITH_CONTENT]
-* `checklist_default.py` - [REPLACE_ME_WITH_CONTENT]
-* `checklist_hidden_data.py` - [REPLACE_ME_WITH_CONTENT]
-* `checklist_extra.py` - [REPLACE_ME_WITH_CONTENT]
-* other `checklist_` files - [REPLACE_ME_WITH_CONTENT]
-* `createChecklist.py` - [REPLACE_ME_WITH_CONTENT]
-* `dates.py` - [REPLACE_ME_WITH_CONTENT]
-* `formatStrings.py` - [REPLACE_ME_WITH_CONTENT]
-* `isProjectCompatible.py` - [REPLACE_ME_WITH_CONTENT]
-* `readConfig.py` - [REPLACE_ME_WITH_CONTENT]
-* `recordsFromFile.py` - [REPLACE_ME_WITH_CONTENT]
-* `reportCheckResults.py` - [REPLACE_ME_WITH_CONTENT]
-* `saveData.py` - [REPLACE_ME_WITH_CONTENT]
-* `saveRecords.py` - [REPLACE_ME_WITH_CONTENT]
+* `Check.py` - Defines the `Check` class. See the `checklist_` files for examples. The `Check` class has the following attributes and methods:
+  * `name` (`str`) -  short name of check used in report names
+  * `description` (`str`) - brief description of report
+  * `report_forms` (`bool`) - whether to generate report on the number of issues broken down by instrument
+  * `inter_project` (`bool`) - whether check compares data between multiple projects
+  * `whole_row_check` (`bool`) - whether check involves all data in a row of data
+  * `check_invalid_entries` (`bool`) - whether check will look at fields hidden by branching logic or fields which cannot be completed for the current row
+  * `inter_record` (`bool`) - whether check compares data from multiple records
+  * `inter_row` (`bool`) - whether check compares data between rows
+  * `specify_fields` (`bool`) - whether the fields to check will be specified explicitly
+  * `target_fields` (`list` of `str`) - set to `None` if specify_fields is `False`, else set to the list of fields to be checked
+  * `rowConditions` (function) -  function which determines whether a row should be checked (regardless of event, instance, branching logic)
+  * `fieldConditions` (function) - function which determines whether a field should be checked (regardless of branching logic)
+  * `checkFunction` (function) - function which performs the actual check
+* `checkDriver.py` - performs each `Check` in a checklist for `mainIntraProject.py`
+* `checkDriverInterProject.py` - performs each `Check` in a checklist for `mainInterProject.py`
+* `createChecklist.py` - runs the checklist scripts
+* `dates.py` - helper for date formatting
+* `formatStrings.py` - helper for string formatting
+* `isProjectCompatible.py` - performs check to determine if project is compatible with the quality control script
+* `readConfig.py` - reads the configuration YAML file
+* `recordsFromFile.py` - helper which reads/writes records from/to Python "pickle" files (rarely used).
+* `reportCheckResults.py` - generates the report CSV files
+* `saveData.py` - saves intermediate data to Python "pickle" files (rarely used).
 ### Old scripts in `qc`
 * `mainInterProject.py` - Performs quality checks that compare data between two REDCap projects. This script may still work, but instructions for its use are not provided.
 * `mainInterProject_vipsspecial.py` - Performs quality checks that compare data between IPSS V3 and VIPS II. This script may still work, but instructions for its use are not provided.

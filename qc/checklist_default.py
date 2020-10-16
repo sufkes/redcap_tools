@@ -16,14 +16,14 @@ checklist = []
 #### Check: Find required fields which have no entry
 name = "required_empty"
 description = "Required fields with no entry"
-report_forms = True
-inter_project = False
-whole_row_check = False
-check_invalid_entries = False
-inter_record = False
-inter_row = False
-specify_fields = False
-target_fields = None
+report_forms = True # Whether to generate report on the number of issues broken down by instrument.
+inter_project = False # Whether check compares data between multiple projects.
+whole_row_check = False # Whether check involves all data in a row of data.
+check_invalid_entries = False # Whether check should look at fields hidden by branching logic or fields which cannot be completed for the current row.
+inter_record = False # Whether check compares data from multiple records.
+inter_row = False # Whether check compares data between rows.
+specify_fields = False # Whether the fields to check will be specified explicitly. 
+target_fields = None # None if specify_fields is False, else set to the list of fields to be checked.
 
 # Define function which determines whether a row should be checked (regardless of event, instance, branching logic)
 def rowConditions(row_index, def_field, metadata, records, record_id_map, repeating_forms_events, form_repetition_map):
