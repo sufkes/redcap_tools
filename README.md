@@ -211,7 +211,7 @@ checks:
 ```
 The options are defined as follows:
 * `out_dir` - The directory to which the reports will be saved.
-* `code_name` - The code name of the project. This must appear in the user's api_keys.yml file.
+* `code_name` - The code name of the project. This must appear in the user's `api_keys.yml` file.
 * `use_custom_record_id_list` - Whether the checks should be performed only on a specific list of records. If this option is set `True`, a list of record IDs must be specified under the `record_id_list` option; if this option is set `False`, the `record_id_list` option will be ignored.
 * `record_id_list` - List of record IDs on which the checks should be performed. Cannot be used if `use_getIPSSIDs` is `True`.
 * `use_getIPSSIDs` -  Whether or not the `getIPSSIDs` function will be used to determine the set of record IDs whose data will be checked. Cannot be set `True` if a `record_id_list` is specified.
