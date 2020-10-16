@@ -1,19 +1,11 @@
 #!/usr/bin/env python
 
-
-######## MODIFY api_url_key_list_path TO POINT TO YOUR LIST OF API KEYS AND URLS (IF YOU WANT THE SCRIPT TO RUN WITHOUT ANY COMMAND LINE ARGUMENTS). ########
-## THE FILE SHOULD BE TWO LINES OF TEXT (NOT INCLUDING THE #):
-#PSOM_API_URL PSOM_API_KEY
-#IPSS_API_URL IPSS_API_KEY
-api_url_key_list_path = "/Users/steven ufkes/Documents/stroke/data_packages/api_url_key_list.txt"
-######## ^ MODIFY ^ #########################################################################################################################################
-
-
 #### Import modules
 # Standard modules 
 import os, sys
 import argparse
 import warnings
+import pandas as pd
 
 # My modules from other directories
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) # this line makes the 'misc' folder available via 'import misc'
@@ -23,8 +15,21 @@ from misc.importRecords import importRecords
 from misc.getRecordIDList import getRecordIDList
 from misc.ApiSettings import ApiSettings
 
+
+#### Defene function which saves import data to CSV.
+def saveToCsv(dictlist, out_path):
+    """
+    Takes a list of dictionaries as input and outputs a CSV file.
+    """
+    df = pd.DataFrame(dictlist)
+    # Reorder the columns a bit.
+    first_columns = ['ipssid', 'redcap_event_name', 'redcap_repeat_instrument', 'redcap_repeat_instance']
+    columns = first_columns + [col for col in df.columns if not col in first_columns]
+    df = df[columns]
+    df.to_csv(out_path, index=False, encoding="utf-8")
+
 #### Define function which transfers data from PSOM V2 to IPSS V4.
-def transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_ids=False):
+def transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_ids=False, out_path=None, manual_import=False):
     """
     Transfer Summary of Impressions data from PSOM V2 to IPSS V4.
     Parameters:
@@ -32,6 +37,9 @@ def transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_i
         key_psom: str, API key for PSOM V2
         url_ipss: str, API URL for IPSS V4
         key_ipss: str, API key for IPSS V4
+        import_non_ipss_ids: bool, whether to import IDs that do not exist in IPSS V4
+        out_path: str, path to save data to be imported to IPSS to
+        manual_import: bool, do not import data to IPSS; data saved to CSV can be manually imported by user
     Returns:
         None
     """
@@ -283,16 +291,23 @@ def transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_i
     ## Map the PSOM data to IPSS fields.
     to_ipss = modifyRecords(from_psom, url_ipss, key_ipss, import_non_ipss_ids=import_non_ipss_ids)
 
+    ## Save data to be imported to a CSV file.
+    if out_path:
+        saveToCsv(to_ipss, out_path)
+    
     ## Import data to IPSS.
-    importRecords(url_ipss, key_ipss, to_ipss, overwrite='overwrite', quick=True, return_content='count')
-
+    if manual_import:
+        print "Skipping automatic import of data. Data to be imported into IPSS V4 was saved to '"+out_path+"'. This file should be imported with the setting \"Allow blank values to overwrite existing saved values?\" set to \"Yes\"."
+    else:
+        importRecords(url_ipss, key_ipss, to_ipss, overwrite='overwrite', quick=True, return_content='count')
+    
     return
 
 #### If this script was called , run transferPSOMToIPSS() using API keys and URLs stored in the default location defined near the start of this 
 if (__name__ == '__main__'):
     #### Handle command-line argumnets
     ## Create argument parser.
-    description = """Transfer data from PSOM V2 'Summary of Impressions' form to IPSS V4 'Status at Discharge' and 'Outcome - PSOM' forms"""
+    description = """Transfer data from PSOM V2 'Summary of Impressions' form to IPSS V4 'Summary of Impressions' form"""
     parser = argparse.ArgumentParser(description=description)
 
     ## Define optional arguments.
@@ -301,12 +316,18 @@ if (__name__ == '__main__'):
     parser.add_argument('--key_psom', help="API key for PSOM project to map from. Default: Read from api_keys.yml file under code name 'psom_v2'", type=str)
     parser.add_argument('--url_ipss', help="API URL for IPSS project to map to. Default: Read from api_keys.yml file under code name 'ipss_v4'", type=str)
     parser.add_argument('--key_ipss', help="API key for IPSS project to map to. Default: Read from api_keys.yml file under code name 'ipss_v4'", type=str)
-
+    parser.add_argument('-o', '--out_path', help="path of CSV file in which to save data to be imported to IPSS. This option is not required unless the -m/--manual_import flag is used.", type=str)
+    parser.add_argument('-m', '--manual_import', help="Do not import data into IPSS V4; save data to be imported into IPSS to a CSV file, which can be manually imported by the user.", action="store_true")
+    
     parser.add_argument('--import_non_ipss_ids', help='Import of records which do not exist in the IPSS (i.e. create new records in IPSS). By default, records are only imported to IPSS if there ID already exists in IPSS. This option exists for debugging purposes only.', action='store_true')
     
     ## Parse arguments.
     args = parser.parse_args()
 
+    # Ensure that an out_path is specified if the -m/--manual_import flag is used.
+    if args.manual_import and (not args.out_path):
+        raise Exception("If -m/--manual_import flag is used, an output path must be specified using the -o/--out_path option.")
+    
     #### Read API keys and URLS from file, to be used as the default arguments for this command line function.
     if (None in [args.url_psom, args.key_psom, args.url_ipss, args.key_ipss]):
         print "At least one API URL or token was not specified. Attempting to read from user's api_keys.yml file. Any URLs or tokens specified as arguments will be ignored."
@@ -324,4 +345,4 @@ if (__name__ == '__main__'):
 
     
     ## Transfer data from PSOM to IPSS.
-    transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_ids=args.import_non_ipss_ids)
+    transferPSOMToIPSS(url_psom, key_psom, url_ipss, key_ipss, import_non_ipss_ids=args.import_non_ipss_ids, out_path=args.out_path, manual_import=args.manual_import)

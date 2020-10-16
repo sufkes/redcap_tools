@@ -216,7 +216,7 @@ There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspeci
 This directory contains a few useful command line tools, helper scripts used in various places throughout this repository, and some old scripts which are no longer useful and are kept only for reference.
 ### Command-line tools in `ipss`
 #### `enrollmentReportIPSS.py`
-Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission. A spreadsheet containing additional information about each data access group can optionally be provided, and will be incorporated in the report broken down by data access group. The first column of the spreadsheet must contain the data access group code.
+Generate a report on patient enrolment in IPSS V4, broken down by stroke type, data access group, and year of admission. A spreadsheet containing additional information about each data access group can optionally be provided, and will be incorporated in the report broken down by data access group. The first column of the spreadsheet must contain the data access group code.
 
 E.g.
 ```
@@ -267,9 +267,23 @@ In the `projects` section, a separate entry must be created for each project inc
   * `getIPSSIDs_args` - Arguments passed to the `getIPSSIDs` function, defined in `getIPSSIDs.py`. These options can be used to specify which record IDs to include for the current project. See the documentation on `getIPSSIDs.py` for more information. If the project setting `use_getIPSSIDs` is `False`, these options will be ignored.
   * `exportRecords_args` - Arguments passed to the `exportRecords` function, defined in `exportRecords.py`. These options can be used to specify which events, instruments, fields (and record IDs) to include for the current project. See documentation on `exportRecords.py` for more information. If the project setting `use_getIPSSIDs` is `True`, the `record_id_list` argument passed to `exportRecords` will be ignored (i.e. the set of record IDs to include will be solely determined by `getIPSSIDs`).
 #### `transferPSOMToIPSS.py`
-Transfer data from the REDCap project PSOM V2 into IPSS V4.
+Copy data from the "Summary of Impressions" instrument in PSOM V2 into the "Summary of Impressions" instrument in IPSS V4. Various modifications are made to the PSOM data before import into IPSS:
+* Rows with a blank PSOM date (`fuionset_soi`) are excluded.
+* Record IDs which do not exist in IPSS are excluded.
+* Events and repeat instance values are reassigned:
+  * Map the instance of the PSOM `summary_of_impressions` form which has the latest `fuionset_soi` date in the `acute_hospitalizat_arm_1` event into the IPSS `'`summary_of_impressions` form in the `acute_arm_1` event.
+    * Instances of the PSOM `summary_of_impressions` form in the `acute_hospitalizat_arm_1` event that have earlier dates will not be transferred to IPSS.
+  * Map the PSOM `summary_of_impressions` form in the `initial_psom_arm_1` and `follow_up_psom_arm_1` events to the IPSS `summary_of_impression` form in the `followup_arm_1` event.
+    * Repeat instance numbers are assigned in order of ascending PSOM date (`fuionset_soi` in PSOM).
+* Field names are changed to match IPSS field names.
+* Data from some PSOM fields are combined into a single field in IPSS.
 
-[REPLACE_ME_WITH_CONTENT]
+Notes:
+* If API URLs and tokens are not provided as arguments, the script will attempt to retrieve them from the user's `api_keys.yml` file, under the code names `ipss_v4` and `psom_v2`.
+* This script maps data between specific fields in PSOM V2 and IPSS V4. Any changes to the events, instruments, and fields involved in this mapping will break the script.
+* By default, the script automatically imports data into IPSS V4. Alternatively, the user can use the `-m/--manual_import` flag, and save the data to be imported into IPSS to a CSV file specified with the `-o/--out_path` option. This CSV file can then be imported manually, with the REDCap setting "Allow blank values to overwrite existing saved values?" set to "Yes". This method is perhaps safer as it allows the user to review the changes before confirmation.
+* Prior to the use of this script, all "Summary of Impressions" data in IPSS V4 for records with data access group `hsc` was deleted. All of the "Summary of Impressions" data stored in IPSS V4 for `hsc` records should be taken from PSOM V2. If the "Summary of Impressions" data if IPSS V4 for `hsc` patients ever becomes corrupted, it could be repaired by deleting all of it, and running this script again.
+
 ### Helper scripts in `ipss`
 * `dataPackageExample.yml` - example YAML configuration file for the `makeDataPackage.py` script.
 * `getIPSSIDs.py` - tool which generates a list of record IDs satisfying user-defined conditions based on data in IPSS-associated projects. This function first generates a list of all records in the project specified in the `from_code_name` argument, which must be defined in the user's `api_keys.yml` file. It then removes records from the list using specific exclusion criteria based on data stored in various IPSS-associated projects. This script is an important part the data package creation and quality control scripts.
