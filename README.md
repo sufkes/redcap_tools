@@ -185,11 +185,11 @@ These are small scripts in the `misc` directory which are used in various places
 * `writeBranchingLogicFunction.py` - Attempts to create a Python function mimicking the behaviour of a field's branching logic function. The returned function will not behave identically to the REDCap branching logic in all cases.
 
 ## qc - Quality control scripts for any REDCap project
-The primary command line tool is `mainIntraProject.py`, which performs quality checks within a single project. This script reads YAML configuration files. The `.yml` files are example configurations. There are a few old scripts which may no longer be useful and are kept only for reference
+The primary command line tool is `mainIntraProject.py`, which performs quality checks within a single project. This script reads YAML configuration files. The `.yml` files in the `qc` directory are example configurations. There are a few old scripts which may no longer be useful and are kept only for reference
 
 There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspecial.py` which perform quality checks that compare data between two REDCap projects. These old scripts are kept for reference, and instructions for their use are not provided. The rest of the scripts are helpers.
 ### How to perform quality control checks on a project.
-Quality checks can be performed on a single project using the script `mainIntraProject.py`. To perform quality checks, first create a configuration YAML file. An example configuration file is given in `example_config-intraProject.yml`. The configuration file must obey the format described below:
+Quality checks can be performed on a single project using the script `mainIntraProject.py`. To perform quality checks, first create a configuration YAML file. See the `.yml` files in the `qc` directory for examples. The configuration file must obey the format described below:
 ```
 out_dir: </directory/to/save/output/to/>
 
