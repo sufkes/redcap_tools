@@ -216,9 +216,13 @@ There are two old scripts, `mainInterProject.py` and `mainInterProject_vipsspeci
 This directory contains a few useful command line tools, helper scripts used in various places throughout this repository, and some old scripts which are no longer useful and are kept only for reference.
 ### Command-line tools in `ipss`
 #### `enrollmentReportIPSS.py`
-Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission.
+Generate a report on patient enrolment in the IPSS, broken down by stroke type, data access group, and year of admission. A spreadsheet containing additional information about each data access group can optionally be provided, and will be incorporated in the report broken down by data access group. The first column of the spreadsheet must contain the data access group code. E.g.
+```
+redcap_data_access_group, name, country
+hsc, The Hospital for Sick Children, Canada
+mayo, The Mayo Clinic, USA
+```
 
-[REPLACE_ME_WITH_CONTENT]
 #### `makeDataPackage.py`
 Generate a formatted data package based on a user-specified configuration file. Data can be taken from multiple projects. The package can include specific instruments, events, forms, fields, and records. The user can specify settings which apply to the whole data package, and specific settings for each project included.
 
