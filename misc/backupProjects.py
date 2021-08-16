@@ -118,8 +118,12 @@ def backupProjects(api_key_path, out_dir, code_name_list=None, modification_note
         api_url = api_info['url']
         api_key = api_info['key']
 
-        pid = str(exportProjectInfo(api_url, api_key)["project_id"])
-        
+        # If you do not have API rights to access the project, exportProjectInfo will return a dict with something like: {u'error': u'You do not have API rights because your privileges have expired for this project as of 2020-12-01.'} ; try to handle this case.
+        project_info = exportProjectInfo(api_url, api_key)
+        if 'error' in project_info:
+            raise Exception('Error returned by REDCap: '+project_info['error'])
+        else:
+            pid = str(project_info['project_id'])
         # Backup project
         backupProject(api_url, api_key, date_dir, date_string, skip_files=args.skip_files)
         
