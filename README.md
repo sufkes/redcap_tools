@@ -3,16 +3,13 @@ Scripts for REDCap API functions, quality control, report generation, and specia
 
 # Getting started
 ## Installation
-All scripts require Python 2.7.
+* All scripts require Python 2.7.
+* Most of the scripts require the Python module "PyCap". See https://github.com/redcap-tools/PyCap. The latest version of PyCap is written for Python 3, and will not work with this project. PyCap version 1.0.2 works with this project (e.g. `pip install pycap==1.0.2`).
+* PyCap requires the module "requests". See https://pypi.org/project/requests (e.g. `pip install requests`).
+* PyCap requires the modele "pycurl". See http://pycurl.io/docs/latest/install.html (e.g. `pip install pycurl`).
+* Some scripts require the Python module "pyyaml". See https://pypi.org/project/PyYAML (e.g. `pip install pyyaml`).
+* Some scripts require the Python module "Pandas". See https://pandas.pydata.org/pandas-docs/stable/install.html (e.g. `pip install pandas`)
 
-Most of the scripts require the Python module "PyCap". See https://github.com/redcap-tools/PyCap . The latest version of PyCap is written for Python 3, and will not work with this project. PyCap version 1.0.2 works with this project (e.g. pip install pycap==1.0.2).	 
-
-
-PyCap requires the module "requests". See https://pypi.org/project/requests
-
-Some scripts require the Python module "pyyaml". See https://pypi.org/project/PyYAML
-
-Some scripts require the Python module "Pandas". See https://pandas.pydata.org/pandas-docs/stable/install.html
 ## Configure `settings.yml` and `api_keys.yml`
 Most scripts use REDCap API functions. To interact with a REDCap project through the API, a user must have API rights enabled in the User Rights tab of the REDCap project page, and an API token. Users can then interact with the project using their API token and the API URL of the REDCap instance in which the project is hosted. The API URL for a REDCap instance can be found in the API Playground of any of the projects it hosts. The API URLs for the REDCap instances at SickKids are:
 | REDCap Instance | API URL |
