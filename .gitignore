@@ -44,5 +44,5 @@ __pycache__/
 *.xlsx
 *.xls
 
-# A user's own settings.yml file
+# A user's own settings.yml and api keys file.
 settings.yml
