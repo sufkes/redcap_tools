@@ -1,4 +1,4 @@
-# sufkes_redcap
+# redcap_tools
 Scripts for REDCap API functions, quality control, report generation, and special-purpose scripts for the Stroke Team at SickKids.
 
 # Getting started
